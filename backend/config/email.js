@@ -4,20 +4,19 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "smtp.resend.com",
   port: 587,
   secure: false,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  connectionTimeout: 30000
+    user: "resend",
+    pass: process.env.RESEND_API_KEY || "re_KZAmNvaZ_HFB6ywYsgCv6TtnNZ8FMnfsD"
+  }
 });
 
 export async function enviarEmail(destino, asunto, mensaje) {
   try {
     let info = await transporter.sendMail({
-      from: '"Sistema Soporte" <rodrigo.luna.analista@gmail.com>',
+      from: '"Sistema Soporte" <onboarding@resend.dev>',
       to: destino,
       subject: asunto,
       text: mensaje
