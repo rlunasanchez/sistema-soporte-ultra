@@ -1,0 +1,246 @@
+# Sistema de Soporte Ultra - Documentación del Proyecto
+
+## 📋 Información General
+
+- **Nombre**: Sistema de Soporte Ultra
+- **Cliente**: Banco Estado (Chile)
+- **Desarrollador**: Rodrigo Luna
+- **Tipo**: Sistema de gestión de órdenes de servicio técnico
+- **Estado**: Desplegado y funcionando en producción
+
+---
+
+## 🚀 URLs de Producción
+
+| Servicio | URL |
+|----------|-----|
+| **Frontend** | https://sistema-soporte-ultra-wngj.vercel.app |
+| **Backend** | https://sistema-soporte-ultra.onrender.com |
+| **Base de datos** | Neon (PostgreSQL) |
+
+---
+
+## 🔐 Credenciales de Acceso
+
+| Usuario | Password | Rol |
+|--------|----------|-----|
+| admin | Rluna6498 | admin |
+| rodrigo | Rluna6498 | tecnico |
+| diego | Rluna6498 | tecnico |
+
+---
+
+## 🛠️ Stack Tecnológico
+
+### Backend
+- **Node.js** - Entorno de ejecución
+- **Express.js** - Framework web REST API
+- **PostgreSQL** - Base de datos (Neon)
+- **JWT** - Autenticación segura
+- **bcrypt** - Encriptación de contraseñas
+- **Resend API** - Envío de correos
+- **xlsx-populate** - Generación de Excel
+
+### Frontend
+- **React** - Framework UI
+- **Vite** - Build tool
+- **Axios** - Cliente HTTP
+- **React Router** - Navegación
+- **Lucide React** - Iconos
+
+---
+
+## ☁️ Servicios en la Nube (Gratuitos)
+
+| Servicio | Uso | Costo |
+|----------|-----|-------|
+| **Vercel** | Frontend | Gratis |
+| **Render** | Backend | Gratis (750 horas/mes) |
+| **Neon** | PostgreSQL | Gratis (0.5GB) |
+| **Resend** | Emails | Gratis (3,000 emails/mes) |
+| **GitHub** | Repositorio | Gratis |
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+sistema-soporte-ultra/
+├── backend/
+│   ├── server.js              # Servidor principal
+│   ├── package.json           # Dependencias Node
+│   ├── schema_postgres.sql    # Estructura DB PostgreSQL
+│   ├── backup_db_postgres.sql # Backup completo DB
+│   ├── datos_migrate.sql      # Datos de migración
+│   ├── config/
+│   │   ├── db.js              # Conexión PostgreSQL
+│   │   └── email.js           # Configuración Resend
+│   ├── middleware/
+│   │   └── authMiddleware.js  # Autenticación JWT
+│   └── routes/
+│       ├── auth.js            # Rutas de autenticación
+│       └── ordenRoutes.js     # Rutas de órdenes
+│
+├── frontend-ultra/
+│   ├── package.json           # Dependencias React
+│   ├── vite.config.js         # Config Vite
+│   ├── vercel.json            # Config Vercel
+│   ├── .env.example           # Variables de entorno ejemplo
+│   └── src/
+│       ├── App.jsx            # Componente principal
+│       ├── services/
+│       │   └── api.js         # Cliente Axios
+│       ├── pages/
+│       │   ├── Login.jsx      # Login
+│       │   ├── GestionUsuarios.jsx
+│       │   └── Informacion.jsx
+│       └── components/
+│           ├── Ordenes.jsx
+│           ├── Formulario.jsx
+│           └── PrivateRoute.jsx
+│
+└── backup_db.sql              # Backup original MySQL
+```
+
+---
+
+## 🔧 Configuración de Variables de Entorno
+
+### Backend (Render)
+
+| Variable | Descripción |
+|----------|-------------|
+| `DATABASE_URL` | Connection string PostgreSQL de Neon |
+| `JWT_SECRET` | Clave secreta para JWT |
+| `RESEND_API_KEY` | API Key de Resend para emails |
+| `NODE_ENV` | production |
+
+### Frontend (Vercel)
+
+| Variable | Descripción |
+|----------|-------------|
+| `VITE_API_URL` | URL del backend en Render |
+
+---
+
+## 📊 Base de Datos
+
+### Tabla: usuarios
+```sql
+id, usuario, password, rol, activo, email, codigo_recuperacion, fecha_codigo, fecha_creacion
+```
+
+### Tabla: ordenes_servicio
+```sql
+id, os, cliente, tecnico, asignacion, en_garantia, tipo, estado_actual, 
+fecha_reparacion, solicitud_compra, n_denuncia, qty, anexo, fecha, 
+equipo, marca, serie, modelo, procesador, disco, memoria, 
+cargador, bateria, insumo, cabezal, otros, 
+falla_informada, falla_detectada, conclusion, realizado_por
+```
+
+---
+
+## 📝 API Endpoints
+
+### Autenticación
+- `POST /api/auth/login` - Iniciar sesión
+- `POST /api/auth/registrar` - Crear usuario (admin)
+- `PUT /api/auth/cambiar-password` - Cambiar contraseña
+- `POST /api/auth/buscar-usuario` - Solicitar código recuperación
+- `POST /api/auth/verificar-codigo` - Verificar código
+- `POST /api/auth/cambiar-password-externo` - Cambiar password con código
+- `GET /api/auth/usuarios` - Listar usuarios
+- `PUT /api/auth/resetear-password/:id` - Resetear password (admin)
+- `PUT /api/auth/activar-usuario/:id` - Activar/desactivar usuario
+- `DELETE /api/auth/eliminar-usuario/:id` - Eliminar usuario
+
+### Órdenes
+- `GET /api/orden` - Listar órdenes (con paginación y filtros)
+- `POST /api/orden` - Crear orden
+- `PUT /api/orden/:id` - Actualizar orden
+- `DELETE /api/orden/:id` - Eliminar orden
+- `GET /api/orden/excel` - Exportar Excel FileMaker
+- `GET /api/orden/excel-correo` - Exportar Excel Banco Estado
+- `GET /api/orden/excel-respaldo` - Exportar Excel Respaldo
+
+---
+
+## ⚙️ Migración de MySQL a PostgreSQL
+
+El proyecto fue migrado de MySQL local a PostgreSQL en la nube (Neon). Los cambios principales fueron:
+
+1. **driver**: mysql2 → pg
+2. **sintaxis queries**: `?` → `$1, $2...`
+3. **booleanos**: `1/0` → `true/false`
+4. **tipos de datos**: `AUTO_INCREMENT` → `SERIAL`
+
+---
+
+## 📦 Comandos Útiles
+
+### Desarrollo local
+```bash
+# Backend
+cd backend
+npm install
+npm start
+
+# Frontend
+cd frontend-ultra
+npm install
+npm run dev
+```
+
+### Despliegue
+```bash
+# Subir cambios a GitHub
+git add .
+git commit -m "mensaje"
+git push origin main
+
+# El deploy es automático en Vercel y Render
+```
+
+---
+
+## 🔒 Seguridad Implementada
+
+- JWT con expiración de 8 horas
+- Contraseñas encriptadas con bcrypt (10 rondas)
+- Rate limiting: 100 peticiones/15min (general)
+- Rate limiting: 5 intentos/15min (login)
+- CORS configurado para orígenes específicos
+- Parámetros seguros en consultas SQL (prepared statements)
+
+---
+
+## 📞 Notas Importantes
+
+1. **Neon**: El proyecto usa Neon.tech para PostgreSQL gratis. La base de datos está configurada con SSL requerido.
+
+2. **Render**: El backend está en el plan gratuito. Puede hibernar después de 15 minutos de inactividad. La primera petición después de hibernar puede tardar ~30 segundos.
+
+3. **Resend**: Para emails se usa Resend API (gratis). La cuenta está configurada con el dominio `onboarding@resend.dev`.
+
+4. **Vercel**: El frontend está configurado como SPA (Single Page Application) con rewrites para React Router.
+
+5. **Datos**: Las órdenes y usuarios están sincronizados con la base de datos de Neon.
+
+---
+
+## ✅ Estado Actual
+
+- [x] Frontend desplegado en Vercel
+- [x] Backend desplegado en Render
+- [x] Base de datos en Neon
+- [x] Envío de emails funcionando
+- [x] Login y autenticación funcionando
+- [x] CRUD de órdenes funcionando
+- [x] Exportación a Excel funcionando
+- [x] Gestión de usuarios funcionando
+
+---
+
+**Última actualización**: Marzo 2026
+**Versión**: 1.0.0
