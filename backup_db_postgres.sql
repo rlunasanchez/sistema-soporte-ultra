@@ -1,5 +1,5 @@
 -- PostgreSQL dump for Sistema Soporte Ultra
--- Migrated from MySQL to PostgreSQL
+-- Base de datos migrada de MySQL a PostgreSQL
 
 -- Crear tabla de usuarios
 CREATE TABLE IF NOT EXISTS usuarios (
