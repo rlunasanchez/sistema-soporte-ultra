@@ -4,7 +4,7 @@ import Ordenes from "./components/Ordenes";
 import GestionUsuarios from "./pages/GestionUsuarios";
 import Informacion from "./pages/Informacion";
 import PrivateRoute from "./components/PrivateRoute";
-import "./styles/app.css";
+import "./styles/App.css";
 
 function App() {
   return (
