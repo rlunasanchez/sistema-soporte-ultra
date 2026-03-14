@@ -9,17 +9,21 @@ dotenv.config();
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // Rate Limiting - Limitar intentos de solicitud
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 100, // Máximo 100 solicitudes por IP
-  message: { msg: "Demasiadas solicitudes, intenta más tarde" }
+  message: { msg: "Demasiadas solicitudes, intenta más tarde" },
+  validate: { xForwardedForHeader: false }
 });
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 5, // Máximo 5 intentos de login
-  message: { msg: "Demasiados intentos de login, intenta en 15 minutos" }
+  message: { msg: "Demasiados intentos de login, intenta en 15 minutos" },
+  validate: { xForwardedForHeader: false }
 });
 
 // Middlewares de seguridad
