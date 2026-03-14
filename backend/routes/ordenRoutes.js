@@ -1,0 +1,647 @@
+import express from "express";
+import pool from "../config/db.js";
+import XlsxPopulate from "xlsx-populate";
+import { authMiddleware } from "../middleware/authMiddleware.js";
+
+const router = express.Router();
+
+router.use(authMiddleware);
+
+const formatDate = (d) =>
+  d ? new Date(d).toISOString().slice(0, 19).replace("T", " ") : null;
+
+const buildFilterQuery = (query) => {
+  const {
+    os,
+    cliente,
+    tecnico,
+    estado,
+    fechaAsignacionDesde,
+    fechaAsignacionHasta,
+    fechaReparacionDesde,
+    fechaReparacionHasta,
+    fecha,
+    page,
+    limit,
+  } = query;
+
+  let sql = "SELECT * FROM ordenes_servicio WHERE 1=1";
+  let countSql = "SELECT COUNT(*) as total FROM ordenes_servicio WHERE 1=1";
+  const params = [];
+  let paramIndex = 1;
+
+  if (os) {
+    sql += ` AND os LIKE $${paramIndex}`;
+    countSql += ` AND os LIKE $${paramIndex}`;
+    params.push(`%${os}%`);
+    paramIndex++;
+  }
+
+  if (cliente) {
+    sql += ` AND cliente LIKE $${paramIndex}`;
+    countSql += ` AND cliente LIKE $${paramIndex}`;
+    params.push(`%${cliente}%`);
+    paramIndex++;
+  }
+
+  if (tecnico) {
+    sql += ` AND tecnico LIKE $${paramIndex}`;
+    countSql += ` AND tecnico LIKE $${paramIndex}`;
+    params.push(`%${tecnico}%`);
+    paramIndex++;
+  }
+
+  if (estado) {
+    sql += ` AND estado_actual LIKE $${paramIndex}`;
+    countSql += ` AND estado_actual LIKE $${paramIndex}`;
+    params.push(`%${estado}%`);
+    paramIndex++;
+  }
+
+  if (fechaAsignacionDesde) {
+    sql += ` AND DATE(asignacion) >= $${paramIndex}`;
+    countSql += ` AND DATE(asignacion) >= $${paramIndex}`;
+    params.push(fechaAsignacionDesde);
+    paramIndex++;
+  }
+
+  if (fechaAsignacionHasta) {
+    sql += ` AND DATE(asignacion) <= $${paramIndex}`;
+    countSql += ` AND DATE(asignacion) <= $${paramIndex}`;
+    params.push(fechaAsignacionHasta);
+    paramIndex++;
+  }
+
+  if (fechaReparacionDesde) {
+    sql += ` AND DATE(fecha_reparacion) >= $${paramIndex}`;
+    countSql += ` AND DATE(fecha_reparacion) >= $${paramIndex}`;
+    params.push(fechaReparacionDesde);
+    paramIndex++;
+  }
+
+  if (fechaReparacionHasta) {
+    sql += ` AND DATE(fecha_reparacion) <= $${paramIndex}`;
+    countSql += ` AND DATE(fecha_reparacion) <= $${paramIndex}`;
+    params.push(fechaReparacionHasta);
+    paramIndex++;
+  }
+
+  if (fecha) {
+    sql += ` AND DATE(fecha) = $${paramIndex}`;
+    countSql += ` AND DATE(fecha) = $${paramIndex}`;
+    params.push(fecha);
+    paramIndex++;
+  }
+
+  const pageNum = parseInt(page) || 1;
+  const limitNum = parseInt(limit) || 5;
+  const offset = (pageNum - 1) * limitNum;
+
+  sql += ` ORDER BY id DESC LIMIT ${limitNum} OFFSET ${offset}`;
+
+  return { sql, countSql, params, page: pageNum, limit: limitNum };
+};
+
+/* ===============================
+   OBTENER ÓRDENES
+=================================*/
+router.get("/", async (req, res) => {
+  try {
+    const { sql, countSql, params, page, limit } = buildFilterQuery(req.query);
+    
+    const result = await pool.query(sql, params);
+    const countResult = await pool.query(countSql, params);
+    const total = countResult.rows[0].total;
+    const totalPages = Math.ceil(total / limit);
+
+    res.json({
+      data: result.rows,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Error obteniendo órdenes" });
+  }
+});
+
+/* ===============================
+   CREAR NUEVA ORDEN
+=================================*/
+router.post("/", async (req, res) => {
+  try {
+    const data = req.body;
+
+    const sql = `
+      INSERT INTO ordenes_servicio (
+        os, cliente, tecnico, asignacion, en_garantia, tipo,
+        estado_actual, fecha_reparacion, solicitud_compra,
+        n_denuncia, qty, anexo, fecha, equipo, marca,
+        serie, modelo, procesador, disco, memoria,
+        cargador, bateria, insumo, cabezal, otros,
+        falla_informada, falla_detectada, conclusion, realizado_por
+      )
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30)
+      RETURNING id
+    `;
+
+    const values = [
+      data.os,
+      data.cliente,
+      data.tecnico,
+      formatDate(data.asignacion),
+      data.en_garantia,
+      data.tipo,
+      data.estado_actual,
+      formatDate(data.fecha_reparacion),
+      data.solicitud_compra,
+      data.n_denuncia,
+      data.qty,
+      data.anexo,
+      formatDate(data.fecha),
+      data.equipo,
+      data.marca,
+      data.serie,
+      data.modelo,
+      data.procesador,
+      data.disco,
+      data.memoria,
+      data.cargador,
+      data.bateria,
+      data.insumo,
+      data.cabezal,
+      data.otros,
+      data.falla_informada,
+      data.falla_detectada,
+      data.conclusion,
+      data.realizado_por,
+    ];
+
+    const result = await pool.query(sql, values);
+
+    res.status(201).json({
+      msg: "Orden creada correctamente",
+      id: result.rows[0].id,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Error creando orden" });
+  }
+});
+
+/* ===============================
+   ACTUALIZAR ORDEN
+=================================*/
+router.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    const sql = `
+      UPDATE ordenes_servicio SET
+        os = $1, cliente = $2, tecnico = $3, asignacion = $4, en_garantia = $5, tipo = $6,
+        estado_actual = $7, fecha_reparacion = $8, solicitud_compra = $9,
+        n_denuncia = $10, qty = $11, anexo = $12, fecha = $13, equipo = $14, marca = $15,
+        serie = $16, modelo = $17, procesador = $18, disco = $19, memoria = $20,
+        cargador = $21, bateria = $22, insumo = $23, cabezal = $24, otros = $25,
+        falla_informada = $26, falla_detectada = $27, conclusion = $28, realizado_por = $29
+      WHERE id = $30
+    `;
+
+    const values = [
+      data.os,
+      data.cliente,
+      data.tecnico,
+      formatDate(data.asignacion),
+      data.en_garantia,
+      data.tipo,
+      data.estado_actual,
+      formatDate(data.fecha_reparacion),
+      data.solicitud_compra,
+      data.n_denuncia,
+      data.qty,
+      data.anexo,
+      formatDate(data.fecha),
+      data.equipo,
+      data.marca,
+      data.serie,
+      data.modelo,
+      data.procesador,
+      data.disco,
+      data.memoria,
+      data.cargador,
+      data.bateria,
+      data.insumo,
+      data.cabezal,
+      data.otros,
+      data.falla_informada,
+      data.falla_detectada,
+      data.conclusion,
+      data.realizado_por,
+      id,
+    ];
+
+    await pool.query(sql, values);
+
+    res.json({ msg: "Orden actualizada correctamente" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Error actualizando orden" });
+  }
+});
+
+/* ===============================
+   ELIMINAR ORDEN
+=================================*/
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await pool.query("DELETE FROM ordenes_servicio WHERE id = $1", [id]);
+
+    res.json({ msg: "Orden eliminada correctamente" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Error eliminando orden" });
+  }
+});
+
+/* ===============================
+   EXPORTAR EXCEL NORMAL
+=================================*/
+router.get("/excel", async (req, res) => {
+  try {
+    const { sql, params } = buildFilterQuery(req.query);
+    const result = await pool.query(sql, params);
+
+    const workbook = await XlsxPopulate.fromBlankAsync();
+    const sheet = workbook.sheet(0);
+
+    sheet.name("Importacion FileMaker");
+
+    const headers = [
+      "Fecha Registro",
+      "OS",
+      "Fecha :",
+      "OS :",
+      "Cliente :",
+      "Equipo.",
+      "Marca",
+      "Serie :",
+      "Modelo :",
+      "Cliente",
+      "Procesador",
+      "Disco",
+      "Memoria",
+      "Técnico",
+      "Accesorios",
+      "Otros",
+      "Asignación",
+      "Falla informada :",
+      "Garantía",
+      "Tipo",
+      "Falla detectada :",
+      "Estado Actual",
+      "Conclusión",
+      "Fecha Reparación",
+      "Solicitud de Compra",
+      "N° Denuncia",
+      "Cantidad",
+      "Anexo",
+      "Realizado",
+    ];
+
+    headers.forEach((h, i) => sheet.cell(1, i + 1).value(h));
+
+    result.rows.forEach((r, rowIndex) => {
+      const rowNum = rowIndex + 2;
+
+      const accesorios = [
+        r.cargador ? "Cargador" : "",
+        r.bateria ? "Batería" : "",
+        r.insumo ? "Insumo" : "",
+        r.cabezal ? "Cabezal" : "",
+      ]
+        .filter(Boolean)
+        .join(", ");
+
+      const values = [
+        r.fecha ? new Date(r.fecha).toLocaleDateString("es-CL") : "",
+        r.os,
+        r.fecha ? new Date(r.fecha).toLocaleDateString("es-CL") : "",
+        r.os,
+        r.cliente,
+        r.equipo,
+        r.marca,
+        r.serie,
+        r.modelo,
+        r.cliente,
+        r.procesador,
+        r.disco,
+        r.memoria,
+        r.tecnico,
+        accesorios,
+        r.otros,
+        r.asignacion ? new Date(r.asignacion).toLocaleDateString("es-CL") : "",
+        r.falla_informada,
+        r.en_garantia,
+        r.tipo,
+        r.falla_detectada,
+        r.estado_actual,
+        r.conclusion,
+        r.fecha_reparacion
+          ? new Date(r.fecha_reparacion).toLocaleDateString("es-CL")
+          : "",
+        r.solicitud_compra,
+        r.n_denuncia,
+        r.qty,
+        r.anexo,
+        r.realizado_por,
+      ];
+
+      values.forEach((v, colIndex) => {
+        sheet.cell(rowNum, colIndex + 1).value(v);
+      });
+    });
+
+    const buffer = await workbook.outputAsync();
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=ordenes_servicio.xlsx"
+    );
+
+    res.send(buffer);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Error generando Excel" });
+  }
+});
+
+/* ===============================
+   EXPORTAR EXCEL CORREO
+=================================*/
+router.get("/excel-correo", async (req, res) => {
+  try {
+    const { sql, params } = buildFilterQuery(req.query);
+    const result = await pool.query(sql, params);
+
+    const workbook = await XlsxPopulate.fromBlankAsync();
+    const sheet = workbook.sheet(0);
+
+    sheet.name("Banco Estado");
+
+    sheet.cell("A1").value("Equipos Banco Estado");
+    sheet.range("A1:C1").merged(true).style({
+      bold: true,
+      fontSize: 16,
+      horizontalAlignment: "center",
+      verticalAlignment: "center",
+      fill: "10B981",
+      fontColor: "FFFFFF",
+    });
+
+    sheet.row(1).height(30);
+
+    const headers = [
+      "Ticket Laboratorio",
+      "Serie",
+      "Observación"
+    ];
+
+    headers.forEach((h, i) => {
+      sheet.cell(3, i + 1).value(h);
+    });
+
+    sheet.range("A3:C3").style({
+      bold: true,
+      fill: "D1FAE5",
+      horizontalAlignment: "center",
+      border: true,
+      borderColor: "10B981",
+    });
+
+    result.rows.forEach((r, i) => {
+      const row = i + 4;
+
+      sheet.cell(`A${row}`).value(r.os);
+      sheet.cell(`B${row}`).value(r.serie);
+      sheet.cell(`C${row}`).value("");
+
+      sheet.range(`A${row}:C${row}`).style({
+        horizontalAlignment: "center",
+        border: true,
+        borderColor: "E2E8F0",
+      });
+
+      if (i % 2 === 0) {
+        sheet.range(`A${row}:C${row}`).style({
+          fill: "F8FAFC",
+        });
+      }
+    });
+
+    sheet.column("A").width(22);
+    sheet.column("B").width(25);
+    sheet.column("C").width(35);
+
+    const buffer = await workbook.outputAsync();
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=equipos_banco_estado.xlsx"
+    );
+
+    res.send(buffer);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Error generando Excel correo" });
+  }
+});
+
+/* ===============================
+   EXPORTAR EXCEL RESPALDO
+=================================*/
+router.get("/excel-respaldo", async (req, res) => {
+  try {
+    const { sql, params } = buildFilterQuery(req.query);
+    const result = await pool.query(sql, params);
+
+    const workbook = await XlsxPopulate.fromBlankAsync();
+    const sheet = workbook.sheet(0);
+
+    sheet.name("Respaldo Banco Estado");
+
+    sheet.cell("A1").value("Equipos Banco Estado - Respaldo Completo");
+    sheet.range("A1:AC1").merged(true).style({
+      bold: true,
+      fontSize: 18,
+      horizontalAlignment: "center",
+      verticalAlignment: "center",
+      fill: "10B981",
+      fontColor: "FFFFFF",
+    });
+
+    sheet.row(1).height(30);
+
+    const headers = [
+      "OS",
+      "Cliente",
+      "Técnico",
+      "Asignación",
+      "Garantía",
+      "Tipo",
+      "Estado",
+      "Fecha Rep.",
+      "Solicitud Compra",
+      "N° Denuncia",
+      "Qty",
+      "Anexo",
+      "Fecha",
+      "Equipo",
+      "Marca",
+      "Serie",
+      "Modelo",
+      "Procesador",
+      "Disco",
+      "Memoria",
+      "Cargador",
+      "Batería",
+      "Insumo",
+      "Cabezal",
+      "Otros",
+      "Falla Informada",
+      "Falla Detectada",
+      "Conclusión",
+      "Realizado Por",
+    ];
+
+    headers.forEach((h, i) => {
+      sheet.cell(3, i + 1).value(h);
+    });
+
+    sheet.range("A3:AC3").style({
+      bold: true,
+      fill: "D1FAE5",
+      horizontalAlignment: "center",
+      border: true,
+      borderColor: "10B981",
+      fontColor: "065F46",
+    });
+
+    result.rows.forEach((r, i) => {
+      const row = i + 4;
+
+      const values = [
+        r.os,
+        r.cliente,
+        r.tecnico,
+        r.asignacion ? new Date(r.asignacion).toLocaleDateString("es-CL") : "",
+        r.en_garantia,
+        r.tipo,
+        r.estado_actual,
+        r.fecha_reparacion ? new Date(r.fecha_reparacion).toLocaleDateString("es-CL") : "",
+        r.solicitud_compra,
+        r.n_denuncia,
+        r.qty,
+        r.anexo,
+        r.fecha ? new Date(r.fecha).toLocaleDateString("es-CL") : "",
+        r.equipo,
+        r.marca,
+        r.serie,
+        r.modelo,
+        r.procesador,
+        r.disco,
+        r.memoria,
+        r.cargador ? "✓" : "✗",
+        r.bateria ? "✓" : "✗",
+        r.insumo ? "✓" : "✗",
+        r.cabezal ? "✓" : "✗",
+        r.otros,
+        r.falla_informada,
+        r.falla_detectada,
+        r.conclusion,
+        r.realizado_por,
+      ];
+
+      values.forEach((v, c) => {
+        sheet.cell(row, c + 1).value(v);
+      });
+
+      sheet.range(`A${row}:AC${row}`).style({
+        horizontalAlignment: "center",
+        border: true,
+        borderColor: "E2E8F0",
+      });
+
+      if (i % 2 === 0) {
+        sheet.range(`A${row}:AC${row}`).style({
+          fill: "F9FAFB",
+        });
+      }
+    });
+
+    sheet.column("A").width(12);
+    sheet.column("B").width(18);
+    sheet.column("C").width(15);
+    sheet.column("D").width(12);
+    sheet.column("E").width(10);
+    sheet.column("F").width(12);
+    sheet.column("G").width(15);
+    sheet.column("H").width(12);
+    sheet.column("I").width(15);
+    sheet.column("J").width(12);
+    sheet.column("K").width(8);
+    sheet.column("L").width(10);
+    sheet.column("M").width(12);
+    sheet.column("N").width(15);
+    sheet.column("O").width(12);
+    sheet.column("P").width(18);
+    sheet.column("Q").width(15);
+    sheet.column("R").width(15);
+    sheet.column("S").width(12);
+    sheet.column("T").width(12);
+    sheet.column("U").width(10);
+    sheet.column("V").width(10);
+    sheet.column("W").width(10);
+    sheet.column("X").width(10);
+    sheet.column("Y").width(15);
+    sheet.column("Z").width(20);
+    sheet.column("AA").width(20);
+    sheet.column("AB").width(20);
+    sheet.column("AC").width(15);
+
+    const buffer = await workbook.outputAsync();
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=respaldo_banco_estado.xlsx"
+    );
+
+    res.send(buffer);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Error generando Excel respaldo" });
+  }
+});
+
+export default router;
