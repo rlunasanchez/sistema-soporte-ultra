@@ -1,7 +1,4 @@
 import nodemailer from "nodemailer";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const transporter = nodemailer.createTransport({
   host: "smtp.resend.com",
@@ -9,7 +6,7 @@ const transporter = nodemailer.createTransport({
   secure: false,
   auth: {
     user: "resend",
-    pass: process.env.RESEND_API_KEY || "re_KZAmNvaZ_HFB6ywYsgCv6TtnNZ8FMnfsD"
+    pass: process.env.RESEND_API_KEY
   }
 });
 
