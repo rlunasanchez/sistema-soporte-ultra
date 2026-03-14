@@ -15,7 +15,7 @@ router.post("/login", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT * FROM usuarios WHERE usuario = $1 AND activo = 1",
+      "SELECT * FROM usuarios WHERE usuario = $1 AND activo = true",
       [usuario]
     );
 
@@ -123,7 +123,7 @@ router.post("/buscar-usuario", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT id, email FROM usuarios WHERE usuario = $1 AND activo = 1",
+      "SELECT id, email FROM usuarios WHERE usuario = $1 AND activo = true",
       [usuario]
     );
 
@@ -195,7 +195,7 @@ router.post("/cambiar-password-externo", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT id FROM usuarios WHERE usuario = $1 AND activo = 1",
+      "SELECT id FROM usuarios WHERE usuario = $1 AND activo = true",
       [usuario]
     );
 
@@ -255,7 +255,7 @@ router.put("/activar-usuario/:id", authMiddleware, async (req, res) => {
   try {
     await pool.query(
       "UPDATE usuarios SET activo = $1 WHERE id = $2",
-      [activo ? 1 : 0, id]
+      [activo ? true : false, id]
     );
 
     res.json({ msg: activo ? "Usuario activado" : "Usuario desactivado" });
