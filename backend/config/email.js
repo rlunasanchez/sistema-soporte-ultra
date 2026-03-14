@@ -1,25 +1,27 @@
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.resend.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: "resend",
-    pass: process.env.RESEND_API_KEY
-  }
-});
-
 export async function enviarEmail(destino, asunto, mensaje) {
   try {
-    let info = await transporter.sendMail({
-      from: '"Sistema Soporte" <onboarding@resend.dev>',
-      to: destino,
-      subject: asunto,
-      text: mensaje
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`
+      },
+      body: JSON.stringify({
+        from: 'Sistema Soporte <onboarding@resend.dev>',
+        to: destino,
+        subject: asunto,
+        text: mensaje
+      })
     });
-    console.log("✓ Email enviado a:", destino);
-    return true;
+
+    if (response.ok) {
+      console.log("✓ Email enviado a:", destino);
+      return true;
+    } else {
+      const error = await response.text();
+      console.error("✗ Error email:", error);
+      return false;
+    }
   } catch (error) {
     console.error("✗ Error email:", error.message);
     return false;
