@@ -35,9 +35,20 @@ app.use(cors({
 app.use(express.json());
 
 // Rutas API
-app.use("/api/auth/login", loginLimiter); // Rate limit específico para login
+app.use("/api/auth", loginLimiter); // Rate limit para auth
 app.use("/api/auth", authRoutes);
 app.use("/api/orden", ordenRoutes);
+
+// Ruta de prueba
+app.get("/api/test", async (req, res) => {
+  try {
+    const pool = (await import("./config/db.js")).default;
+    const result = await pool.query("SELECT 1 as test");
+    res.json({ status: "ok", database: "connected", result: result.rows });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
 
 app.listen(5000, () => {
   console.log("Servidor de Rodrigo ejecutándose en puerto 5000");
