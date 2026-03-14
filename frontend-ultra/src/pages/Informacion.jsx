@@ -46,6 +46,7 @@ function Informacion() {
           <p><strong>Cliente:</strong> Banco Estado (Chile)</p>
           <p><strong>Desarrollador:</strong> Rodrigo Luna</p>
           <p><strong>Tipo:</strong> Sistema de gestión de soporte técnico</p>
+          <p><strong>Estado:</strong> Desplegado en producción</p>
         </div>
       )
     },
@@ -59,10 +60,10 @@ function Informacion() {
           <ul>
             <li><strong>Node.js</strong> - Entorno de ejecución</li>
             <li><strong>Express.js</strong> - Framework web REST API</li>
-            <li><strong>PostgreSQL</strong> - Base de datos relacional</li>
+            <li><strong>PostgreSQL</strong> - Base de datos (Neon)</li>
             <li><strong>JWT</strong> - Autenticación segura</li>
             <li><strong>bcrypt</strong> - Encriptación de contraseñas</li>
-            <li><strong>nodemailer</strong> - Envío de correos</li>
+            <li><strong>Resend</strong> - Envío de correos</li>
             <li><strong>xlsx-populate</strong> - Generación de Excel</li>
           </ul>
           <h4>Frontend</h4>
@@ -72,6 +73,32 @@ function Informacion() {
             <li><strong>Axios</strong> - Cliente HTTP</li>
             <li><strong>React Router</strong> - Navegación</li>
             <li><strong>Lucide React</strong> - Iconos</li>
+          </ul>
+        </div>
+      )
+    },
+    {
+      id: "despliegue",
+      titulo: "Despliegue en la Nube",
+      icono: <Database size={20} />,
+      contenido: (
+        <div className="info-content">
+          <p>El sistema está desplegado utilizando servicios gratuitos de nube:</p>
+          <h4>Servicios Utilizados</h4>
+          <ul>
+            <li><strong>Frontend:</strong> Vercel</li>
+            <li><strong>Backend:</strong> Render</li>
+            <li><strong>Base de datos:</strong> Neon (PostgreSQL)</li>
+            <li><strong>Email:</strong> Resend (API)</li>
+            <li><strong>Repositorio:</strong> GitHub</li>
+          </ul>
+          <h4>Costos</h4>
+          <ul>
+            <li><strong>Todos los servicios son gratuitos</strong></li>
+            <li>Neon: PostgreSQL gratis hasta 0.5GB</li>
+            <li>Render: 750 horas/mes gratis</li>
+            <li>Vercel: Ilimitado para proyectos personales</li>
+            <li>Resend: 3,000 emails gratis/mes</li>
           </ul>
         </div>
       )
@@ -262,7 +289,8 @@ function Informacion() {
           <div className="info-badges">
             <span className="badge badge-primary">Backend: Node.js + Express</span>
             <span className="badge badge-info">Frontend: React + Vite</span>
-            <span className="badge badge-success">Database: PostgreSQL</span>
+            <span className="badge badge-success">Database: PostgreSQL (Neon)</span>
+            <span className="badge badge-warning">Desplegado: Vercel + Render</span>
           </div>
         </div>
 
