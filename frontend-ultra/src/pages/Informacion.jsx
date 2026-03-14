@@ -59,7 +59,7 @@ function Informacion() {
           <ul>
             <li><strong>Node.js</strong> - Entorno de ejecución</li>
             <li><strong>Express.js</strong> - Framework web REST API</li>
-            <li><strong>MySQL</strong> - Base de datos relacional</li>
+            <li><strong>PostgreSQL</strong> - Base de datos relacional</li>
             <li><strong>JWT</strong> - Autenticación segura</li>
             <li><strong>bcrypt</strong> - Encriptación de contraseñas</li>
             <li><strong>nodemailer</strong> - Envío de correos</li>
@@ -262,7 +262,7 @@ function Informacion() {
           <div className="info-badges">
             <span className="badge badge-primary">Backend: Node.js + Express</span>
             <span className="badge badge-info">Frontend: React + Vite</span>
-            <span className="badge badge-success">Database: MySQL</span>
+            <span className="badge badge-success">Database: PostgreSQL</span>
           </div>
         </div>
 
@@ -290,7 +290,7 @@ function Informacion() {
 
         <div className="info-footer">
           <p>© {new Date().getFullYear()} Rodrigo Luna. Todos los derechos reservados.</p>
-          <p>Desarrollado con React, Node.js y MySQL</p>
+          <p>Desarrollado con React, Node.js y PostgreSQL</p>
         </div>
       </div>
     </div>
