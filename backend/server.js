@@ -25,7 +25,7 @@ const loginLimiter = rateLimit({
 // Middlewares de seguridad
 app.use(limiter); // Rate limit general
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'], // Origins permitidos
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://sistema-soporte-ultra-wngj.vercel.app'],
   credentials: true
 }));
 app.use(express.json());
