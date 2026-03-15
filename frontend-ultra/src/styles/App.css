@@ -246,7 +246,8 @@ body {
   background: var(--panel);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .table-header {
@@ -749,8 +750,19 @@ textarea:focus {
   }
   
   .user-info {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     width: 100%;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .user-info button {
+    flex: 1;
+    min-width: 100px;
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 0.8rem;
   }
   
   .actions-bar {
@@ -777,6 +789,63 @@ textarea:focus {
   .pagination {
     flex-direction: column;
     gap: 12px;
+  }
+
+  /* Tabla responsive para móvil */
+  .table-container table {
+    display: block;
+    min-width: 600px;
+  }
+
+  .table-container thead {
+    display: none;
+  }
+
+  .table-container tbody,
+  .table-container tr,
+  .table-container td {
+    display: block;
+    width: 100%;
+  }
+
+  .table-container tr {
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: white;
+  }
+
+  .table-container td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+
+  .table-container td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--primary);
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+  }
+
+  .table-container td:last-child {
+    border-bottom: none;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .action-buttons .table-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+    font-size: 0.8rem;
   }
 }
 

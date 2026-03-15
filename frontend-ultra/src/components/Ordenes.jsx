@@ -493,18 +493,18 @@ function Ordenes() {
               <tbody>
                 {ordenes.map((o) => (
                   <tr key={o.id}>
-                    <td>{o.id}</td>
-                    <td><strong>{o.os}</strong></td>
-                    <td>{o.cliente}</td>
-                    <td>{o.tecnico}</td>
-                    <td>{formatDate(o.asignacion)}</td>
-                    <td>{getEstadoBadge(o.estado_actual)}</td>
-                    <td>{formatDate(o.fecha_reparacion)}</td>
-                    <td>{formatDate(o.fecha)}</td>
-                    <td>{o.equipo}</td>
-                    <td>{o.serie}</td>
+                    <td data-label="ID">{o.id}</td>
+                    <td data-label="OS"><strong>{o.os}</strong></td>
+                    <td data-label="Cliente">{o.cliente}</td>
+                    <td data-label="Técnico">{o.tecnico}</td>
+                    <td data-label="Asignación">{formatDate(o.asignacion)}</td>
+                    <td data-label="Estado">{getEstadoBadge(o.estado_actual)}</td>
+                    <td data-label="Fecha Rep.">{formatDate(o.fecha_reparacion)}</td>
+                    <td data-label="Fecha">{formatDate(o.fecha)}</td>
+                    <td data-label="Equipo">{o.equipo}</td>
+                    <td data-label="Serie">{o.serie}</td>
 
-                    <td>
+                    <td data-label="Acciones">
                       <div className="action-buttons">
                         <button
                           className="table-btn edit-btn"
