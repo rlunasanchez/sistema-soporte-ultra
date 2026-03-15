@@ -750,28 +750,33 @@ textarea:focus {
   }
   
   .user-info {
-    flex-direction: row;
+    display: flex;
     flex-wrap: wrap;
     width: 100%;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
   }
 
   .user-info button {
     flex: 1;
-    min-width: 100px;
+    min-width: 80px;
     justify-content: center;
-    padding: 10px 12px;
-    font-size: 0.8rem;
+    padding: 8px 10px;
+    font-size: 0.7rem;
   }
   
   .actions-bar {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
   }
   
   .actions-bar .main-btn {
-    width: 100%;
+    flex: 1;
+    min-width: 120px;
     justify-content: center;
+    padding: 10px 12px;
+    font-size: 0.75rem;
   }
   
   .filters-content {
@@ -816,10 +821,10 @@ textarea:focus {
   }
 
   .table-container td {
-    padding: 10px 12px;
+    padding: 8px 10px;
     text-align: left;
     border-bottom: 1px solid var(--border);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 
   .table-container td::before {
@@ -837,15 +842,18 @@ textarea:focus {
   }
 
   .action-buttons {
-    flex-direction: column;
+    display: flex;
+    flex-wrap: wrap;
     gap: 6px;
   }
 
   .action-buttons .table-btn {
-    width: 100%;
+    flex: 1;
+    min-width: auto;
     justify-content: center;
-    padding: 10px;
-    font-size: 0.8rem;
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    white-space: nowrap;
   }
 }
 
