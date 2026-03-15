@@ -434,6 +434,11 @@ table tr:last-child td {
   border-color: var(--primary);
 }
 
+.page-numbers-desktop {
+  display: flex;
+  gap: 4px;
+}
+
 /* =========================
    LOGIN
 ========================= */
@@ -816,7 +821,11 @@ textarea:focus {
   .pagination-controls .page-btn-nav {
     font-size: 1rem;
     font-weight: bold;
-    padding: 8px 12px;
+    padding: 8px 14px;
+  }
+
+  .pagination-controls .page-numbers-desktop {
+    display: none;
   }
 
   .pagination-info {

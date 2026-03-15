@@ -593,18 +593,20 @@ function Ordenes() {
               ‹
             </button>
 
-            {[...Array(totalPaginas)].map((_, i) => {
-              const numero = i + 1;
-              return (
-                <button
-                  key={numero}
-                  onClick={() => setPaginaActual(numero)}
-                  className={paginaActual === numero ? 'active' : ''}
-                >
-                  {numero}
-                </button>
-              );
-            })}
+            <span className="page-numbers-desktop">
+              {[...Array(totalPaginas)].map((_, i) => {
+                const numero = i + 1;
+                return (
+                  <button
+                    key={numero}
+                    onClick={() => setPaginaActual(numero)}
+                    className={paginaActual === numero ? 'active' : ''}
+                  >
+                    {numero}
+                  </button>
+                );
+              })}
+            </span>
 
             <button
               className="page-btn-nav"
