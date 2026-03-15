@@ -806,10 +806,17 @@ textarea:focus {
     width: 100%;
   }
 
-  .pagination button {
+  .pagination-controls button {
     padding: 8px 10px;
     font-size: 0.75rem;
     white-space: nowrap;
+    min-width: 36px;
+  }
+
+  .pagination-controls .page-btn-nav {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 8px 12px;
   }
 
   .pagination-info {

@@ -586,10 +586,11 @@ function Ordenes() {
 
           <div className="pagination-controls">
             <button
+              className="page-btn-nav"
               onClick={() => setPaginaActual(paginaActual - 1)}
               disabled={paginaActual === 1}
             >
-              ← Anterior
+              ‹
             </button>
 
             {[...Array(totalPaginas)].map((_, i) => {
@@ -606,10 +607,11 @@ function Ordenes() {
             })}
 
             <button
+              className="page-btn-nav"
               onClick={() => setPaginaActual(paginaActual + 1)}
               disabled={paginaActual === totalPaginas || totalPaginas === 0}
             >
-              Siguiente →
+              ›
             </button>
           </div>
         </div>
