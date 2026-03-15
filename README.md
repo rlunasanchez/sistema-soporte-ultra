@@ -239,8 +239,31 @@ git push origin main
 - [x] CRUD de órdenes funcionando
 - [x] Exportación a Excel funcionando
 - [x] Gestión de usuarios funcionando
+- [x] Diseño responsive para móviles
+
+---
+
+## 📱 Diseño Responsive
+
+El sistema está optimizado para funcionar en diferentes tamaños de pantalla:
+
+### Desktop y Notebook
+- Tabla completa con todas las columnas visibles
+- Botones de paginación con texto completo ("Anterior", "Siguiente")
+- Navegación horizontal en header
+
+### Tablet (768px)
+- Transición intermedia
+- Botones más compactos
+
+### Móvil (<768px)
+- **Órdenes de servicio**: Se muestran como tarjetas independientes
+- **Paginación**: Botones simplificados (‹ ›) sin números de página
+- **Header**: Botones en filas flexibles
+- **Formularios**: Campos en una sola columna
+- **Gestión de usuarios**: Tarjetas responsive con data-labels
 
 ---
 
 **Última actualización**: Marzo 2026
-**Versión**: 1.0.0
+**Versión**: 1.0.1
