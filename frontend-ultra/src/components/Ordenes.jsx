@@ -472,62 +472,111 @@ function Ordenes() {
             <p>No se encontraron órdenes</p>
           </div>
         ) : (
-          <div className="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>OS</th>
-                  <th>Cliente</th>
-                  <th>Técnico</th>
-                  <th>Asignación</th>
-                  <th>Estado</th>
-                  <th>Fecha Rep.</th>
-                  <th>Fecha</th>
-                  <th>Equipo</th>
-                  <th>Serie</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {ordenes.map((o) => (
-                  <tr key={o.id}>
-                    <td data-label="ID">{o.id}</td>
-                    <td data-label="OS"><strong>{o.os}</strong></td>
-                    <td data-label="Cliente">{o.cliente}</td>
-                    <td data-label="Técnico">{o.tecnico}</td>
-                    <td data-label="Asignación">{formatDate(o.asignacion)}</td>
-                    <td data-label="Estado">{getEstadoBadge(o.estado_actual)}</td>
-                    <td data-label="Fecha Rep.">{formatDate(o.fecha_reparacion)}</td>
-                    <td data-label="Fecha">{formatDate(o.fecha)}</td>
-                    <td data-label="Equipo">{o.equipo}</td>
-                    <td data-label="Serie">{o.serie}</td>
-
-                    <td data-label="Acciones">
-                      <div className="action-buttons">
-                        <button
-                          className="table-btn edit-btn"
-                          onClick={() => editarOrden(o)}
-                        >
-                          <Edit size={14} />
-                          Editar
-                        </button>
-
-                        <button
-                          className="table-btn delete-btn"
-                          onClick={() => eliminarOrden(o.id)}
-                        >
-                          <Trash2 size={14} />
-                          Eliminar
-                        </button>
-                      </div>
-                    </td>
+          <>
+            <div className="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>OS</th>
+                    <th>Cliente</th>
+                    <th>Técnico</th>
+                    <th>Asignación</th>
+                    <th>Estado</th>
+                    <th>Fecha Rep.</th>
+                    <th>Fecha</th>
+                    <th>Equipo</th>
+                    <th>Serie</th>
+                    <th>Acciones</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+
+                <tbody>
+                  {ordenes.map((o) => (
+                    <tr key={o.id}>
+                      <td data-label="ID">{o.id}</td>
+                      <td data-label="OS"><strong>{o.os}</strong></td>
+                      <td data-label="Cliente">{o.cliente}</td>
+                      <td data-label="Técnico">{o.tecnico}</td>
+                      <td data-label="Asignación">{formatDate(o.asignacion)}</td>
+                      <td data-label="Estado">{getEstadoBadge(o.estado_actual)}</td>
+                      <td data-label="Fecha Rep.">{formatDate(o.fecha_reparacion)}</td>
+                      <td data-label="Fecha">{formatDate(o.fecha)}</td>
+                      <td data-label="Equipo">{o.equipo}</td>
+                      <td data-label="Serie">{o.serie}</td>
+
+                      <td data-label="Acciones">
+                        <div className="action-buttons">
+                          <button
+                            className="table-btn edit-btn"
+                            onClick={() => editarOrden(o)}
+                          >
+                            <Edit size={14} />
+                            Editar
+                          </button>
+
+                          <button
+                            className="table-btn delete-btn"
+                            onClick={() => eliminarOrden(o.id)}
+                          >
+                            <Trash2 size={14} />
+                            Eliminar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mobile-cards">
+              {ordenes.map((o) => (
+                <div className="mobile-card" key={o.id}>
+                  <div className="mobile-card-header">
+                    <span>OS: {o.os}</span>
+                    {getEstadoBadge(o.estado_actual)}
+                  </div>
+                  <div className="mobile-card-body">
+                    <div className="mobile-card-row">
+                      <label>Cliente:</label>
+                      <span>{o.cliente}</span>
+                    </div>
+                    <div className="mobile-card-row">
+                      <label>Técnico:</label>
+                      <span>{o.tecnico}</span>
+                    </div>
+                    <div className="mobile-card-row">
+                      <label>Asignación:</label>
+                      <span>{formatDate(o.asignacion)}</span>
+                    </div>
+                    <div className="mobile-card-row">
+                      <label>Fecha Rep.:</label>
+                      <span>{formatDate(o.fecha_reparacion)}</span>
+                    </div>
+                    <div className="mobile-card-row">
+                      <label>Equipo:</label>
+                      <span>{o.equipo}</span>
+                    </div>
+                    <div className="mobile-card-row">
+                      <label>Serie:</label>
+                      <span>{o.serie}</span>
+                    </div>
+                  </div>
+                  <div className="mobile-card-footer">
+                    <button className="table-btn edit-btn" onClick={() => editarOrden(o)}>
+                      <Edit size={14} />
+                      Editar
+                    </button>
+                    <button className="table-btn delete-btn" onClick={() => eliminarOrden(o.id)}>
+                      <Trash2 size={14} />
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         <div className="pagination">
