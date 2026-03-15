@@ -800,6 +800,23 @@ textarea:focus {
     gap: 12px;
   }
 
+  .pagination-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .pagination button {
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .pagination-info {
+    text-align: center;
+    font-size: 0.75rem;
+  }
+
   /* Vista de tarjetas en móvil */
   .table-container .table-wrapper {
     display: none;
