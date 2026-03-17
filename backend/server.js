@@ -2,30 +2,25 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
+import path from "path";
+import { fileURLToPath } from "url";
 import ordenRoutes from "./routes/ordenRoutes.js";
 import authRoutes from "./routes/auth.js";
-
 dotenv.config();
-
 const app = express();
-
-app.set('trust proxy', 1);
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Rate Limiting - Limitar intentos de solicitud
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 100, // Máximo 100 solicitudes por IP
-  message: { msg: "Demasiadas solicitudes, intenta más tarde" },
-  validate: { xForwardedForHeader: false }
+  message: { msg: "Demasiadas solicitudes, intenta más tarde" }
 });
-
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 5, // Máximo 5 intentos de login
-  message: { msg: "Demasiados intentos de login, intenta en 15 minutos" },
-  validate: { xForwardedForHeader: false }
+  message: { msg: "Demasiados intentos de login, intenta en 15 minutos" }
 });
-
 // Middlewares de seguridad
 app.use(limiter); // Rate limit general
 app.use(cors({
@@ -33,23 +28,17 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-
+// Servir archivos estáticos del frontend
+const frontendPath = path.join(__dirname, "../frontend-ultra/dist");
+app.use(express.static(frontendPath));
 // Rutas API
-app.use("/api/auth", loginLimiter); // Rate limit para auth
+app.use("/api/auth/login", loginLimiter); // Rate limit específico para login
 app.use("/api/auth", authRoutes);
 app.use("/api/orden", ordenRoutes);
-
-// Ruta de prueba
-app.get("/api/test", async (req, res) => {
-  try {
-    const pool = (await import("./config/db.js")).default;
-    const result = await pool.query("SELECT 1 as test");
-    res.json({ status: "ok", database: "connected", result: result.rows });
-  } catch (err) {
-    res.status(500).json({ status: "error", message: err.message });
-  }
+// Redirigir todas las demás solicitudes al index.html del frontend (SPA)
+app.get("*path", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
 });
-
 app.listen(5000, () => {
   console.log("Servidor de Rodrigo ejecutándose en puerto 5000");
 });
