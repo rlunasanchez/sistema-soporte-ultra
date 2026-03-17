@@ -17,8 +17,8 @@ const limiter = rateLimit({
   message: { msg: "Demasiadas solicitudes, intenta más tarde" }
 });
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 5, // Máximo 5 intentos de login
+  windowMs: 15 * 60 * 1000,
+  max: 100, // Más permisivo para VPNs
   message: { msg: "Demasiados intentos de login, intenta en 15 minutos" }
 });
 // Middlewares de seguridad
