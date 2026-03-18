@@ -23,15 +23,15 @@ router.get("/", async (req, res) => {
     let paramIndex = 1;
 
     if (fechaDesde) {
-      sql += ` AND fecha_retiro >= $${paramIndex}::date`;
-      countSql += ` AND fecha_retiro >= $${paramIndex}::date`;
+      sql += ` AND fecha_retiro::date >= $${paramIndex}::date`;
+      countSql += ` AND fecha_retiro::date >= $${paramIndex}::date`;
       params.push(fechaDesde);
       paramIndex++;
     }
 
     if (fechaHasta) {
-      sql += ` AND fecha_retiro <= $${paramIndex}::date + interval '1 day' - interval '1 second'`;
-      countSql += ` AND fecha_retiro <= $${paramIndex}::date + interval '1 day' - interval '1 second'`;
+      sql += ` AND fecha_retiro::date <= $${paramIndex}::date`;
+      countSql += ` AND fecha_retiro::date <= $${paramIndex}::date`;
       params.push(fechaHasta);
       paramIndex++;
     }
