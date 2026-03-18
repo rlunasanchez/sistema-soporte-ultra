@@ -16,6 +16,8 @@ const formatDate = (d) =>
 router.get("/", async (req, res) => {
   try {
     const { fechaDesde, fechaHasta, page, limit } = req.query;
+    
+    console.log("Filtro fechas:", { fechaDesde, fechaHasta });
 
     let sql = "SELECT * FROM equipos_retirados WHERE 1=1";
     let countSql = "SELECT COUNT(*) as total FROM equipos_retirados WHERE 1=1";
