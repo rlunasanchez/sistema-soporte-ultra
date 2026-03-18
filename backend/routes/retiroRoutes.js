@@ -17,8 +17,6 @@ router.get("/", async (req, res) => {
   try {
     const { fechaDesde, fechaHasta, page, limit } = req.query;
     
-    console.log("Filtro fechas:", { fechaDesde, fechaHasta });
-
     let sql = "SELECT * FROM equipos_retirados WHERE 1=1";
     let countSql = "SELECT COUNT(*) as total FROM equipos_retirados WHERE 1=1";
     const params = [];
@@ -38,6 +36,8 @@ router.get("/", async (req, res) => {
       paramIndex++;
     }
 
+    console.log("SQL params:", params);
+    
     const pageNum = parseInt(page) || 1;
     const limitNum = parseInt(limit) || 5;
     const offset = (pageNum - 1) * limitNum;
@@ -46,6 +46,8 @@ router.get("/", async (req, res) => {
 
     const result = await pool.query(sql, params);
     const rows = result.rows;
+    
+    console.log("Rows encontrados:", rows.length, rows.map(r => ({ id: r.id, fecha: r.fecha_retiro })));
     
     const countResult = await pool.query(countSql, params);
     const total = countResult.rows[0].total;
