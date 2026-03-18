@@ -41,13 +41,22 @@ function Formulario({ orden, onCerrar }) {
   const [guardando, setGuardando] = useState(false);
   const textareasRef = useRef({});
 
+  const getDateValue = (fecha) => {
+    if (!fecha) return "";
+    if (typeof fecha === 'string' && fecha.includes('T')) {
+      return fecha.split('T')[0];
+    }
+    if (typeof fecha === 'string') return fecha;
+    return "";
+  };
+
   useEffect(() => {
     if (orden) {
       setForm({
         ...orden,
-        asignacion: orden.asignacion ? orden.asignacion.split("T")[0] : "",
-        fecha_reparacion: orden.fecha_reparacion ? orden.fecha_reparacion.split("T")[0] : "",
-        fecha: orden.fecha ? orden.fecha.split("T")[0] : "",
+        asignacion: getDateValue(orden.asignacion),
+        fecha_reparacion: getDateValue(orden.fecha_reparacion),
+        fecha: getDateValue(orden.fecha),
         cargador: orden.cargador === 1,
         bateria: orden.bateria === 1,
         insumo: orden.insumo === 1,
