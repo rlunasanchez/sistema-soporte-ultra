@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { 
   Wrench, Plus, Download, Mail, Save, 
   Search, ChevronDown, ChevronUp, LogOut,
-  User, Edit, Trash2, Filter, FileSpreadsheet, Users, Info
+  User, Edit, Trash2, Filter, FileSpreadsheet, Users, Info, Package
 } from "lucide-react";
 import api from "../services/api";
 import Formulario from "./Formulario";
@@ -342,6 +342,11 @@ function Ordenes() {
         <button onClick={() => navigate("/informacion")} className="main-btn info-btn">
           <Info size={20} />
           Datos del Software
+        </button>
+
+        <button onClick={() => navigate("/retiro-bodega")} className="main-btn" style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)' }}>
+          <Package size={20} />
+          Retiro Bodega
         </button>
       </div>
 

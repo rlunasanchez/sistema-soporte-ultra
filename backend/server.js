@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import ordenRoutes from "./routes/ordenRoutes.js";
 import authRoutes from "./routes/auth.js";
+import retiroRoutes from "./routes/retiroRoutes.js";
 dotenv.config();
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -35,6 +36,7 @@ app.use(express.static(frontendPath));
 app.use("/api/auth/login", loginLimiter); // Rate limit específico para login
 app.use("/api/auth", authRoutes);
 app.use("/api/orden", ordenRoutes);
+app.use("/api/retiro", retiroRoutes);
 // Redirigir todas las demás solicitudes al index.html del frontend (SPA)
 app.get("*path", (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
