@@ -25,8 +25,8 @@
 | Usuario | Password | Rol |
 |--------|----------|-----|
 | admin | Rluna6498 | admin |
-| rodrigo | Rluna6498 | tecnico |
-| diego | Rluna6498 | tecnico |
+| rodrigo | 123456 | tecnico |
+| diego | 123456 | tecnico |
 
 ---
 
