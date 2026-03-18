@@ -5,6 +5,7 @@
 - **Desarrollador:** Rodrigo Luna
 - **Stack:** React + Vite (Frontend), Node.js + Express (Backend), PostgreSQL (DB Neon)
 - **Repositorio:** https://github.com/rlunasanchez/sistema-soporte-ultra
+- **Versión:** 1.0.1
 
 ## Infraestructura
 - **Frontend:** Vercel
@@ -177,6 +178,7 @@ Esto asegura que al editar una orden, las fechas se muestren correctamente en lo
 ### Frontend
 - `frontend-ultra/src/App.jsx` - Nueva ruta /retiro-bodega
 - `frontend-ultra/src/pages/RetiroBodega.jsx` - Nuevo componente
+- `frontend-ultra/src/pages/Informacion.jsx` - Actualizado con documentación de Retiro Bodega
 - `frontend-ultra/src/components/Ordenes.jsx` - Boton "Retiro Bodega" y formatDate corregido
 - `frontend-ultra/src/components/Formulario.jsx` - Ajuste de fechas al guardar y editar
 
@@ -192,10 +194,11 @@ Usa las mismas clases que el resto de la aplicacion:
 
 ## Para Continuar
 - No hay tareas pendientes conocidas
-- Modulo completo y funcional en produccion
+- Modulo completo y funcional en producción
 - Filtro de fechas funcionando correctamente
-- Exportacion Excel funcionando
-- Paginas de ordenes y retiro bodega funcionando con zona horaria corregida
+- Exportación Excel funcionando
+- Páginas de órdenes y retiro bodega funcionando con zona horaria corregida
+- Documentación del sistema actualizada en página de información (v1.0.1)
 
 ---
 
