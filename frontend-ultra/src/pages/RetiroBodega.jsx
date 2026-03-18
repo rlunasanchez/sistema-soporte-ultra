@@ -48,10 +48,18 @@ function RetiroBodega() {
   const fetchRetiros = async () => {
     setCargando(true);
     try {
+      const timezoneOffset = new Date().getTimezoneOffset();
+      const ajustarfiltroFecha = (fecha) => {
+        if (!fecha) return '';
+        const d = new Date(fecha);
+        d.setMinutes(d.getMinutes() - timezoneOffset);
+        return d.toISOString().split('T')[0];
+      };
+
       const res = await api.get("/api/retiro", {
         params: {
-          fechaDesde: filtroFechaDesde,
-          fechaHasta: filtroFechaHasta,
+          fechaDesde: ajustarfiltroFecha(filtroFechaDesde),
+          fechaHasta: ajustarfiltroFecha(filtroFechaHasta),
           page: paginaActual,
           limit: registrosPorPagina,
         },
@@ -118,7 +126,7 @@ function RetiroBodega() {
   };
 
   const formatDate = (fecha) =>
-    fecha ? new Date(fecha).toLocaleDateString("es-CL") : "-";
+    fecha ? new Date(fecha + 'Z').toLocaleDateString("es-CL") : "-";
 
   const limpiarFiltros = () => {
     setFiltroFechaDesde("");
