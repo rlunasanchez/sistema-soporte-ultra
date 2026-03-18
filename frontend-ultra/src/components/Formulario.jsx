@@ -45,6 +45,9 @@ function Formulario({ orden, onCerrar }) {
     if (orden) {
       setForm({
         ...orden,
+        asignacion: orden.asignacion ? orden.asignacion.split("T")[0] : "",
+        fecha_reparacion: orden.fecha_reparacion ? orden.fecha_reparacion.split("T")[0] : "",
+        fecha: orden.fecha ? orden.fecha.split("T")[0] : "",
         cargador: orden.cargador === 1,
         bateria: orden.bateria === 1,
         insumo: orden.insumo === 1,
@@ -71,12 +74,18 @@ function Formulario({ orden, onCerrar }) {
     setGuardando(true);
 
     try {
+      const dataToSend = {
+        ...form,
+        asignacion: form.asignacion ? form.asignacion + "T12:00:00" : "",
+        fecha_reparacion: form.fecha_reparacion ? form.fecha_reparacion + "T12:00:00" : "",
+        fecha: form.fecha ? form.fecha + "T12:00:00" : "",
+      };
       let res;
 
       if (orden) {
-        res = await api.put(`/api/orden/${orden.id}`, form);
+        res = await api.put(`/api/orden/${orden.id}`, dataToSend);
       } else {
-        res = await api.post("/api/orden", form);
+        res = await api.post("/api/orden", dataToSend);
       }
 
       alert(res.data?.msg || "Operación realizada correctamente");
