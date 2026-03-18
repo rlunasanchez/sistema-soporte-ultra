@@ -144,8 +144,14 @@ function Ordenes() {
     fetchOrdenes();
   };
 
-  const formatDate = (fecha) =>
-    fecha ? new Date(fecha).toLocaleDateString("es-CL") : "-";
+  const formatDate = (fecha) => {
+    if (!fecha) return "-";
+    const d = new Date(fecha);
+    const day = String(d.getUTCDate()).padStart(2, '0');
+    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const year = d.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   const getEstadoBadge = (estado) => {
     const estadoLower = (estado || '').toLowerCase();
