@@ -83,10 +83,14 @@ function RetiroBodega() {
   const guardarRetiro = async (e) => {
     e.preventDefault();
     try {
+      const dataToSend = {
+        ...formData,
+        fecha_retiro: formData.fecha_retiro ? formData.fecha_retiro + "T00:00:00" : null
+      };
       if (editarRetiro) {
-        await api.put(`/api/retiro/${editarRetiro.id}`, formData);
+        await api.put(`/api/retiro/${editarRetiro.id}`, dataToSend);
       } else {
-        await api.post("/api/retiro", formData);
+        await api.post("/api/retiro", dataToSend);
       }
       setFormData({ fecha_retiro: "", serie_reversa: "", equipo: "" });
       setEditarRetiro(null);
@@ -99,8 +103,9 @@ function RetiroBodega() {
 
   const editarItem = (item) => {
     setEditarRetiro(item);
+    const fechaParts = item.fecha_retiro ? item.fecha_retiro.split("T")[0] : "";
     setFormData({
-      fecha_retiro: item.fecha_retiro ? item.fecha_retiro.split("T")[0] : "",
+      fecha_retiro: fechaParts,
       serie_reversa: item.serie_reversa || "",
       equipo: item.equipo || ""
     });
@@ -117,12 +122,8 @@ function RetiroBodega() {
     }
   };
 
-  const formatDate = (fecha) => {
-    if (!fecha) return "-";
-    const d = new Date(fecha);
-    d.setDate(d.getDate() + 1);
-    return d.toLocaleDateString("es-CL");
-  };
+  const formatDate = (fecha) =>
+    fecha ? new Date(fecha).toLocaleDateString("es-CL") : "-";
 
   const limpiarFiltros = () => {
     setFiltroFechaDesde("");
