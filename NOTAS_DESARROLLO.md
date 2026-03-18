@@ -122,7 +122,17 @@ const formatDate = (fecha) => {
 };
 ```
 
-**Guardado de fechas (frontend):**
+**Guardado de fechas (frontend - ordenes):**
+```javascript
+const dataToSend = {
+  ...form,
+  asignacion: form.asignacion ? form.asignacion + "T12:00:00" : "",
+  fecha_reparacion: form.fecha_reparacion ? form.fecha_reparacion + "T12:00:00" : "",
+  fecha: form.fecha ? form.fecha + "T12:00:00" : "",
+};
+```
+
+**Guardado de fechas (frontend - retiro bodega):**
 ```javascript
 const dataToSend = {
   ...formData,
@@ -139,6 +149,22 @@ const formatDate = (d) => {
 };
 ```
 
+### 4. Funcion Helper para Extraer Fechas al Editar
+En el formulario de ordenes, al editar se usa una funcion para manejar diferentes formatos de fecha:
+
+```javascript
+const getDateValue = (fecha) => {
+  if (!fecha) return "";
+  if (typeof fecha === 'string' && fecha.includes('T')) {
+    return fecha.split('T')[0];
+  }
+  if (typeof fecha === 'string') return fecha;
+  return "";
+};
+```
+
+Esto asegura que al editar una orden, las fechas se muestren correctamente en los campos de tipo date.
+
 ---
 
 ## Archivos Modificados
@@ -151,8 +177,8 @@ const formatDate = (d) => {
 ### Frontend
 - `frontend-ultra/src/App.jsx` - Nueva ruta /retiro-bodega
 - `frontend-ultra/src/pages/RetiroBodega.jsx` - Nuevo componente
-- `frontend-ultra/src/components/Ordenes.jsx` - Boton "Retiro Bodega"
-- `frontend-ultra/src/components/Formulario.jsx` - Ajuste de fechas al guardar
+- `frontend-ultra/src/components/Ordenes.jsx` - Boton "Retiro Bodega" y formatDate corregido
+- `frontend-ultra/src/components/Formulario.jsx` - Ajuste de fechas al guardar y editar
 
 ---
 
