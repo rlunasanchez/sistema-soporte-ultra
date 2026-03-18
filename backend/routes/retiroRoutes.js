@@ -7,8 +7,13 @@ const router = express.Router();
 
 router.use(authMiddleware);
 
-const formatDate = (d) =>
-  d ? new Date(d).toISOString().slice(0, 19).replace("T", " ") : null;
+const formatDate = (d) => {
+  if (!d) return null;
+  if (d.includes('T')) {
+    return d;
+  }
+  return d + 'T00:00:00.000Z';
+};
 
 /* ===============================
    OBTENER RETIROS CON PAGINACION
@@ -23,21 +28,19 @@ router.get("/", async (req, res) => {
     let paramIndex = 1;
 
     if (fechaDesde) {
-      sql += ` AND TO_CHAR(fecha_retiro, 'YYYY-MM-DD') >= $${paramIndex}`;
-      countSql += ` AND TO_CHAR(fecha_retiro, 'YYYY-MM-DD') >= $${paramIndex}`;
+      sql += ` AND DATE(fecha_retiro) >= $${paramIndex}`;
+      countSql += ` AND DATE(fecha_retiro) >= $${paramIndex}`;
       params.push(fechaDesde);
       paramIndex++;
     }
 
     if (fechaHasta) {
-      sql += ` AND TO_CHAR(fecha_retiro, 'YYYY-MM-DD') <= $${paramIndex}`;
-      countSql += ` AND TO_CHAR(fecha_retiro, 'YYYY-MM-DD') <= $${paramIndex}`;
+      sql += ` AND DATE(fecha_retiro) <= $${paramIndex}`;
+      countSql += ` AND DATE(fecha_retiro) <= $${paramIndex}`;
       params.push(fechaHasta);
       paramIndex++;
     }
 
-    console.log("SQL params:", params);
-    
     const pageNum = parseInt(page) || 1;
     const limitNum = parseInt(limit) || 5;
     const offset = (pageNum - 1) * limitNum;
@@ -46,8 +49,6 @@ router.get("/", async (req, res) => {
 
     const result = await pool.query(sql, params);
     const rows = result.rows;
-    
-    console.log("Rows encontrados:", rows.length, rows.map(r => ({ id: r.id, fecha: r.fecha_retiro })));
     
     const countResult = await pool.query(countSql, params);
     const total = countResult.rows[0].total;
