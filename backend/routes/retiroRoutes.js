@@ -42,9 +42,11 @@ router.get("/", async (req, res) => {
 
     sql += ` ORDER BY id DESC LIMIT ${limitNum} OFFSET ${offset}`;
 
-    const [rows] = await pool.query(sql, params);
-    const [countResult] = await pool.query(countSql, params);
-    const total = countResult[0].total;
+    const result = await pool.query(sql, params);
+    const rows = result.rows;
+    
+    const countResult = await pool.query(countSql, params);
+    const total = countResult.rows[0].total;
     const totalPages = Math.ceil(total / limitNum);
 
     res.json({
@@ -81,11 +83,11 @@ router.post("/", async (req, res) => {
       data.equipo,
     ];
 
-    const [result] = await pool.query(sql, values);
+    const result = await pool.query(sql, values);
 
     res.status(201).json({
       msg: "Retiro creado correctamente",
-      id: result[0].id,
+      id: result.rows[0].id,
     });
   } catch (err) {
     console.error(err);
@@ -166,7 +168,8 @@ router.get("/excel", async (req, res) => {
 
     sql += " ORDER BY fecha_retiro DESC";
 
-    const [rows] = await pool.query(sql, params);
+    const result = await pool.query(sql, params);
+    const rows = result.rows;
 
     const workbook = await XlsxPopulate.fromBlankAsync();
     const sheet = workbook.sheet(0);
