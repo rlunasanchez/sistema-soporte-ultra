@@ -139,6 +139,14 @@ function Informacion() {
             <li>Excel Correo: Formato Banco Estado</li>
             <li>Excel Respaldo: Backup completo</li>
           </ul>
+          <h4>Retiro de Bodega</h4>
+          <ul>
+            <li>Gestión de equipos retirada de bodega</li>
+            <li>Crear, editar y eliminar retiros</li>
+            <li>Filtros por fecha</li>
+            <li>Paginación (5 por página)</li>
+            <li>Exportación a Excel</li>
+          </ul>
         </div>
       )
     },
@@ -211,6 +219,23 @@ function Informacion() {
               <tr><td>GET</td><td>/api/orden/excel</td><td>Exportar Excel</td></tr>
             </tbody>
           </table>
+          <h4>Retiro de Bodega</h4>
+          <table className="info-table">
+            <thead>
+              <tr>
+                <th>Método</th>
+                <th>Endpoint</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>GET</td><td>/api/retiro</td><td>Listar retiros</td></tr>
+              <tr><td>POST</td><td>/api/retiro</td><td>Crear retiro</td></tr>
+              <tr><td>PUT</td><td>/api/retiro/:id</td><td>Actualizar retiro</td></tr>
+              <tr><td>DELETE</td><td>/api/retiro/:id</td><td>Eliminar retiro</td></tr>
+              <tr><td>GET</td><td>/api/retiro/excel</td><td>Exportar Excel</td></tr>
+            </tbody>
+          </table>
         </div>
       )
     },
@@ -227,6 +252,10 @@ function Informacion() {
 │   ├── package.json
 │   ├── .env
 │   ├── crear_base_datos.sql
+│   ├── datos_migrate.sql
+│   ├── datos_completos.sql
+│   ├── backup_db_postgres.sql
+│   ├── equipos_retirados_postgres.sql
 │   ├── config/
 │   │   ├── db.js
 │   │   └── email.js
@@ -234,11 +263,13 @@ function Informacion() {
 │   │   └── authMiddleware.js
 │   └── routes/
 │       ├── auth.js
-│       └── ordenRoutes.js
+│       ├── ordenRoutes.js
+│       └── retiroRoutes.js
 │
 └── frontend-ultra/
     ├── package.json
     ├── vite.config.js
+    ├── vercel.json
     ├── index.html
     └── src/
         ├── main.jsx
@@ -247,14 +278,16 @@ function Informacion() {
         │   └── api.js
         ├── pages/
         │   ├── Login.jsx
-        │   └── GestionUsuarios.jsx
+        │   ├── GestionUsuarios.jsx
+        │   ├── Informacion.jsx
+        │   └── RetiroBodega.jsx
         ├── components/
         │   ├── Ordenes.jsx
         │   ├── Formulario.jsx
         │   └── PrivateRoute.jsx
         └── styles/
             ├── App.css
-            └── app.css`}
+            └── index.css`}
           </pre>
         </div>
       )
@@ -282,7 +315,7 @@ function Informacion() {
       <div className="info-container">
         <div className="info-header-section">
           <h2>Sistema de Soporte Ultra</h2>
-          <p className="info-subtitle">Versión 1.0.0</p>
+          <p className="info-subtitle">Versión 1.0.1</p>
           <p className="info-description">
             Aplicación web para la gestión de órdenes de servicio técnico para Banco Estado Chile.
           </p>
@@ -291,6 +324,7 @@ function Informacion() {
             <span className="badge badge-info">Frontend: React + Vite</span>
             <span className="badge badge-success">Database: PostgreSQL (Neon)</span>
             <span className="badge badge-warning">Desplegado: Vercel + Render</span>
+            <span className="badge badge-primary">Retiro Bodega</span>
           </div>
         </div>
 
