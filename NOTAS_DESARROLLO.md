@@ -203,7 +203,7 @@ Usa las mismas clases que el resto de la aplicacion:
 ## v1.0.2 (19-03-2026)
 
 ### Cambio en Retiro Bodega
-- En vista móvil, el header de las tarjetas ahora muestra "Fecha: [fecha]" en lugar de "Retiro #[id]"
+- En vista móvil, el header de las tarjetas ahora muestra "Fecha retiro: [fecha]" en lugar de "Retiro #[id]"
 - Archivo: `frontend-ultra/src/pages/RetiroBodega.jsx` línea 411
 
 ---
