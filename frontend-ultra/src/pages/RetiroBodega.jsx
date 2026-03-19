@@ -408,7 +408,7 @@ function RetiroBodega() {
               {retiros.map((r) => (
                 <div className="mobile-card" key={r.id}>
                   <div className="mobile-card-header">
-                    <span>Retiro #{r.id}</span>
+                    <span>Fecha: {formatDate(r.fecha_retiro)}</span>
                   </div>
                   <div className="mobile-card-body">
                     <div className="mobile-card-row">
