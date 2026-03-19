@@ -200,6 +200,12 @@ Usa las mismas clases que el resto de la aplicacion:
 - Páginas de órdenes y retiro bodega funcionando con zona horaria corregida
 - Documentación del sistema actualizada en página de información (v1.0.1)
 
+## v1.0.2 (19-03-2026)
+
+### Cambio en Retiro Bodega
+- En vista móvil, el header de las tarjetas ahora muestra "Fecha: [fecha]" en lugar de "Retiro #[id]"
+- Archivo: `frontend-ultra/src/pages/RetiroBodega.jsx` línea 411
+
 ---
 
 ## Comandos Git
