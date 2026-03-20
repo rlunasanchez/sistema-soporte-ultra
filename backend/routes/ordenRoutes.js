@@ -10,10 +10,10 @@ const router = express.Router();
 ================================*/
 router.get("/tecnicos", async (req, res) => {
   try {
-    const [rows] = await pool.query(
+    const result = await pool.query(
       "SELECT usuario FROM usuarios WHERE activo = 1 ORDER BY usuario ASC"
     );
-    res.json(rows);
+    res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Error obteniendo técnicos" });
@@ -25,20 +25,20 @@ router.get("/tecnicos", async (req, res) => {
 ================================*/
 router.get("/filtros-valores", async (req, res) => {
   try {
-    const [equipos] = await pool.query(
+    const equipos = await pool.query(
       "SELECT DISTINCT equipo FROM ordenes_servicio WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
     );
-    const [marcas] = await pool.query(
+    const marcas = await pool.query(
       "SELECT DISTINCT marca FROM ordenes_servicio WHERE marca IS NOT NULL AND marca != '' ORDER BY marca ASC"
     );
-    const [modelos] = await pool.query(
+    const modelos = await pool.query(
       "SELECT DISTINCT modelo FROM ordenes_servicio WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
     );
 
     res.json({
-      equipos: equipos.map(r => r.equipo),
-      marcas: marcas.map(r => r.marca),
-      modelos: modelos.map(r => r.modelo)
+      equipos: equipos.rows.map(r => r.equipo),
+      marcas: marcas.rows.map(r => r.marca),
+      modelos: modelos.rows.map(r => r.modelo)
     });
   } catch (err) {
     console.error(err);
@@ -51,20 +51,20 @@ router.get("/filtros-valores", async (req, res) => {
 ================================*/
 router.get("/valores-formulario", async (req, res) => {
   try {
-    const [equipos] = await pool.query(
+    const equipos = await pool.query(
       "SELECT DISTINCT equipo FROM ordenes_servicio WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
     );
-    const [marcas] = await pool.query(
+    const marcas = await pool.query(
       "SELECT DISTINCT marca FROM ordenes_servicio WHERE marca IS NOT NULL AND marca != '' ORDER BY marca ASC"
     );
-    const [modelos] = await pool.query(
+    const modelos = await pool.query(
       "SELECT DISTINCT modelo FROM ordenes_servicio WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
     );
 
     res.json({
-      equipos: equipos.map(r => r.equipo),
-      marcas: marcas.map(r => r.marca),
-      modelos: modelos.map(r => r.modelo)
+      equipos: equipos.rows.map(r => r.equipo),
+      marcas: marcas.rows.map(r => r.marca),
+      modelos: modelos.rows.map(r => r.modelo)
     });
   } catch (err) {
     console.error(err);
