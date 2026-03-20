@@ -10,18 +10,18 @@
   --panel: #ffffff;
   --text: #1a1a2e;
   --text-muted: #64748b;
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-  --primary-light: #eef2ff;
-  --success: #10b981;
-  --success-light: #d1fae5;
-  --danger: #ef4444;
-  --danger-light: #fee2e2;
-  --warning: #f59e0b;
-  --warning-light: #fef3c7;
-  --info: #0ea5e9;
+  --primary: #0C4A8C;
+  --primary-hover: #0a3d75;
+  --primary-light: #e6f0fa;
+  --success: #00B5E2;
+  --success-light: #e0f7fc;
+  --danger: #E53935;
+  --danger-light: #ffebee;
+  --warning: #FF9800;
+  --warning-light: #fff3e0;
+  --info: #009EE3;
   --border: #e2e8f0;
-  --gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  --gradient: linear-gradient(135deg, #0C4A8C 0%, #009EE3 100%);
 }
 
 * {
@@ -137,13 +137,13 @@ body {
   font-weight: 600;
   font-size: 0.9rem;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 2px 8px rgba(12, 74, 140, 0.3);
   width: 160px;
 }
 
 .main-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+  box-shadow: 0 4px 12px rgba(12, 74, 140, 0.4);
 }
 
 .export-btn {
@@ -316,7 +316,7 @@ table tr:last-child td {
 
 .badge-success {
   background: var(--success-light);
-  color: #047857;
+  color: #009EE3;
 }
 
 .badge-warning {
@@ -859,7 +859,7 @@ textarea:focus {
 .info-header-section {
   text-align: center;
   padding: 30px;
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #0C4A8C 0%, #009EE3 100%);
   color: white;
   border-radius: var(--radius);
   margin-bottom: 24px;
@@ -1017,10 +1017,10 @@ textarea:focus {
 
 /* Botón Datos del Software */
 .main-btn.info-btn {
-  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #009EE3 0%, #00B5E2 100%);
   color: white;
 }
 
 .main-btn.info-btn:hover {
-  background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%);
+  background: linear-gradient(135deg, #009EE3 0%, #0099cc 100%);
 }

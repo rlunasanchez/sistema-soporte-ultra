@@ -537,7 +537,7 @@ function Formulario({ orden, onCerrar }) {
               type="button"
               onClick={() => setMostrarDiagnostico(true)}
               className="main-btn"
-              style={{ whiteSpace: 'nowrap', background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)' }}
+              style={{ whiteSpace: 'nowrap', background: 'linear-gradient(135deg, #009EE3 0%, #00B5E2 100%)' }}
             >
               <FileText size={20} />
               Diagnóstico

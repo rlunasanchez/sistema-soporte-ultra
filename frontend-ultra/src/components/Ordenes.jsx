@@ -403,7 +403,7 @@ function Ordenes() {
           Excel Respaldo
         </button>
 
-        <button onClick={descargarPDF} className="main-btn export-btn action-btn" style={{ background: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)' }}>
+        <button onClick={descargarPDF} className="main-btn export-btn action-btn" style={{ background: 'linear-gradient(135deg, #E53935 0%, #ff5252 100%)' }}>
           <FileText size={20} />
           Exportar PDF
         </button>
@@ -420,7 +420,7 @@ function Ordenes() {
           </button>
         )}
 
-        <button onClick={() => navigate("/retiro-bodega")} className="main-btn action-btn" style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)' }}>
+        <button onClick={() => navigate("/retiro-bodega")} className="main-btn action-btn" style={{ background: 'linear-gradient(135deg, #009EE3 0%, #00B5E2 100%)' }}>
           <Package size={20} />
           Retiro Bodega
         </button>
