@@ -151,14 +151,14 @@ Todas las consultas deben usar `informe_tecnico` en lugar de `ordenes_servicio`.
 - Modulo Diagnostico: COMPLETADO
 - Cambios de texto interfaz: COMPLETADO
 - Tabla renombrada a informe_tecnico: COMPLETADO
-- Colores corporativos Sonda: COMPLETADO
+- Colores corporativos Sonda (UI, PDF, Excel): COMPLETADO
 - Produccion (PostgreSQL Neon): FUNCIONANDO
 
 ---
 
 ## Colores Corporativos Sonda
 
-**Colores aplicados a todos los botones:**
+**Colores aplicados a botones, PDF y Excel:**
 - **Primary:** #0C4A8C (azul corporativo)
 - **Primary Hover:** #0a3d75
 - **Primary Light:** #e6f0fa
@@ -168,3 +168,14 @@ Todas las consultas deben usar `informe_tecnico` en lugar de `ordenes_servicio`.
 - **Danger:** #E53935
 - **Warning:** #FF9800
 - **Gradient:** linear-gradient(135deg, #0C4A8C 0%, #009EE3 100%)
+
+**Colores en PDF:**
+- Header: #0C4A8C
+- Footer/Líneas: #009EE3
+- Labels: #0C4A8C
+
+**Colores en Excel:**
+- Header título: #009EE3 (cyan)
+- Header columnas: #E6F0FA
+- Texto header: #0C4A8C
+- Bordes: #009EE3
