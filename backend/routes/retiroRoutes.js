@@ -187,7 +187,7 @@ router.get("/excel", async (req, res) => {
       fontSize: 16,
       horizontalAlignment: "center",
       verticalAlignment: "center",
-      fill: "059669",
+      fill: "009EE3",
       fontColor: "FFFFFF",
     });
 
@@ -205,11 +205,11 @@ router.get("/excel", async (req, res) => {
 
     sheet.range("A3:D3").style({
       bold: true,
-      fill: "D1FAE5",
+      fill: "E6F0FA",
       horizontalAlignment: "center",
       border: true,
-      borderColor: "059669",
-      fontColor: "065F46",
+      borderColor: "0C4A8C",
+      fontColor: "0C4A8C",
     });
 
     rows.forEach((r, i) => {
