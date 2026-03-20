@@ -102,6 +102,15 @@ function Formulario({ orden, onCerrar }) {
     }
   }, [orden]);
 
+  useEffect(() => {
+    if (orden && tecnicos.length > 0) {
+      const tecnicoOptions = tecnicos.map(t => t.usuario);
+      if (!tecnicoOptions.includes(orden.tecnico) && orden.tecnico) {
+        setTecnicos(prev => [...prev, { usuario: orden.tecnico }]);
+      }
+    }
+  }, [orden, tecnicos]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
