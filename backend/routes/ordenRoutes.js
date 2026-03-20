@@ -11,7 +11,7 @@ const router = express.Router();
 router.get("/tecnicos", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT usuario FROM usuarios WHERE activo = 1 ORDER BY usuario ASC"
+      "SELECT usuario FROM usuarios WHERE activo = true OR activo = 1 ORDER BY usuario ASC"
     );
     res.json(result.rows);
   } catch (err) {
