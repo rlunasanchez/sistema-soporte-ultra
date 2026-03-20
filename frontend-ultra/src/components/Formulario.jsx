@@ -90,7 +90,6 @@ function Formulario({ orden, onCerrar }) {
   useEffect(() => {
     if (orden) {
       setForm((prev) => ({
-        ...prev,
         ...orden,
         asignacion: getDateValue(orden.asignacion),
         fecha_reparacion: getDateValue(orden.fecha_reparacion),
@@ -99,27 +98,9 @@ function Formulario({ orden, onCerrar }) {
         bateria: orden.bateria === 1 || orden.bateria === true,
         insumo: orden.insumo === 1 || orden.insumo === true,
         cabezal: orden.cabezal === 1 || orden.cabezal === true,
-        tecnico: orden.tecnico || "",
-        realizado_por: orden.realizado_por || "",
-        equipo: orden.equipo || "",
-        marca: orden.marca || "",
-        modelo: orden.modelo || "",
       }));
     }
   }, [orden]);
-
-  useEffect(() => {
-    if (orden && tecnicos.length > 0) {
-      setForm((prev) => ({
-        ...prev,
-        tecnico: orden.tecnico || prev.tecnico,
-        realizado_por: orden.realizado_por || prev.realizado_por,
-        equipo: orden.equipo || prev.equipo,
-        marca: orden.marca || prev.marca,
-        modelo: orden.modelo || prev.modelo,
-      }));
-    }
-  }, [tecnicos]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
