@@ -10,9 +10,11 @@ const router = express.Router();
 ================================*/
 router.get("/tecnicos", async (req, res) => {
   try {
+    console.log("Ruta tecnicos llamada");
     const result = await pool.query(
       "SELECT usuario FROM usuarios WHERE activo = true OR activo = 1 ORDER BY usuario ASC"
     );
+    console.log("Tecnicos encontrados:", result.rows);
     res.json(result.rows);
   } catch (err) {
     console.error(err);
