@@ -108,6 +108,19 @@ function Formulario({ orden, onCerrar }) {
     }
   }, [orden]);
 
+  useEffect(() => {
+    if (orden && tecnicos.length > 0) {
+      setForm((prev) => ({
+        ...prev,
+        tecnico: orden.tecnico || prev.tecnico,
+        realizado_por: orden.realizado_por || prev.realizado_por,
+        equipo: orden.equipo || prev.equipo,
+        marca: orden.marca || prev.marca,
+        modelo: orden.modelo || prev.modelo,
+      }));
+    }
+  }, [tecnicos]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
