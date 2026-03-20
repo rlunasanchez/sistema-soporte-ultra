@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
-  Wrench, Plus, Download, Mail, Save, 
+  Wrench, Plus, Download, Mail, Save, FileText,
   Search, ChevronDown, ChevronUp, LogOut,
   User, Edit, Trash2, Filter, FileSpreadsheet, Users, Info, Package
 } from "lucide-react";
@@ -310,6 +310,41 @@ function Ordenes() {
     }
   };
 
+  const descargarPDF = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (busquedaOS) params.append("os", busquedaOS);
+      if (filtroCliente) params.append("cliente", filtroCliente);
+      if (filtroTecnico) params.append("tecnico", filtroTecnico);
+      if (filtroEstado) params.append("estado", filtroEstado);
+      if (filtroEquipo) params.append("equipo", filtroEquipo);
+      if (filtroMarca) params.append("marca", filtroMarca);
+      if (filtroModelo) params.append("modelo", filtroModelo);
+      if (fechaAsignacionDesde) params.append("fechaAsignacionDesde", fechaAsignacionDesde);
+      if (fechaAsignacionHasta) params.append("fechaAsignacionHasta", fechaAsignacionHasta);
+      if (fechaReparacionDesde) params.append("fechaReparacionDesde", fechaReparacionDesde);
+      if (fechaReparacionHasta) params.append("fechaReparacionHasta", fechaReparacionHasta);
+      if (fechaFiltro) params.append("fecha", fechaFiltro);
+      params.append("limit", "1000");
+      params.append("page", "1");
+
+      const response = await api.get(`/api/orden/pdf?${params.toString()}`, {
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "informes_tecnicos.pdf");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+    } catch {
+      alert("No se pudo descargar el PDF");
+    }
+  };
+
   const limpiarFiltros = () => {
     setBusquedaOS("");
     setFiltroCliente("");
@@ -364,7 +399,7 @@ function Ordenes() {
           className="main-btn"
         >
           <Plus size={20} />
-          Nueva OS
+          Informe Técnico
         </button>
 
         <button onClick={descargarExcel} className="main-btn export-btn">
@@ -380,6 +415,11 @@ function Ordenes() {
         <button onClick={descargarExcelRespaldo} className="main-btn export-btn">
           <Save size={20} />
           Excel Respaldo
+        </button>
+
+        <button onClick={descargarPDF} className="main-btn export-btn" style={{ background: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)' }}>
+          <FileText size={20} />
+          Exportar PDF
         </button>
 
         {rol === 'admin' ? (
@@ -575,7 +615,7 @@ function Ordenes() {
 
       <div className="table-container">
         <div className="table-header">
-          <span>Órdenes de Servicio ({ordenes.length} registros)</span>
+          <span>Informes ({ordenes.length} registros)</span>
         </div>
 
         {cargando ? (
@@ -585,7 +625,7 @@ function Ordenes() {
         ) : ordenes.length === 0 ? (
           <div className="empty-state">
             <Search size={48} />
-            <p>No se encontraron órdenes</p>
+            <p>No se encontraron informes</p>
           </div>
         ) : (
           <>

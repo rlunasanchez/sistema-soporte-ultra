@@ -1,6 +1,7 @@
 import express from "express";
 import pool from "../config/db.js";
 import XlsxPopulate from "xlsx-populate";
+import PDFDocument from "pdfkit";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -10,11 +11,9 @@ const router = express.Router();
 ================================*/
 router.get("/tecnicos", async (req, res) => {
   try {
-    console.log("Ruta tecnicos llamada");
     const result = await pool.query(
       "SELECT usuario FROM usuarios WHERE activo = true ORDER BY usuario ASC"
     );
-    console.log("Tecnicos encontrados:", result.rows);
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -28,13 +27,13 @@ router.get("/tecnicos", async (req, res) => {
 router.get("/filtros-valores", async (req, res) => {
   try {
     const equipos = await pool.query(
-      "SELECT DISTINCT equipo FROM ordenes_servicio WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
+      "SELECT DISTINCT equipo FROM informe_tecnico WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
     );
     const marcas = await pool.query(
-      "SELECT DISTINCT marca FROM ordenes_servicio WHERE marca IS NOT NULL AND marca != '' ORDER BY marca ASC"
+      "SELECT DISTINCT marca FROM informe_tecnico WHERE marca IS NOT NULL AND marca != '' ORDER BY marca ASC"
     );
     const modelos = await pool.query(
-      "SELECT DISTINCT modelo FROM ordenes_servicio WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
+      "SELECT DISTINCT modelo FROM informe_tecnico WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
     );
 
     res.json({
@@ -54,13 +53,13 @@ router.get("/filtros-valores", async (req, res) => {
 router.get("/valores-formulario", async (req, res) => {
   try {
     const equipos = await pool.query(
-      "SELECT DISTINCT equipo FROM ordenes_servicio WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
+      "SELECT DISTINCT equipo FROM informe_tecnico WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
     );
     const marcas = await pool.query(
-      "SELECT DISTINCT marca FROM ordenes_servicio WHERE marca IS NOT NULL AND marca != '' ORDER BY marca ASC"
+      "SELECT DISTINCT marca FROM informe_tecnico WHERE marca IS NOT NULL AND marca != '' ORDER BY marca ASC"
     );
     const modelos = await pool.query(
-      "SELECT DISTINCT modelo FROM ordenes_servicio WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
+      "SELECT DISTINCT modelo FROM informe_tecnico WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
     );
 
     res.json({
@@ -97,8 +96,8 @@ const buildFilterQuery = (query) => {
     limit,
   } = query;
 
-  let sql = "SELECT * FROM ordenes_servicio WHERE 1=1";
-  let countSql = "SELECT COUNT(*) as total FROM ordenes_servicio WHERE 1=1";
+  let sql = "SELECT * FROM informe_tecnico WHERE 1=1";
+  let countSql = "SELECT COUNT(*) as total FROM informe_tecnico WHERE 1=1";
   const params = [];
   let paramIndex = 1;
 
@@ -230,15 +229,16 @@ router.post("/", async (req, res) => {
     const data = req.body;
 
     const sql = `
-      INSERT INTO ordenes_servicio (
+      INSERT INTO informe_tecnico (
         os, cliente, tecnico, asignacion, en_garantia, tipo,
         estado_actual, fecha_reparacion, solicitud_compra,
         n_denuncia, qty, anexo, fecha, equipo, marca,
         serie, modelo, procesador, disco, memoria,
         cargador, bateria, insumo, cabezal, otros,
-        falla_informada, falla_detectada, conclusion, realizado_por
+        falla_informada, falla_detectada, conclusion, realizado_por,
+        fecha_diagnostico, diagnostico
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32)
       RETURNING id
     `;
 
@@ -272,6 +272,8 @@ router.post("/", async (req, res) => {
       data.falla_detectada,
       data.conclusion,
       data.realizado_por,
+      formatDate(data.fecha_diagnostico),
+      data.diagnostico,
     ];
 
     const result = await pool.query(sql, values);
@@ -295,14 +297,15 @@ router.put("/:id", async (req, res) => {
     const data = req.body;
 
     const sql = `
-      UPDATE ordenes_servicio SET
+      UPDATE informe_tecnico SET
         os = $1, cliente = $2, tecnico = $3, asignacion = $4, en_garantia = $5, tipo = $6,
         estado_actual = $7, fecha_reparacion = $8, solicitud_compra = $9,
         n_denuncia = $10, qty = $11, anexo = $12, fecha = $13, equipo = $14, marca = $15,
         serie = $16, modelo = $17, procesador = $18, disco = $19, memoria = $20,
         cargador = $21, bateria = $22, insumo = $23, cabezal = $24, otros = $25,
-        falla_informada = $26, falla_detectada = $27, conclusion = $28, realizado_por = $29
-      WHERE id = $30
+        falla_informada = $26, falla_detectada = $27, conclusion = $28, realizado_por = $29,
+        fecha_diagnostico = $30, diagnostico = $31
+      WHERE id = $32
     `;
 
     const values = [
@@ -335,6 +338,8 @@ router.put("/:id", async (req, res) => {
       data.falla_detectada,
       data.conclusion,
       data.realizado_por,
+      formatDate(data.fecha_diagnostico),
+      data.diagnostico,
       id,
     ];
 
@@ -354,7 +359,7 @@ router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    await pool.query("DELETE FROM ordenes_servicio WHERE id = $1", [id]);
+    await pool.query("DELETE FROM informe_tecnico WHERE id = $1", [id]);
 
     res.json({ msg: "Orden eliminada correctamente" });
   } catch (err) {
@@ -470,7 +475,7 @@ router.get("/excel", async (req, res) => {
 
     res.setHeader(
       "Content-Disposition",
-      "attachment; filename=ordenes_servicio.xlsx"
+      "attachment; filename=informe_tecnico.xlsx"
     );
 
     res.send(buffer);
@@ -734,6 +739,195 @@ router.get("/excel-respaldo", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Error generando Excel respaldo" });
+  }
+});
+
+/* ===============================
+   EXPORTAR PDF INFORME TÉCNICO
+================================*/
+router.get("/pdf", async (req, res) => {
+  try {
+    const { os, cliente, tecnico, estado, equipo, marca, modelo } = req.query;
+    
+    let sql = "SELECT * FROM informe_tecnico WHERE 1=1";
+    const params = [];
+    let paramIndex = 1;
+
+    if (os) {
+      sql += ` AND os LIKE $${paramIndex}`;
+      params.push(`%${os}%`);
+      paramIndex++;
+    }
+    if (cliente) {
+      sql += ` AND cliente LIKE $${paramIndex}`;
+      params.push(`%${cliente}%`);
+      paramIndex++;
+    }
+    if (tecnico) {
+      sql += ` AND tecnico LIKE $${paramIndex}`;
+      params.push(`%${tecnico}%`);
+      paramIndex++;
+    }
+    if (estado) {
+      sql += ` AND estado_actual LIKE $${paramIndex}`;
+      params.push(`%${estado}%`);
+      paramIndex++;
+    }
+    if (equipo) {
+      sql += ` AND equipo LIKE $${paramIndex}`;
+      params.push(`%${equipo}%`);
+      paramIndex++;
+    }
+    if (marca) {
+      sql += ` AND marca LIKE $${paramIndex}`;
+      params.push(`%${marca}%`);
+      paramIndex++;
+    }
+    if (modelo) {
+      sql += ` AND modelo LIKE $${paramIndex}`;
+      params.push(`%${modelo}%`);
+      paramIndex++;
+    }
+
+    sql += " ORDER BY id DESC LIMIT 100";
+
+    const result = await pool.query(sql, params);
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ msg: "No hay órdenes para exportar" });
+    }
+
+    const doc = new PDFDocument({
+      size: 'A4',
+      layout: 'portrait',
+      margins: { top: 15, bottom: 15, left: 20, right: 20 }
+    });
+
+    const buffers = [];
+    doc.on('data', (chunk) => buffers.push(chunk));
+    doc.on('end', () => {
+      const pdfBuffer = Buffer.concat(buffers);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=informes_tecnicos.pdf');
+      res.send(pdfBuffer);
+    });
+
+    result.rows.forEach((orden, index) => {
+      if (index > 0) {
+        doc.addPage();
+      }
+
+      const leftX = 20;
+      const col2X = 190;
+      const col3X = 360;
+      const width = 535;
+      const rowH = 18;
+      let y = 15;
+
+      doc.rect(leftX, y, width, 30).fill('#4f46e5');
+      doc.fill('#FFFFFF');
+      doc.fontSize(14);
+      doc.font('Helvetica-Bold');
+      doc.text('INFORME TÉCNICO', leftX, y + 8, { align: 'center', width: width });
+      y += 35;
+
+      doc.fill('#1a1a2e');
+      doc.fontSize(9);
+
+      const row = (label, value, x, rowY) => {
+        doc.font('Helvetica-Bold').fill('#4f46e5').text(label + ':', x, rowY, { width: 70 });
+        doc.font('Helvetica').fill('#1a1a2e').text(value || '-', x + 75, rowY, { width: 110 });
+      };
+
+      row('OS', orden.os, leftX, y);
+      doc.font('Helvetica-Bold').fill('#4f46e5').text('Fecha:', col3X, y);
+      doc.font('Helvetica').fill('#1a1a2e').text(orden.fecha ? new Date(orden.fecha).toLocaleDateString('es-CL') : '-', col3X + 50, y);
+      y += rowH;
+
+      row('Cliente', orden.cliente, leftX, y);
+      row('Garantía', orden.en_garantia, col3X, y);
+      y += rowH;
+
+      row('Técnico', orden.tecnico, leftX, y);
+      row('Tipo', orden.tipo, col3X, y);
+      y += rowH;
+
+      row('Fecha Asignación', orden.asignacion ? new Date(orden.asignacion).toLocaleDateString('es-CL') : '-', leftX, y);
+      row('Estado', orden.estado_actual, col3X, y);
+      y += rowH;
+
+      row('Fecha Reparación', orden.fecha_reparacion ? new Date(orden.fecha_reparacion).toLocaleDateString('es-CL') : '-', leftX, y);
+      row('Realizado Por', orden.realizado_por, col3X, y);
+      y += rowH + 5;
+
+      doc.rect(leftX, y, width, 18).fill('#f1f5f9');
+      doc.fill('#4f46e5');
+      doc.fontSize(10);
+      doc.font('Helvetica-Bold');
+      doc.text('INFORMACIÓN TÉCNICA', leftX + 5, y + 3);
+      y += 22;
+
+      row('Fecha', orden.fecha ? new Date(orden.fecha).toLocaleDateString('es-CL') : '-', leftX, y);
+      row('Solicitud Compra', orden.solicitud_compra, col2X, y);
+      row('Anexo', orden.anexo, col3X, y);
+      y += rowH;
+
+      row('Equipo', orden.equipo, leftX, y);
+      row('Cantidad', orden.qty, col3X, y);
+      y += rowH;
+
+      row('Marca', orden.marca, leftX, y);
+      row('Modelo', orden.modelo, col2X, y);
+      y += rowH;
+
+      row('Serie', orden.serie, leftX, y);
+      row('N° Denuncia', orden.n_denuncia, col2X, y);
+      y += rowH;
+
+      row('Procesador', orden.procesador, leftX, y);
+      row('Memoria', orden.memoria, col2X, y);
+      y += rowH;
+
+      row('Disco', orden.disco, leftX, y);
+      y += rowH + 5;
+
+      const accesorios = [];
+      if (orden.cargador) accesorios.push('Cargador');
+      if (orden.bateria) accesorios.push('Batería');
+      if (orden.insumo) accesorios.push('Insumo');
+      if (orden.cabezal) accesorios.push('Cabezal');
+
+      doc.font('Helvetica-Bold').fill('#4f46e5').text('Accesorios:', leftX, y);
+      doc.font('Helvetica').fill('#1a1a2e').text(accesorios.length > 0 ? accesorios.join(', ') : '-', leftX + 80, y, { width: 150 });
+
+      doc.font('Helvetica-Bold').fill('#4f46e5').text('Otros:', col2X, y);
+      doc.font('Helvetica').fill('#1a1a2e').text(orden.otros || '-', col2X + 50, y, { width: 180 });
+      y += rowH + 10;
+
+      doc.rect(leftX, y, width, 2).fill('#e2e8f0');
+      y += 10;
+
+      doc.font('Helvetica-Bold').fill('#4f46e5').text('Falla Informada:', leftX, y);
+      y += 18;
+      doc.font('Helvetica').fill('#1a1a2e').text(orden.falla_informada || '-', leftX, y, { width: width, lineGap: 5 });
+      y = doc.y + 20;
+
+      doc.font('Helvetica-Bold').fill('#4f46e5').text('Falla Detectada:', leftX, y);
+      y += 18;
+      doc.font('Helvetica').fill('#1a1a2e').text(orden.falla_detectada || '-', leftX, y, { width: width, lineGap: 5 });
+      y = doc.y + 20;
+
+      doc.font('Helvetica-Bold').fill('#4f46e5').text('Conclusión:', leftX, y);
+      y += 18;
+      doc.font('Helvetica').fill('#1a1a2e').text(orden.conclusion || '-', leftX, y, { width: width, lineGap: 5 });
+      y = doc.y + 25;
+      doc.rect(leftX, y, width, 2).fill('#4f46e5');
+    });
+
+    doc.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Error generando PDF" });
   }
 });
 

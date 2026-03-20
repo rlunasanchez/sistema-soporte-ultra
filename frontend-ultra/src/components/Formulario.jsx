@@ -36,9 +36,12 @@ function Formulario({ orden, onCerrar }) {
     falla_detectada: "",
     conclusion: "",
     realizado_por: "",
+    fecha_diagnostico: "",
+    diagnostico: "",
   });
 
   const [guardando, setGuardando] = useState(false);
+  const [mostrarDiagnostico, setMostrarDiagnostico] = useState(false);
   const [tecnicos, setTecnicos] = useState([]);
   const [valoresForm, setValoresForm] = useState({ equipos: [], marcas: [], modelos: [] });
   const textareasRef = useRef({});
@@ -89,23 +92,42 @@ function Formulario({ orden, onCerrar }) {
 
   useEffect(() => {
     if (orden) {
-      setForm((prev) => ({
-        ...orden,
+      setForm({
+        tecnico: orden.tecnico || "",
+        realizado_por: orden.realizado_por || "",
+        equipo: orden.equipo || "",
+        marca: orden.marca || "",
+        modelo: orden.modelo || "",
+        fecha_diagnostico: getDateValue(orden.fecha_diagnostico),
+        diagnostico: orden.diagnostico || "",
         asignacion: getDateValue(orden.asignacion),
         fecha_reparacion: getDateValue(orden.fecha_reparacion),
         fecha: getDateValue(orden.fecha),
-        cargador: orden.cargador === 1 || orden.cargador === true,
-        bateria: orden.bateria === 1 || orden.bateria === true,
-        insumo: orden.insumo === 1 || orden.insumo === true,
-        cabezal: orden.cabezal === 1 || orden.cabezal === true,
-      }));
-    }
-  }, [orden]);
+        cargador: orden.cargador === 1,
+        bateria: orden.bateria === 1,
+        insumo: orden.insumo === 1,
+        cabezal: orden.cabezal === 1,
+        os: orden.os || "",
+        cliente: orden.cliente || "",
+        en_garantia: orden.en_garantia || "NO",
+        tipo: orden.tipo || "REPARACION",
+        estado_actual: orden.estado_actual || "",
+        solicitud_compra: orden.solicitud_compra || "",
+        n_denuncia: orden.n_denuncia || "",
+        qty: orden.qty || "",
+        anexo: orden.anexo || "",
+        serie: orden.serie || "",
+        procesador: orden.procesador || "",
+        disco: orden.disco || "",
+        memoria: orden.memoria || "",
+        otros: orden.otros || "",
+        falla_informada: orden.falla_informada || "",
+        falla_detectada: orden.falla_detectada || "",
+        conclusion: orden.conclusion || "",
+      });
 
-  useEffect(() => {
-    if (orden && tecnicos.length > 0) {
-      const tecnicoOptions = tecnicos.map(t => t.usuario);
-      if (!tecnicoOptions.includes(orden.tecnico) && orden.tecnico) {
+      const tecnicoExiste = tecnicos.some(t => t.usuario === orden.tecnico);
+      if (!tecnicoExiste && orden.tecnico) {
         setTecnicos(prev => [...prev, { usuario: orden.tecnico }]);
       }
     }
@@ -166,7 +188,7 @@ function Formulario({ orden, onCerrar }) {
       <div className="form-header">
         <h2>
           {orden ? <Edit size={24} /> : <FileText size={24} />}
-          {orden ? "Editar OS" : "Nueva OS"}
+          {orden ? "Editar Informe Técnico" : "Nuevo Informe Técnico"}
         </h2>
       </div>
 
@@ -515,22 +537,93 @@ function Formulario({ orden, onCerrar }) {
         </div>
 
         <div className="form-group full-width" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px', marginTop: '8px' }}>
-          <button
-            type="button"
-            className="cancel-btn"
-            onClick={handleCerrar}
-            style={{ whiteSpace: 'nowrap' }}
-          >
-            <ArrowLeft size={20} />
-            Volver
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              type="button"
+              className="cancel-btn"
+              onClick={handleCerrar}
+              style={{ whiteSpace: 'nowrap' }}
+            >
+              <ArrowLeft size={20} />
+              Volver
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMostrarDiagnostico(true)}
+              className="main-btn"
+              style={{ whiteSpace: 'nowrap', background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)' }}
+            >
+              <FileText size={20} />
+              Diagnóstico
+            </button>
+          </div>
 
           <button type="submit" className="main-btn" disabled={guardando} style={{ whiteSpace: 'nowrap' }}>
             <Save size={20} />
-            {guardando ? 'Guardando...' : (orden ? 'Guardar Cambios' : 'Guardar OS')}
+            {guardando ? 'Guardando...' : (orden ? 'Guardar Cambios' : 'Guardar Informe')}
           </button>
         </div>
       </form>
+
+      {mostrarDiagnostico && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            padding: '24px',
+            width: '90%',
+            maxWidth: '500px',
+            maxHeight: '90vh',
+            overflow: 'auto'
+          }}>
+            <h3 style={{ marginTop: 0, marginBottom: '20px', color: '#4f46e5' }}>Diagnóstico</h3>
+
+            <div className="form-group">
+              <label>Fecha Diagnóstico</label>
+              <input
+                type="date"
+                name="fecha_diagnostico"
+                value={form.fecha_diagnostico}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="form-group full-width">
+              <label>Diagnóstico</label>
+              <textarea
+                name="diagnostico"
+                placeholder="Ingrese el diagnóstico..."
+                value={form.diagnostico}
+                onChange={handleChange}
+                rows={8}
+                style={{ minHeight: '150px' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+              <button
+                type="button"
+                className="cancel-btn"
+                onClick={() => setMostrarDiagnostico(false)}
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
