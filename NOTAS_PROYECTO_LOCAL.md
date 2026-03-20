@@ -335,7 +335,7 @@ npm install pdfkit
 
 ## Colores Corporativos Sonda
 
-**Colores aplicados a todos los botones:**
+**Colores aplicados a botones, PDF y Excel:**
 - **Primary:** #0C4A8C (azul corporativo)
 - **Primary Hover:** #0a3d75
 - **Primary Light:** #e6f0fa
@@ -345,6 +345,17 @@ npm install pdfkit
 - **Danger:** #E53935
 - **Warning:** #FF9800
 - **Gradient:** linear-gradient(135deg, #0C4A8C 0%, #009EE3 100%)
+
+**Colores en PDF:**
+- Header: #0C4A8C
+- Footer/Líneas: #009EE3
+- Labels: #0C4A8C
+
+**Colores en Excel:**
+- Header título: #009EE3 (cyan)
+- Header columnas: #E6F0FA
+- Texto header: #0C4A8C
+- Bordes: #009EE3
 
 ---
 
@@ -356,5 +367,6 @@ npm install pdfkit
 - Exportacion PDF: COMPLETADO
 - Modulo Diagnostico: COMPLETADO
 - Cambios de texto interfaz: COMPLETADO
+- Colores corporativos Sonda (UI, PDF, Excel): COMPLETADO
 - Local (MySQL): FUNCIONANDO
 - Produccion (PostgreSQL): FUNCIONANDO
