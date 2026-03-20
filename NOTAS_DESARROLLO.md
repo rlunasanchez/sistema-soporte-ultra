@@ -151,4 +151,20 @@ Todas las consultas deben usar `informe_tecnico` en lugar de `ordenes_servicio`.
 - Modulo Diagnostico: COMPLETADO
 - Cambios de texto interfaz: COMPLETADO
 - Tabla renombrada a informe_tecnico: COMPLETADO
+- Colores corporativos Sonda: COMPLETADO
 - Produccion (PostgreSQL Neon): FUNCIONANDO
+
+---
+
+## Colores Corporativos Sonda
+
+**Colores aplicados a todos los botones:**
+- **Primary:** #0C4A8C (azul corporativo)
+- **Primary Hover:** #0a3d75
+- **Primary Light:** #e6f0fa
+- **Secondary/Info:** #009EE3 (cyan)
+- **Success:** #00B5E2
+- **Success Light:** #e0f7fc
+- **Danger:** #E53935
+- **Warning:** #FF9800
+- **Gradient:** linear-gradient(135deg, #0C4A8C 0%, #009EE3 100%)
