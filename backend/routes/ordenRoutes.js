@@ -490,7 +490,7 @@ router.get("/excel-correo", async (req, res) => {
       fontSize: 16,
       horizontalAlignment: "center",
       verticalAlignment: "center",
-      fill: "10B981",
+      fill: "009EE3",
       fontColor: "FFFFFF",
     });
 
@@ -508,10 +508,10 @@ router.get("/excel-correo", async (req, res) => {
 
     sheet.range("A3:C3").style({
       bold: true,
-      fill: "D1FAE5",
+      fill: "E6F0FA",
       horizontalAlignment: "center",
       border: true,
-      borderColor: "10B981",
+      borderColor: "009EE3",
     });
 
     rows.forEach((r, i) => {
@@ -576,7 +576,7 @@ router.get("/excel-respaldo", async (req, res) => {
       fontSize: 18,
       horizontalAlignment: "center",
       verticalAlignment: "center",
-      fill: "10B981",
+      fill: "009EE3",
       fontColor: "FFFFFF",
     });
 
@@ -620,11 +620,11 @@ router.get("/excel-respaldo", async (req, res) => {
 
     sheet.range("A3:AC3").style({
       bold: true,
-      fill: "D1FAE5",
+      fill: "E6F0FA",
       horizontalAlignment: "center",
       border: true,
-      borderColor: "10B981",
-      fontColor: "065F46",
+      borderColor: "009EE3",
+      fontColor: "0C4A8C",
     });
 
     rows.forEach((r, i) => {
@@ -802,7 +802,7 @@ router.get("/pdf", async (req, res) => {
       const rowH = 18;
       let y = 15;
 
-      doc.rect(leftX, y, width, 30).fill('#4f46e5');
+      doc.rect(leftX, y, width, 30).fill('#0C4A8C');
       doc.fill('#FFFFFF');
       doc.fontSize(14);
       doc.font('Helvetica-Bold');
@@ -813,12 +813,12 @@ router.get("/pdf", async (req, res) => {
       doc.fontSize(9);
 
       const row = (label, value, x, rowY) => {
-        doc.font('Helvetica-Bold').fill('#4f46e5').text(label + ':', x, rowY, { width: 70 });
+        doc.font('Helvetica-Bold').fill('#0C4A8C').text(label + ':', x, rowY, { width: 70 });
         doc.font('Helvetica').fill('#1a1a2e').text(value || '-', x + 75, rowY, { width: 110 });
       };
 
       row('OS', orden.os, leftX, y);
-      doc.font('Helvetica-Bold').fill('#4f46e5').text('Fecha:', col3X, y);
+      doc.font('Helvetica-Bold').fill('#0C4A8C').text('Fecha:', col3X, y);
       doc.font('Helvetica').fill('#1a1a2e').text(orden.fecha ? new Date(orden.fecha).toLocaleDateString('es-CL') : '-', col3X + 50, y);
       y += rowH;
 
@@ -839,7 +839,7 @@ router.get("/pdf", async (req, res) => {
       y += rowH + 5;
 
       doc.rect(leftX, y, width, 18).fill('#f1f5f9');
-      doc.fill('#4f46e5');
+      doc.fill('#0C4A8C');
       doc.fontSize(10);
       doc.font('Helvetica-Bold');
       doc.text('INFORMACIÓN TÉCNICA', leftX + 5, y + 3);
@@ -875,31 +875,31 @@ router.get("/pdf", async (req, res) => {
       if (orden.insumo) accesorios.push('Insumo');
       if (orden.cabezal) accesorios.push('Cabezal');
 
-      doc.font('Helvetica-Bold').fill('#4f46e5').text('Accesorios:', leftX, y);
+      doc.font('Helvetica-Bold').fill('#0C4A8C').text('Accesorios:', leftX, y);
       doc.font('Helvetica').fill('#1a1a2e').text(accesorios.length > 0 ? accesorios.join(', ') : '-', leftX + 80, y, { width: 150 });
 
-      doc.font('Helvetica-Bold').fill('#4f46e5').text('Otros:', col2X, y);
+      doc.font('Helvetica-Bold').fill('#0C4A8C').text('Otros:', col2X, y);
       doc.font('Helvetica').fill('#1a1a2e').text(orden.otros || '-', col2X + 50, y, { width: 180 });
       y += rowH + 10;
 
       doc.rect(leftX, y, width, 2).fill('#e2e8f0');
       y += 10;
 
-      doc.font('Helvetica-Bold').fill('#4f46e5').text('Falla Informada:', leftX, y);
+      doc.font('Helvetica-Bold').fill('#0C4A8C').text('Falla Informada:', leftX, y);
       y += 18;
       doc.font('Helvetica').fill('#1a1a2e').text(orden.falla_informada || '-', leftX, y, { width: width, lineGap: 5 });
       y = doc.y + 20;
 
-      doc.font('Helvetica-Bold').fill('#4f46e5').text('Falla Detectada:', leftX, y);
+      doc.font('Helvetica-Bold').fill('#0C4A8C').text('Falla Detectada:', leftX, y);
       y += 18;
       doc.font('Helvetica').fill('#1a1a2e').text(orden.falla_detectada || '-', leftX, y, { width: width, lineGap: 5 });
       y = doc.y + 20;
 
-      doc.font('Helvetica-Bold').fill('#4f46e5').text('Conclusión:', leftX, y);
+      doc.font('Helvetica-Bold').fill('#0C4A8C').text('Conclusión:', leftX, y);
       y += 18;
       doc.font('Helvetica').fill('#1a1a2e').text(orden.conclusion || '-', leftX, y, { width: width, lineGap: 5 });
       y = doc.y + 25;
-      doc.rect(leftX, y, width, 2).fill('#4f46e5');
+      doc.rect(leftX, y, width, 2).fill('#009EE3');
     });
 
     doc.end();
