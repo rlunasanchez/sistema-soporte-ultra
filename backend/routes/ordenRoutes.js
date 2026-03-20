@@ -5,6 +5,21 @@ import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
+/* ===============================
+   OBTENER TÉCNICOS (PÚBLICO)
+================================*/
+router.get("/tecnicos", async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT usuario FROM usuarios WHERE activo = 1 ORDER BY usuario ASC"
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Error obteniendo técnicos" });
+  }
+});
+
 router.use(authMiddleware);
 
 const formatDate = (d) =>
@@ -16,6 +31,9 @@ const buildFilterQuery = (query) => {
     cliente,
     tecnico,
     estado,
+    equipo,
+    marca,
+    modelo,
     fechaAsignacionDesde,
     fechaAsignacionHasta,
     fechaReparacionDesde,
@@ -55,6 +73,27 @@ const buildFilterQuery = (query) => {
     sql += ` AND estado_actual LIKE $${paramIndex}`;
     countSql += ` AND estado_actual LIKE $${paramIndex}`;
     params.push(`%${estado}%`);
+    paramIndex++;
+  }
+
+  if (equipo) {
+    sql += ` AND equipo LIKE $${paramIndex}`;
+    countSql += ` AND equipo LIKE $${paramIndex}`;
+    params.push(`%${equipo}%`);
+    paramIndex++;
+  }
+
+  if (marca) {
+    sql += ` AND marca LIKE $${paramIndex}`;
+    countSql += ` AND marca LIKE $${paramIndex}`;
+    params.push(`%${marca}%`);
+    paramIndex++;
+  }
+
+  if (modelo) {
+    sql += ` AND modelo LIKE $${paramIndex}`;
+    countSql += ` AND modelo LIKE $${paramIndex}`;
+    params.push(`%${modelo}%`);
     paramIndex++;
   }
 
@@ -103,8 +142,60 @@ const buildFilterQuery = (query) => {
 };
 
 /* ===============================
+   OBTENER VALORES PARA FILTROS (EQUIPO, MARCA, MODELO)
+================================*/
+router.get("/filtros-valores", async (req, res) => {
+  try {
+    const [equipos] = await pool.query(
+      "SELECT DISTINCT equipo FROM ordenes_servicio WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
+    );
+    const [marcas] = await pool.query(
+      "SELECT DISTINCT marca FROM ordenes_servicio WHERE marca IS NOT NULL AND marca != '' ORDER BY marca ASC"
+    );
+    const [modelos] = await pool.query(
+      "SELECT DISTINCT modelo FROM ordenes_servicio WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
+    );
+
+    res.json({
+      equipos: equipos.map(r => r.equipo),
+      marcas: marcas.map(r => r.marca),
+      modelos: modelos.map(r => r.modelo)
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Error obteniendo valores de filtro" });
+  }
+});
+
+/* ===============================
+   OBTENER VALORES PARA FORMULARIO (EQUIPO, MARCA, MODELO)
+================================*/
+router.get("/valores-formulario", async (req, res) => {
+  try {
+    const [equipos] = await pool.query(
+      "SELECT DISTINCT equipo FROM ordenes_servicio WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
+    );
+    const [marcas] = await pool.query(
+      "SELECT DISTINCT marca FROM ordenes_servicio WHERE marca IS NOT NULL AND marca != '' ORDER BY marca ASC"
+    );
+    const [modelos] = await pool.query(
+      "SELECT DISTINCT modelo FROM ordenes_servicio WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
+    );
+
+    res.json({
+      equipos: equipos.map(r => r.equipo),
+      marcas: marcas.map(r => r.marca),
+      modelos: modelos.map(r => r.modelo)
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Error obteniendo valores de formulario" });
+  }
+});
+
+/* ===============================
    OBTENER ÓRDENES
-=================================*/
+================================*/
 router.get("/", async (req, res) => {
   try {
     const { sql, countSql, params, page, limit } = buildFilterQuery(req.query);

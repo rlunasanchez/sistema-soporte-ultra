@@ -8,12 +8,12 @@ function Formulario({ orden, onCerrar }) {
 
   const [form, setForm] = useState({
     os: "",
-    cliente: "",
+    cliente: "Banco Estado",
     tecnico: "",
     asignacion: "",
     en_garantia: "NO",
     tipo: "REPARACION",
-    estado_actual: "",
+    estado_actual: "Reparado en bodega",
     fecha_reparacion: "",
     solicitud_compra: "",
     n_denuncia: "",
@@ -39,7 +39,35 @@ function Formulario({ orden, onCerrar }) {
   });
 
   const [guardando, setGuardando] = useState(false);
+  const [tecnicos, setTecnicos] = useState([]);
+  const [valoresForm, setValoresForm] = useState({ equipos: [], marcas: [], modelos: [] });
   const textareasRef = useRef({});
+
+  useEffect(() => {
+    const cargarTecnicos = async () => {
+      try {
+        const res = await api.get("/api/orden/tecnicos");
+        const data = Array.isArray(res.data) ? res.data : (res.data.data || []);
+        setTecnicos(data);
+      } catch (err) {
+        console.error("Error cargando técnicos:", err);
+        setTecnicos([]);
+      }
+    };
+    cargarTecnicos();
+  }, []);
+
+  useEffect(() => {
+    const cargarValoresForm = async () => {
+      try {
+        const res = await api.get("/api/orden/valores-formulario");
+        setValoresForm(res.data);
+      } catch (err) {
+        console.error("Error cargando valores de formulario:", err);
+      }
+    };
+    cargarValoresForm();
+  }, []);
 
   const getDateValue = (fecha) => {
     if (!fecha) return "";
@@ -52,7 +80,8 @@ function Formulario({ orden, onCerrar }) {
 
   useEffect(() => {
     if (orden) {
-      setForm({
+      setForm((prev) => ({
+        ...prev,
         ...orden,
         asignacion: getDateValue(orden.asignacion),
         fecha_reparacion: getDateValue(orden.fecha_reparacion),
@@ -61,9 +90,27 @@ function Formulario({ orden, onCerrar }) {
         bateria: orden.bateria === 1,
         insumo: orden.insumo === 1,
         cabezal: orden.cabezal === 1,
-      });
+        tecnico: orden.tecnico || "",
+        realizado_por: orden.realizado_por || "",
+        equipo: orden.equipo || "",
+        marca: orden.marca || "",
+        modelo: orden.modelo || "",
+      }));
     }
   }, [orden]);
+
+  useEffect(() => {
+    if (orden && tecnicos.length > 0) {
+      setForm((prev) => ({
+        ...prev,
+        tecnico: orden.tecnico || prev.tecnico,
+        realizado_por: orden.realizado_por || prev.realizado_por,
+        equipo: orden.equipo || prev.equipo,
+        marca: orden.marca || prev.marca,
+        modelo: orden.modelo || prev.modelo,
+      }));
+    }
+  }, [tecnicos, orden]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -147,12 +194,18 @@ function Formulario({ orden, onCerrar }) {
 
         <div className="form-group">
           <label>Técnico</label>
-          <input
+          <select
             name="tecnico"
-            placeholder="Técnico responsable"
             value={form.tecnico}
             onChange={handleChange}
-          />
+          >
+            <option value="">Seleccionar técnico</option>
+            {tecnicos.map((t) => (
+              <option key={t.usuario} value={t.usuario}>
+                {t.usuario}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="form-group">
@@ -188,12 +241,14 @@ function Formulario({ orden, onCerrar }) {
 
         <div className="form-group">
           <label>Estado Actual</label>
-          <input
+          <select
             name="estado_actual"
-            placeholder="Estado de la orden"
             value={form.estado_actual}
             onChange={handleChange}
-          />
+          >
+            <option value="Reparado en bodega">Reparado en bodega</option>
+            <option value="Equipo irreparable en bodega">Equipo irreparable en bodega</option>
+          </select>
         </div>
 
         <div className="form-group">
@@ -273,12 +328,18 @@ function Formulario({ orden, onCerrar }) {
 
         <div className="form-group">
           <label>Equipo</label>
-          <input
+          <select
             name="equipo"
-            placeholder="Tipo de equipo"
             value={form.equipo}
             onChange={handleChange}
-          />
+          >
+            <option value="">Seleccionar equipo</option>
+            {valoresForm.equipos.map((eq) => (
+              <option key={eq} value={eq}>
+                {eq}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="form-group">
@@ -293,22 +354,34 @@ function Formulario({ orden, onCerrar }) {
 
         <div className="form-group">
           <label>Marca</label>
-          <input
+          <select
             name="marca"
-            placeholder="Marca"
             value={form.marca}
             onChange={handleChange}
-          />
+          >
+            <option value="">Seleccionar marca</option>
+            {valoresForm.marcas.map((marca) => (
+              <option key={marca} value={marca}>
+                {marca}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="form-group">
           <label>Modelo</label>
-          <input
+          <select
             name="modelo"
-            placeholder="Modelo"
             value={form.modelo}
             onChange={handleChange}
-          />
+          >
+            <option value="">Seleccionar modelo</option>
+            {valoresForm.modelos.map((mod) => (
+              <option key={mod} value={mod}>
+                {mod}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="form-group">
@@ -428,12 +501,18 @@ function Formulario({ orden, onCerrar }) {
 
         <div className="form-group">
           <label>Realizado Por</label>
-          <input
+          <select
             name="realizado_por"
-            placeholder="Técnico Asignado"
             value={form.realizado_por}
             onChange={handleChange}
-          />
+          >
+            <option value="">Seleccionar técnico</option>
+            {tecnicos.map((t) => (
+              <option key={t.usuario} value={t.usuario}>
+                {t.usuario}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="form-group full-width" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px', marginTop: '8px' }}>

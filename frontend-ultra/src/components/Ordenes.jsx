@@ -34,11 +34,16 @@ function Ordenes() {
   const [ordenes, setOrdenes] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [filtrosExpandidos, setFiltrosExpandidos] = useState(true);
+  const [tecnicos, setTecnicos] = useState([]);
+  const [filtrosValores, setFiltrosValores] = useState({ equipos: [], marcas: [], modelos: [] });
 
   const [busquedaOS, setBusquedaOS] = useState("");
   const [filtroCliente, setFiltroCliente] = useState("");
   const [filtroTecnico, setFiltroTecnico] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("");
+  const [filtroEquipo, setFiltroEquipo] = useState("");
+  const [filtroMarca, setFiltroMarca] = useState("");
+  const [filtroModelo, setFiltroModelo] = useState("");
 
   const [fechaAsignacionDesde, setFechaAsignacionDesde] = useState("");
   const [fechaAsignacionHasta, setFechaAsignacionHasta] = useState("");
@@ -66,6 +71,32 @@ function Ordenes() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
+  useEffect(() => {
+    const cargarTecnicos = async () => {
+      try {
+        const res = await api.get("/api/orden/tecnicos");
+        const data = Array.isArray(res.data) ? res.data : (res.data.data || []);
+        setTecnicos(data);
+      } catch (err) {
+        console.error("Error cargando técnicos:", err);
+        setTecnicos([]);
+      }
+    };
+    cargarTecnicos();
+  }, []);
+
+  useEffect(() => {
+    const cargarFiltrosValores = async () => {
+      try {
+        const res = await api.get("/api/orden/filtros-valores");
+        setFiltrosValores(res.data);
+      } catch (err) {
+        console.error("Error cargando valores de filtro:", err);
+      }
+    };
+    cargarFiltrosValores();
+  }, []);
+
   const [paginaActual, setPaginaActual] = useState(1);
   const [registrosPorPagina] = useState(5);
   const [totalRegistros, setTotalRegistros] = useState(0);
@@ -80,6 +111,9 @@ function Ordenes() {
           cliente: filtroCliente,
           tecnico: filtroTecnico,
           estado: filtroEstado,
+          equipo: filtroEquipo,
+          marca: filtroMarca,
+          modelo: filtroModelo,
           fechaAsignacionDesde,
           fechaAsignacionHasta,
           fechaReparacionDesde,
@@ -114,6 +148,9 @@ function Ordenes() {
     filtroCliente,
     filtroTecnico,
     filtroEstado,
+    filtroEquipo,
+    filtroMarca,
+    filtroModelo,
     fechaAsignacionDesde,
     fechaAsignacionHasta,
     fechaReparacionDesde,
@@ -269,6 +306,9 @@ function Ordenes() {
     setFiltroCliente("");
     setFiltroTecnico("");
     setFiltroEstado("");
+    setFiltroEquipo("");
+    setFiltroMarca("");
+    setFiltroModelo("");
     setFechaAsignacionDesde("");
     setFechaAsignacionHasta("");
     setFechaReparacionDesde("");
@@ -384,29 +424,85 @@ function Ordenes() {
 
             <div className="filter-group">
               <label>Cliente</label>
-              <input
-                placeholder="Filtrar por Cliente"
+              <select
                 value={filtroCliente}
                 onChange={(e) => setFiltroCliente(e.target.value)}
-              />
+              >
+                <option value="">Todos</option>
+                <option value="Banco Estado">Banco Estado</option>
+              </select>
             </div>
 
             <div className="filter-group">
               <label>Técnico</label>
-              <input
-                placeholder="Filtrar por Técnico"
+              <select
                 value={filtroTecnico}
                 onChange={(e) => setFiltroTecnico(e.target.value)}
-              />
+              >
+                <option value="">Todos</option>
+                {tecnicos.map((t) => (
+                  <option key={t.usuario} value={t.usuario}>
+                    {t.usuario}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="filter-group">
               <label>Estado</label>
-              <input
-                placeholder="Filtrar por Estado"
+              <select
                 value={filtroEstado}
                 onChange={(e) => setFiltroEstado(e.target.value)}
-              />
+              >
+                <option value="">Todos</option>
+                <option value="Reparado en bodega">Reparado en bodega</option>
+                <option value="Equipo irreparable en bodega">Equipo irreparable en bodega</option>
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label>Equipo</label>
+              <select
+                value={filtroEquipo}
+                onChange={(e) => setFiltroEquipo(e.target.value)}
+              >
+                <option value="">Todos</option>
+                {filtrosValores.equipos.map((eq) => (
+                  <option key={eq} value={eq}>
+                    {eq}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label>Marca</label>
+              <select
+                value={filtroMarca}
+                onChange={(e) => setFiltroMarca(e.target.value)}
+              >
+                <option value="">Todos</option>
+                {filtrosValores.marcas.map((marca) => (
+                  <option key={marca} value={marca}>
+                    {marca}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label>Modelo</label>
+              <select
+                value={filtroModelo}
+                onChange={(e) => setFiltroModelo(e.target.value)}
+              >
+                <option value="">Todos</option>
+                {filtrosValores.modelos.map((mod) => (
+                  <option key={mod} value={mod}>
+                    {mod}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="filter-group">
