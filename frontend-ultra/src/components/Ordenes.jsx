@@ -75,7 +75,16 @@ function Ordenes() {
     const cargarTecnicos = async () => {
       try {
         const res = await api.get("/api/orden/tecnicos");
-        const data = Array.isArray(res.data) ? res.data : (res.data.data || []);
+        let data = [];
+        if (res.data) {
+          if (Array.isArray(res.data)) {
+            data = res.data;
+          } else if (res.data.rows && Array.isArray(res.data.rows)) {
+            data = res.data.rows;
+          } else if (res.data.data && Array.isArray(res.data.data)) {
+            data = res.data.data;
+          }
+        }
         setTecnicos(data);
       } catch (err) {
         console.error("Error cargando técnicos:", err);
