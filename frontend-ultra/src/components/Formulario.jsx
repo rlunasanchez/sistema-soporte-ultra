@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Save, ArrowLeft, FileText, Monitor, User, Calendar, Edit } from "lucide-react";
+import { Save, ArrowLeft, FileText, Monitor, Edit } from "lucide-react";
 import api from "../services/api";
 
 function Formulario({ orden, onCerrar }) {
