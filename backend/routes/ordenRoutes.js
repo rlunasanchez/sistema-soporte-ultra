@@ -186,12 +186,7 @@ const buildFilterQuery = (query, forExport = false) => {
   }
 
   if (forExport) {
-    const limitNum = parseInt(limit);
-    if (limitNum) {
-      sql += ` ORDER BY id DESC LIMIT ${limitNum}`;
-    } else {
-      sql += ` ORDER BY id DESC`;
-    }
+    sql += ` ORDER BY id DESC`;
     return { sql, params };
   }
 
