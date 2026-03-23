@@ -42,32 +42,8 @@ function Formulario({ orden, onCerrar }) {
 
   const [guardando, setGuardando] = useState(false);
   const [mostrarDiagnostico, setMostrarDiagnostico] = useState(false);
-  const [tecnicos, setTecnicos] = useState([]);
   const [valoresForm, setValoresForm] = useState({ equipos: [], marcas: [], modelos: [] });
   const textareasRef = useRef({});
-
-  useEffect(() => {
-    const cargarTecnicos = async () => {
-      try {
-        const res = await api.get("/api/orden/tecnicos");
-        let data = [];
-        if (res.data) {
-          if (Array.isArray(res.data)) {
-            data = res.data;
-          } else if (res.data.rows && Array.isArray(res.data.rows)) {
-            data = res.data.rows;
-          } else if (res.data.data && Array.isArray(res.data.data)) {
-            data = res.data.data;
-          }
-        }
-        setTecnicos(data);
-      } catch (err) {
-        console.error("Error cargando técnicos:", err);
-        setTecnicos([]);
-      }
-    };
-    cargarTecnicos();
-  }, []);
 
   useEffect(() => {
     const cargarValoresForm = async () => {
@@ -131,7 +107,7 @@ function Formulario({ orden, onCerrar }) {
         setTecnicos(prev => [...prev, { usuario: orden.tecnico }]);
       }
     }
-  }, [orden, tecnicos]);
+  }, [orden]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -215,18 +191,13 @@ function Formulario({ orden, onCerrar }) {
 
         <div className="form-group">
           <label>Técnico</label>
-          <select
+          <input
+            type="text"
             name="tecnico"
+            placeholder="Nombre del técnico"
             value={form.tecnico}
             onChange={handleChange}
-          >
-            <option value="">Seleccionar técnico</option>
-            {tecnicos.map((t) => (
-              <option key={t.usuario} value={t.usuario}>
-                {t.usuario}
-              </option>
-            ))}
-          </select>
+          />
         </div>
 
         <div className="form-group">
