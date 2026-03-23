@@ -484,17 +484,12 @@ function Ordenes() {
 
             <div className="filter-group">
               <label>Técnico</label>
-              <select
+              <input
+                type="text"
+                placeholder="Nombre del técnico"
                 value={filtroTecnico}
                 onChange={(e) => setFiltroTecnico(e.target.value)}
-              >
-                <option value="">Todos</option>
-                {tecnicos.map((t) => (
-                  <option key={t.usuario} value={t.usuario}>
-                    {t.usuario}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             <div className="filter-group">
