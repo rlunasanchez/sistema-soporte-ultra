@@ -5,12 +5,27 @@
 - **Desarrollador:** Rodrigo Luna
 - **Stack:** React + Vite (Frontend), Node.js + Express (Backend), PostgreSQL (DB Neon)
 - **Repositorio:** https://github.com/rlunasanchez/sistema-soporte-ultra
-- **Versión:** 1.0.3
+- **Versión:** 1.0.4
 
 ## Infraestructura
 - **Frontend:** Vercel
 - **Backend:** Render (https://sistema-soporte-ultra.onrender.com)
 - **Base de datos:** Neon PostgreSQL
+
+---
+
+## Cambios Recientes - 23/03/2026
+
+### Cambios en Filtro y Campo Técnico
+
+**Cambio realizado:**
+- Filtro "Técnico" en Ordenes.jsx cambiado de `<select>` a `<input type="text">`
+- Campo "Técnico" en Formulario.jsx cambiado de `<select>` a `<input type="text">`
+- Permite escribir el nombre del técnico manualmente en lugar de seleccionarlo de una lista
+
+**Archivos modificados:**
+- `frontend-ultra/src/components/Ordenes.jsx` - Línea 485-492 (filtro técnico)
+- `frontend-ultra/src/components/Formulario.jsx` - Línea 216-223 (campo técnico)
 
 ---
 
