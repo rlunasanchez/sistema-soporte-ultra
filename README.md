@@ -40,6 +40,7 @@
 - **bcrypt** - Encriptación de contraseñas
 - **Resend API** - Envío de correos
 - **xlsx-populate** - Generación de Excel
+- **pdfkit** - Generación de PDF
 
 ### Frontend
 - **React** - Framework UI
@@ -72,6 +73,7 @@ sistema-soporte-ultra/
 │   ├── schema_postgres.sql    # Estructura DB PostgreSQL
 │   ├── backup_db_postgres.sql # Backup completo DB
 │   ├── datos_migrate.sql      # Datos de migración
+│   ├── crear_base_datos.sql   # Script creación DB
 │   ├── config/
 │   │   ├── db.js              # Conexión PostgreSQL
 │   │   └── email.js           # Configuración Resend
@@ -79,13 +81,13 @@ sistema-soporte-ultra/
 │   │   └── authMiddleware.js  # Autenticación JWT
 │   └── routes/
 │       ├── auth.js            # Rutas de autenticación
-│       └── ordenRoutes.js     # Rutas de órdenes
+│       ├── ordenRoutes.js     # Rutas de órdenes
+│       └── retiroRoutes.js    # Rutas de retiro bodega
 │
 ├── frontend-ultra/
 │   ├── package.json           # Dependencias React
 │   ├── vite.config.js         # Config Vite
 │   ├── vercel.json            # Config Vercel
-│   ├── .env.example           # Variables de entorno ejemplo
 │   └── src/
 │       ├── App.jsx            # Componente principal
 │       ├── services/
@@ -93,7 +95,8 @@ sistema-soporte-ultra/
 │       ├── pages/
 │       │   ├── Login.jsx      # Login
 │       │   ├── GestionUsuarios.jsx
-│       │   └── Informacion.jsx
+│       │   ├── Informacion.jsx
+│       │   └── RetiroBodega.jsx
 │       └── components/
 │           ├── Ordenes.jsx
 │           ├── Formulario.jsx
@@ -130,13 +133,19 @@ sistema-soporte-ultra/
 id, usuario, password, rol, activo, email, codigo_recuperacion, fecha_codigo, fecha_creacion
 ```
 
-### Tabla: ordenes_servicio
+### Tabla: informe_tecnico
 ```sql
 id, os, cliente, tecnico, asignacion, en_garantia, tipo, estado_actual, 
 fecha_reparacion, solicitud_compra, n_denuncia, qty, anexo, fecha, 
 equipo, marca, serie, modelo, procesador, disco, memoria, 
 cargador, bateria, insumo, cabezal, otros, 
-falla_informada, falla_detectada, conclusion, realizado_por
+falla_informada, falla_detectada, conclusion, realizado_por,
+fecha_diagnostico, diagnostico
+```
+
+### Tabla: equipos_retirados
+```sql
+id, equipo, serie, motivo, tecnico, fecha_retiro, estado
 ```
 
 ---
@@ -163,17 +172,45 @@ falla_informada, falla_detectada, conclusion, realizado_por
 - `GET /api/orden/excel` - Exportar Excel FileMaker
 - `GET /api/orden/excel-correo` - Exportar Excel Banco Estado
 - `GET /api/orden/excel-respaldo` - Exportar Excel Respaldo
+- `GET /api/orden/pdf` - Exportar PDF informe técnico
+- `GET /api/orden/tecnicos` - Listar técnicos
+- `GET /api/orden/filtros-valores` - Valores para filtros
+- `GET /api/orden/valores-formulario` - Valores para formulario
+
+### Retiro Bodega
+- `GET /api/retiro` - Listar equipos retirados
+- `POST /api/retiro` - Registrar retiro
+- `PUT /api/retiro/:id` - Actualizar retiro
+- `DELETE /api/retiro/:id` - Eliminar retiro
+- `GET /api/retiro/excel` - Exportar Excel equipos retirados
 
 ---
 
-## ⚙️ Migración de MySQL a PostgreSQL
+## 🎯 Funcionalidades Principales
 
-El proyecto fue migrado de MySQL local a PostgreSQL en la nube (Neon). Los cambios principales fueron:
+### Módulo de Órdenes
+- ✅ Crear, editar y eliminar órdenes de servicio
+- ✅ Filtros por: OS, cliente, técnico, estado, equipo, marca, modelo
+- ✅ Filtros por fecha: asignación, reparación, fecha específica
+- ✅ Paginación de resultados (5 por página)
+- ✅ Exportar a Excel (3 formatos: FileMaker, Banco Estado, Respaldo)
+- ✅ Exportar a PDF con formato de informe técnico
 
-1. **driver**: mysql2 → pg
-2. **sintaxis queries**: `?` → `$1, $2...`
-3. **booleanos**: `1/0` → `true/false`
-4. **tipos de datos**: `AUTO_INCREMENT` → `SERIAL`
+### Módulo de Usuarios
+- ✅ Gestión de usuarios (admin)
+- ✅ Roles: admin, técnico
+- ✅ Cambio de contraseña
+- ✅ Recuperación de contraseña por email
+
+### Módulo de Retiro de Bodega
+- ✅ Registrar equipos-retirados
+- ✅ Seguimiento de estado
+- ✅ Exportar a Excel
+
+### Diseño Responsive
+- ✅ Adaptable a escritorio, tablet y móvil
+- ✅ Modo tarjetas para móvil
+- ✅ Navegación optimizada para touchscreen
 
 ---
 
@@ -238,8 +275,11 @@ git push origin main
 - [x] Login y autenticación funcionando
 - [x] CRUD de órdenes funcionando
 - [x] Exportación a Excel funcionando
+- [x] Exportación a PDF funcionando
 - [x] Gestión de usuarios funcionando
+- [x] Módulo de retiro de bodega funcionando
 - [x] Diseño responsive para móviles
+- [x] Filtros de fecha funcionando correctamente
 
 ---
 
@@ -266,4 +306,4 @@ El sistema está optimizado para funcionar en diferentes tamaños de pantalla:
 ---
 
 **Última actualización**: Marzo 2026
-**Versión**: 1.0.1
+**Versión**: 1.0.5
