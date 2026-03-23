@@ -522,18 +522,13 @@ function Formulario({ orden, onCerrar }) {
 
         <div className="form-group">
           <label>Realizado Por</label>
-          <select
+          <input
+            type="text"
             name="realizado_por"
+            placeholder="Nombre de quien realizó el trabajo"
             value={form.realizado_por}
             onChange={handleChange}
-          >
-            <option value="">Seleccionar técnico</option>
-            {tecnicos.map((t) => (
-              <option key={t.usuario} value={t.usuario}>
-                {t.usuario}
-              </option>
-            ))}
-          </select>
+          />
         </div>
 
         <div className="form-group full-width" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px', marginTop: '8px' }}>
