@@ -101,11 +101,6 @@ function Formulario({ orden, onCerrar }) {
         falla_detectada: orden.falla_detectada || "",
         conclusion: orden.conclusion || "",
       });
-
-      const tecnicoExiste = tecnicos.some(t => t.usuario === orden.tecnico);
-      if (!tecnicoExiste && orden.tecnico) {
-        setTecnicos(prev => [...prev, { usuario: orden.tecnico }]);
-      }
     }
   }, [orden]);
 
