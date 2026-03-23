@@ -78,7 +78,7 @@ router.use(authMiddleware);
 const formatDate = (d) =>
   d ? new Date(d).toISOString().slice(0, 19).replace("T", " ") : null;
 
-const buildFilterQuery = (query) => {
+const buildFilterQuery = (query, forExport = false) => {
   const {
     os,
     cliente,
@@ -183,6 +183,16 @@ const buildFilterQuery = (query) => {
     countSql += ` AND DATE(fecha) = $${paramIndex}`;
     params.push(fecha);
     paramIndex++;
+  }
+
+  if (forExport) {
+    const limitNum = parseInt(limit);
+    if (limitNum) {
+      sql += ` ORDER BY id DESC LIMIT ${limitNum}`;
+    } else {
+      sql += ` ORDER BY id DESC`;
+    }
+    return { sql, params };
   }
 
   const pageNum = parseInt(page) || 1;
@@ -373,7 +383,7 @@ router.delete("/:id", async (req, res) => {
 =================================*/
 router.get("/excel", async (req, res) => {
   try {
-    const { sql, params } = buildFilterQuery(req.query);
+    const { sql, params } = buildFilterQuery(req.query, true);
     const result = await pool.query(sql, params);
 
     const workbook = await XlsxPopulate.fromBlankAsync();
@@ -490,7 +500,7 @@ router.get("/excel", async (req, res) => {
 =================================*/
 router.get("/excel-correo", async (req, res) => {
   try {
-    const { sql, params } = buildFilterQuery(req.query);
+    const { sql, params } = buildFilterQuery(req.query, true);
     const result = await pool.query(sql, params);
 
     const workbook = await XlsxPopulate.fromBlankAsync();
@@ -576,7 +586,7 @@ router.get("/excel-correo", async (req, res) => {
 =================================*/
 router.get("/excel-respaldo", async (req, res) => {
   try {
-    const { sql, params } = buildFilterQuery(req.query);
+    const { sql, params } = buildFilterQuery(req.query, true);
     const result = await pool.query(sql, params);
 
     const workbook = await XlsxPopulate.fromBlankAsync();
@@ -747,50 +757,8 @@ router.get("/excel-respaldo", async (req, res) => {
 ================================*/
 router.get("/pdf", async (req, res) => {
   try {
-    const { os, cliente, tecnico, estado, equipo, marca, modelo } = req.query;
+    const { sql, params } = buildFilterQuery(req.query, true);
     
-    let sql = "SELECT * FROM informe_tecnico WHERE 1=1";
-    const params = [];
-    let paramIndex = 1;
-
-    if (os) {
-      sql += ` AND os LIKE $${paramIndex}`;
-      params.push(`%${os}%`);
-      paramIndex++;
-    }
-    if (cliente) {
-      sql += ` AND cliente LIKE $${paramIndex}`;
-      params.push(`%${cliente}%`);
-      paramIndex++;
-    }
-    if (tecnico) {
-      sql += ` AND tecnico LIKE $${paramIndex}`;
-      params.push(`%${tecnico}%`);
-      paramIndex++;
-    }
-    if (estado) {
-      sql += ` AND estado_actual LIKE $${paramIndex}`;
-      params.push(`%${estado}%`);
-      paramIndex++;
-    }
-    if (equipo) {
-      sql += ` AND equipo LIKE $${paramIndex}`;
-      params.push(`%${equipo}%`);
-      paramIndex++;
-    }
-    if (marca) {
-      sql += ` AND marca LIKE $${paramIndex}`;
-      params.push(`%${marca}%`);
-      paramIndex++;
-    }
-    if (modelo) {
-      sql += ` AND modelo LIKE $${paramIndex}`;
-      params.push(`%${modelo}%`);
-      paramIndex++;
-    }
-
-    sql += " ORDER BY id DESC LIMIT 100";
-
     const result = await pool.query(sql, params);
 
     if (result.rows.length === 0) {
