@@ -1,0 +1,8 @@
+{
+  "buildCommand": "cd frontend-ultra && npm install && npm run build",
+  "outputDirectory": "frontend-ultra/dist",
+  "installCommand": "cd frontend-ultra && npm install",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

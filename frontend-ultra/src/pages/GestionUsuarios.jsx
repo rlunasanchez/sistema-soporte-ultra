@@ -306,15 +306,15 @@ function GestionUsuarios() {
             <tbody>
               {usuarios.map((u) => (
                 <tr key={u.id}>
-                  <td>{u.id}</td>
-                  <td><strong>{u.usuario}</strong></td>
-                  <td>{u.email || '-'}</td>
-                  <td>
+                  <td data-label="ID">{u.id}</td>
+                  <td data-label="Usuario"><strong>{u.usuario}</strong></td>
+                  <td data-label="Correo">{u.email || '-'}</td>
+                  <td data-label="Rol">
                     <span className={`badge ${u.rol === 'admin' ? 'badge-primary' : 'badge-info'}`}>
                       {u.rol}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Estado">
                     <button
                       className="table-btn"
                       onClick={() => toggleActivo(u.id, u.activo)}
@@ -324,8 +324,8 @@ function GestionUsuarios() {
                       {u.activo ? 'Activo' : 'Inactivo'}
                     </button>
                   </td>
-                  <td>{u.fecha_creacion ? new Date(u.fecha_creacion).toLocaleDateString("es-CL") : '-'}</td>
-                  <td>
+                  <td data-label="Fecha">{u.fecha_creacion ? new Date(u.fecha_creacion).toLocaleDateString("es-CL") : '-'}</td>
+                  <td data-label="Acciones">
                     <div className="action-buttons">
                       {rol === 'admin' && (
                         <>

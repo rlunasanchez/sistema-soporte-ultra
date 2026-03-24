@@ -9,12 +9,12 @@ function Formulario({ orden, onCerrar }) {
 
   const [form, setForm] = useState({
     os: "",
-    cliente: "",
+    cliente: "Banco Estado",
     tecnico: "",
     asignacion: "",
     en_garantia: "NO",
-    tipo: "",
-    estado_actual: "",
+    tipo: "REPARACION",
+    estado_actual: "Reparado en bodega",
     fecha_reparacion: "",
     solicitud_compra: "",
     n_denuncia: "",
@@ -68,37 +68,6 @@ function Formulario({ orden, onCerrar }) {
     };
     cargarValoresForm();
   }, []);
-
-  useEffect(() => {
-    if (orden) {
-      setOpcionesCliente(prev => {
-        if (orden.cliente && !prev.includes(orden.cliente)) return [...prev, orden.cliente];
-        return prev;
-      });
-      setOpcionesTipo(prev => {
-        if (orden.tipo && !prev.includes(orden.tipo)) return [...prev, orden.tipo];
-        return prev;
-      });
-      setOpcionesEstado(prev => {
-        if (orden.estado_actual && !prev.includes(orden.estado_actual)) return [...prev, orden.estado_actual];
-        return prev;
-      });
-      if (valoresForm.equipos.length > 0) {
-        setValoresForm(prev => {
-          const newEquipos = orden.equipo && !prev.equipos.includes(orden.equipo) 
-            ? [...prev.equipos, orden.equipo] : prev.equipos;
-          const newMarcas = orden.marca && !prev.marcas.includes(orden.marca) 
-            ? [...prev.marcas, orden.marca] : prev.marcas;
-          const newModelos = orden.modelo && !prev.modelos.includes(orden.modelo) 
-            ? [...prev.modelos, orden.modelo] : prev.modelos;
-          if (newEquipos !== prev.equipos || newMarcas !== prev.marcas || newModelos !== prev.modelos) {
-            return { equipos: newEquipos, marcas: newMarcas, modelos: newModelos };
-          }
-          return prev;
-        });
-      }
-    }
-  }, [orden, valoresForm.equipos.length]);
 
   const getDateValue = (fecha) => {
     if (!fecha) return "";
@@ -165,12 +134,18 @@ function Formulario({ orden, onCerrar }) {
     setGuardando(true);
 
     try {
+      const dataToSend = {
+        ...form,
+        asignacion: form.asignacion ? form.asignacion + "T12:00:00" : "",
+        fecha_reparacion: form.fecha_reparacion ? form.fecha_reparacion + "T12:00:00" : "",
+        fecha: form.fecha ? form.fecha + "T12:00:00" : "",
+      };
       let res;
 
       if (orden) {
-        res = await api.put(`/api/orden/${orden.id}`, form);
+        res = await api.put(`/api/orden/${orden.id}`, dataToSend);
       } else {
-        res = await api.post("/api/orden", form);
+        res = await api.post("/api/orden", dataToSend);
       }
 
       alert(res.data?.msg || "Operación realizada correctamente");
@@ -225,6 +200,7 @@ function Formulario({ orden, onCerrar }) {
         <div className="form-group">
           <label>Técnico</label>
           <input
+            type="text"
             name="tecnico"
             placeholder="Nombre del técnico"
             value={form.tecnico}
@@ -511,6 +487,7 @@ function Formulario({ orden, onCerrar }) {
         <div className="form-group">
           <label>Realizado Por</label>
           <input
+            type="text"
             name="realizado_por"
             placeholder="Nombre de quien realizó el trabajo"
             value={form.realizado_por}

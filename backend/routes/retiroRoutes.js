@@ -7,8 +7,13 @@ const router = express.Router();
 
 router.use(authMiddleware);
 
-const formatDate = (d) =>
-  d ? new Date(d).toISOString().slice(0, 19).replace("T", " ") : null;
+const formatDate = (d) => {
+  if (!d) return null;
+  if (d.includes('T')) {
+    return d;
+  }
+  return d + 'T00:00:00.000Z';
+};
 
 /* ===============================
    OBTENER RETIROS CON PAGINACION
@@ -16,21 +21,24 @@ const formatDate = (d) =>
 router.get("/", async (req, res) => {
   try {
     const { fechaDesde, fechaHasta, page, limit } = req.query;
-
+    
     let sql = "SELECT * FROM equipos_retirados WHERE 1=1";
     let countSql = "SELECT COUNT(*) as total FROM equipos_retirados WHERE 1=1";
     const params = [];
+    let paramIndex = 1;
 
     if (fechaDesde) {
-      sql += " AND DATE(fecha_retiro) >= ?";
-      countSql += " AND DATE(fecha_retiro) >= ?";
+      sql += ` AND DATE(fecha_retiro) >= $${paramIndex}`;
+      countSql += ` AND DATE(fecha_retiro) >= $${paramIndex}`;
       params.push(fechaDesde);
+      paramIndex++;
     }
 
     if (fechaHasta) {
-      sql += " AND DATE(fecha_retiro) <= ?";
-      countSql += " AND DATE(fecha_retiro) <= ?";
+      sql += ` AND DATE(fecha_retiro) <= $${paramIndex}`;
+      countSql += ` AND DATE(fecha_retiro) <= $${paramIndex}`;
       params.push(fechaHasta);
+      paramIndex++;
     }
 
     const pageNum = parseInt(page) || 1;
@@ -39,9 +47,11 @@ router.get("/", async (req, res) => {
 
     sql += ` ORDER BY id DESC LIMIT ${limitNum} OFFSET ${offset}`;
 
-    const [rows] = await pool.query(sql, params);
-    const [countResult] = await pool.query(countSql, params);
-    const total = countResult[0].total;
+    const result = await pool.query(sql, params);
+    const rows = result.rows;
+    
+    const countResult = await pool.query(countSql, params);
+    const total = countResult.rows[0].total;
     const totalPages = Math.ceil(total / limitNum);
 
     res.json({
@@ -68,7 +78,8 @@ router.post("/", async (req, res) => {
 
     const sql = `
       INSERT INTO equipos_retirados (fecha_retiro, serie_reversa, equipo)
-      VALUES (?, ?, ?)
+      VALUES ($1, $2, $3)
+      RETURNING id
     `;
 
     const values = [
@@ -77,11 +88,11 @@ router.post("/", async (req, res) => {
       data.equipo,
     ];
 
-    const [result] = await pool.query(sql, values);
+    const result = await pool.query(sql, values);
 
     res.status(201).json({
       msg: "Retiro creado correctamente",
-      id: result.insertId,
+      id: result.rows[0].id,
     });
   } catch (err) {
     console.error(err);
@@ -99,10 +110,10 @@ router.put("/:id", async (req, res) => {
 
     const sql = `
       UPDATE equipos_retirados SET
-        fecha_retiro = ?,
-        serie_reversa = ?,
-        equipo = ?
-      WHERE id = ?
+        fecha_retiro = $1,
+        serie_reversa = $2,
+        equipo = $3
+      WHERE id = $4
     `;
 
     const values = [
@@ -128,7 +139,7 @@ router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    await pool.query("DELETE FROM equipos_retirados WHERE id = ?", [id]);
+    await pool.query("DELETE FROM equipos_retirados WHERE id = $1", [id]);
 
     res.json({ msg: "Retiro eliminado correctamente" });
   } catch (err) {
@@ -146,20 +157,24 @@ router.get("/excel", async (req, res) => {
 
     let sql = "SELECT * FROM equipos_retirados WHERE 1=1";
     const params = [];
+    let paramIndex = 1;
 
     if (fechaDesde) {
-      sql += " AND DATE(fecha_retiro) >= ?";
+      sql += ` AND DATE(fecha_retiro) >= $${paramIndex}`;
       params.push(fechaDesde);
+      paramIndex++;
     }
 
     if (fechaHasta) {
-      sql += " AND DATE(fecha_retiro) <= ?";
+      sql += ` AND DATE(fecha_retiro) <= $${paramIndex}`;
       params.push(fechaHasta);
+      paramIndex++;
     }
 
     sql += " ORDER BY fecha_retiro DESC";
 
-    const [rows] = await pool.query(sql, params);
+    const result = await pool.query(sql, params);
+    const rows = result.rows;
 
     const workbook = await XlsxPopulate.fromBlankAsync();
     const sheet = workbook.sheet(0);
@@ -213,7 +228,7 @@ router.get("/excel", async (req, res) => {
 
       if (i % 2 === 0) {
         sheet.range(`A${row}:D${row}`).style({
-          fill: "F8FAFC",
+          fill: "F0FDF4",
         });
       }
     });

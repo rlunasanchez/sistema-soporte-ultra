@@ -1,0 +1,13 @@
+-- Insertar usuarios adicionales
+INSERT INTO usuarios (usuario, password, rol, activo, email) VALUES 
+('rodrigo', '$2b$10$RQDQWLcM14LHUaIcuVIzleZyGLkHaq0k016q1Ir113HdAoveY6rba', 'tecnico', true, 'rluna.msys@gmail.com'),
+('diego', '$2b$10$BrP4VoUgX0Qb1/gUz75pU.3NIQ6Al2Prl0Km3BYadnaVuXRQeFUJC', 'tecnico', true, NULL)
+ON CONFLICT (usuario) DO NOTHING;
+
+-- Insertar órdenes de ejemplo
+INSERT INTO ordenes_servicio (os, cliente, tecnico, asignacion, en_garantia, tipo, estado_actual, fecha_reparacion, solicitud_compra, n_denuncia, qty, anexo, fecha, equipo, marca, serie, modelo, procesador, disco, memoria, cargador, bateria, insumo, cabezal, otros, falla_informada, falla_detectada, conclusion, realizado_por) VALUES 
+('DOA-2520','Banco Estado','Rodrigo Luna','2026-03-02','NO','REPARACION','Reparado en Bodega','2026-03-04','','','','','2026-03-04','Impresora Termica','Sewoo','SW15AST001986','LK-T200','','','',false,false,false,false,'','No informada','Falta mantencion y ajustes mecanicos.','EQUIPO REPARADO - Se realizo mantencion general y revision de puertos dejando equipo operativo.','Rodrigo Luna'),
+('DOA-2521','Banco Estado','Rodrigo Luna','2026-03-02','NO','REPARACION','Reparado en bodega','2026-03-04','','','','','2026-03-04','Impresora termica','Sewoo','SW19GST071368','LK-T200','','','',false,false,false,false,'','No informada','Falta mantencion y ajustes mecanicos.','EQUIPO REPARADO - Se realizo mantencion general y revision de puertos dejando equipo operativo.','Rodrigo Luna'),
+('DOA-2522','Banco Estado','Rodrigo Luna','2026-03-02','NO','REPARACION','Reparado en bodega','2026-03-04','','','','','2026-03-04','Impresora termica','Sewoo','SW22CST042999','LK-T200','','','',false,false,false,false,'','No informada','Falta mantencion y ajustes mecanicos.','EQUIPO REPARADO - Se realizo mantencion general y revision de puertos dejando equipo operativo.','Rodrigo Luna'),
+('DOA-2524','Banco Estado','Rodrigo Luna','2026-03-02','NO','REPARACION','Reparado en bodega','2026-03-04','','','','','2026-03-04','Impresora termica','Sewoo','SW17IST198553','LK-T200','','','',false,false,false,false,'','No informada','Falta mantencion y ajustes mecanicos.','EQUIPO REPARADO - Se realizo mantencion general y revision de puertos dejando equipo operativo.','Rodrigo Luna'),
+('DOA-2525','Banco Estado','Rodrigo Luna','2026-03-02','NO','REPARACION','Reparado en bodega','2026-03-04','','','','','2026-03-04','Impresora termica','Sewoo','','','','','',false,false,false,false,'','No informada','Falta mantencion y ajustes mecanicos.','EQUIPO REPARADO - Se realizo mantencion general y revision de puertos dejando equipo operativo.','Rodrigo Luna');

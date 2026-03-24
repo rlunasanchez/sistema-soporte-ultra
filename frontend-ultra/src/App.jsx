@@ -5,7 +5,7 @@ import GestionUsuarios from "./pages/GestionUsuarios";
 import Informacion from "./pages/Informacion";
 import RetiroBodega from "./pages/RetiroBodega";
 import PrivateRoute from "./components/PrivateRoute";
-import "./styles/app.css";
+import "./styles/App.css";
 
 function App() {
   return (

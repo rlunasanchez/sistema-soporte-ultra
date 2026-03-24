@@ -126,7 +126,6 @@ body {
 .main-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
   background: var(--gradient);
   color: white;
@@ -138,7 +137,6 @@ body {
   font-size: 0.9rem;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(12, 74, 140, 0.3);
-  width: 160px;
 }
 
 .main-btn:hover {
@@ -231,7 +229,6 @@ body {
   font-size: 0.875rem;
   transition: all 0.2s ease;
   background: var(--bg);
-  width: 100%;
 }
 
 .filter-group input:focus,
@@ -249,7 +246,8 @@ body {
   background: var(--panel);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .table-header {
@@ -268,6 +266,10 @@ body {
 
 .table-wrapper {
   overflow-x: auto;
+}
+
+.mobile-cards {
+  display: none;
 }
 
 table {
@@ -430,6 +432,11 @@ table tr:last-child td {
   background: var(--primary);
   color: white;
   border-color: var(--primary);
+}
+
+.page-numbers-desktop {
+  display: flex;
+  gap: 4px;
 }
 
 /* =========================
@@ -752,17 +759,33 @@ textarea:focus {
   }
   
   .user-info {
-    flex-direction: column;
+    display: flex;
+    flex-wrap: wrap;
     width: 100%;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .user-info button {
+    flex: 1;
+    min-width: 80px;
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 0.7rem;
   }
   
   .actions-bar {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
   }
   
   .actions-bar .main-btn {
-    width: 100%;
+    flex: 1;
+    min-width: 120px;
     justify-content: center;
+    padding: 10px 12px;
+    font-size: 0.75rem;
   }
   
   .filters-content {
@@ -780,6 +803,112 @@ textarea:focus {
   .pagination {
     flex-direction: column;
     gap: 12px;
+  }
+
+  .pagination-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .pagination-controls button {
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    min-width: 36px;
+  }
+
+  .pagination-controls .page-btn-nav {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 8px 14px;
+  }
+
+  .pagination-controls .page-numbers-desktop {
+    display: none;
+  }
+
+  .pagination-info {
+    text-align: center;
+    font-size: 0.75rem;
+  }
+
+  /* Vista de tarjetas en móvil */
+  .table-container .table-wrapper {
+    display: none;
+  }
+
+  .table-container {
+    padding: 0;
+  }
+
+  .mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .mobile-card {
+    background: white;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .mobile-card-header {
+    background: var(--primary-light);
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mobile-card-header span {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.9rem;
+  }
+
+  .mobile-card-body {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mobile-card-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+  }
+
+  .mobile-card-row label {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .mobile-card-row span {
+    color: var(--text);
+    font-weight: 600;
+    text-align: right;
+    max-width: 60%;
+    word-break: break-word;
+  }
+
+  .mobile-card-footer {
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+  }
+
+  .mobile-card-footer .table-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 10px;
+    font-size: 0.8rem;
   }
 }
 
@@ -1023,7 +1152,4 @@ textarea:focus {
 
 .main-btn.info-btn:hover {
   background: linear-gradient(135deg, #009EE3 0%, #0099cc 100%);
-}
-
-
 }

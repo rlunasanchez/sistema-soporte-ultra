@@ -5,7 +5,7 @@
 - **Desarrollador:** Rodrigo Luna
 - **Stack:** React + Vite (Frontend), Node.js + Express (Backend), PostgreSQL (DB Neon)
 - **Repositorio:** https://github.com/rlunasanchez/sistema-soporte-ultra
-- **Versión:** 1.0.3
+- **Versión:** 1.0.4
 
 ## Infraestructura
 - **Frontend:** Vercel
@@ -14,35 +14,59 @@
 
 ---
 
-## v1.0.3 (20-03-2026)
+## Cambios Recientes - 23/03/2026
 
-### Cambios de Texto en la Interfaz
+### Cambios en Filtro y Campo Técnico
+
+**Cambio realizado:**
+- Filtro "Técnico" en Ordenes.jsx cambiado de `<select>` a `<input type="text">`
+- Campo "Técnico" en Formulario.jsx cambiado de `<select>` a `<input type="text">`
+- Permite escribir el nombre del técnico manualmente en lugar de seleccionarlo de una lista
+
+**Archivos modificados:**
+- `frontend-ultra/src/components/Ordenes.jsx` - Línea 485-492 (filtro técnico)
+- `frontend-ultra/src/components/Formulario.jsx` - Línea 216-223 (campo técnico)
+
+---
+
+## Cambios Recientes - 20/03/2026
+
+### 1. Renombrar Tabla
+La tabla `ordenes_servicio` fue renombrada a `informe_tecnico`.
+
+**SQL:**
+```sql
+ALTER TABLE ordenes_servicio RENAME TO informe_tecnico;
+```
+
+### 2. Campos Diagnóstico (NUEVO)
+
+**SQL para agregar campos:**
+```sql
+ALTER TABLE informe_tecnico 
+ADD COLUMN fecha_diagnostico TIMESTAMP NULL,
+ADD COLUMN diagnostico TEXT NULL;
+```
+
+**Nota:** Estos campos NO se exportan a Excel ni PDF.
+
+### 3. Cambios de Texto en la Interfaz
+
 - Botón "Nueva OS" → "Informe Técnico"
+- Título formulario: "Nueva OS" → "Nuevo Informe Técnico"
+- Título al editar: "Editar OS" → "Editar Informe Técnico"
+- Botón guardar: "Guardar OS" → "Guardar Informe"
 - Título tabla: "Órdenes de Servicio" → "Informes"
 - Mensaje vacío: "No se encontraron órdenes" → "No se encontraron informes"
 
-### Exportacion PDF Informes Tecnicos (NUEVO)
+### 4. Exportacion PDF Informes Tecnicos (NUEVO)
 
 **Nueva funcionalidad:**
 - Botón "Exportar PDF" en Ordenes.jsx (color rojo)
 - Genera PDF con formato similar al formulario Nueva OS
 - Cada orden aparece en una página separada
 - Mismos campos que el formulario
-
-**Backend - ordenRoutes.js:**
-```javascript
-// GET /api/orden/pdf
-// Genera PDF con pdfkit
-// Filtros aplicados: os, cliente, tecnico, estado, equipo, marca, modelo
-// Maximo 100 ordenes por exportacion
-```
-
-**Frontend - Ordenes.jsx:**
-```javascript
-// Funcion descargarPDF()
-// Envia todos los filtros aplicados al backend
-// Descarga archivo informes_tecnicos.pdf
-```
+- NO incluye campos de Diagnóstico
 
 **Libreria necesaria:**
 ```bash
@@ -63,25 +87,6 @@ npm install pdfkit
 ### Descripcion
 Modulo independiente para registrar equipos retireidos de bodega con filtros por fecha de retiro.
 
-### Archivos Creados
-
-**Frontend:**
-- `frontend-ultra/src/pages/RetiroBodega.jsx`
-  - Formulario para crear/editar retiros
-  - Tabla con paginacion (5 por pagina)
-  - Filtros por rango de fechas
-  - Exportacion a Excel con filtros aplicados
-  - Editar y Eliminar registros
-  - Vista movil (mobile-cards)
-
-**Backend:**
-- `backend/routes/retiroRoutes.js` - API completa PostgreSQL
-  - GET /api/retiro - Listar con paginacion y filtros
-  - POST /api/retiro - Crear
-  - PUT /api/retiro/:id - Actualizar
-  - DELETE /api/retiro/:id - Eliminar
-  - GET /api/retiro/excel - Exportar Excel con filtros
-
 ### Campos de la Tabla equipos_retirados
 | Campo | Tipo | Descripcion |
 |-------|------|-------------|
@@ -91,20 +96,6 @@ Modulo independiente para registrar equipos retireidos de bodega con filtros por
 | equipo | VARCHAR(200) | Nombre/tipo de equipo |
 | created_at | TIMESTAMP | Fecha creacion registro |
 | updated_at | TIMESTAMP | Fecha actualizacion |
-
-### SQL para crear la tabla
-```sql
-CREATE TABLE equipos_retirados (
-    id SERIAL PRIMARY KEY,
-    fecha_retiro TIMESTAMP NOT NULL,
-    serie_reversa VARCHAR(100) NOT NULL,
-    equipo VARCHAR(200) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX idx_fecha_retiro ON equipos_retirados(fecha_retiro);
-```
 
 ---
 
@@ -133,32 +124,8 @@ SELECT usuario FROM usuarios WHERE activo = true
 SELECT usuario FROM usuarios WHERE activo = 1
 ```
 
-### 3. Problema de Zona Horaria
-Chile esta en UTC-3/UTC-4. Las fechas se guardaban con 1 dia de diferencia.
-
-**Format Date correcto (frontend):**
-```javascript
-const formatDate = (fecha) => {
-  if (!fecha) return "-";
-  const d = new Date(fecha);
-  const day = String(d.getUTCDate()).padStart(2, '0');
-  const month = String(d.getUTCMonth() + 1).padStart(2, '0');
-  const year = d.getUTCFullYear();
-  return `${day}/${month}/${year}`;
-};
-```
-
-### 4. Funcion Helper para Extraer Fechas al Editar
-```javascript
-const getDateValue = (fecha) => {
-  if (!fecha) return "";
-  if (typeof fecha === 'string' && fecha.includes('T')) {
-    return fecha.split('T')[0];
-  }
-  if (typeof fecha === 'string') return fecha;
-  return "";
-};
-```
+### 3. Tabla renombrada a informe_tecnico
+Todas las consultas deben usar `informe_tecnico` en lugar de `ordenes_servicio`.
 
 ---
 
@@ -166,32 +133,24 @@ const getDateValue = (fecha) => {
 
 ### Backend (v1.0.3)
 - `backend/routes/ordenRoutes.js`
-  - Nueva ruta GET /api/orden/pdf (exportar PDF con pdfkit)
-  - Filtros para equipo, marca, modelo en buildFilterQuery
+  - Tabla renombrada a `informe_tecnico`
+  - Campos diagnostico agregados a INSERT y UPDATE
+  - Ruta GET /api/orden/pdf (exportar PDF)
+  - Ruta GET /api/orden/tecnicos (publica)
+  - Ruta GET /api/orden/filtros-valores (publica)
+  - Ruta GET /api/orden/valores-formulario (publica)
 
 ### Frontend (v1.0.3)
 - `frontend-ultra/src/components/Ordenes.jsx`
   - Botón "Exportar PDF" (color rojo)
   - Botón "Informe Técnico"
   - Tabla "Informes"
-  - Mensaje vacío actualizado
+  - Selects en filtros para cliente, tecnico, estado, equipo, marca, modelo
 
----
-
-## v1.0.4 (23-03-2026)
-
-### Equipos por defecto en Formulario
-- Agregados equipos por defecto: PC, Notebook, Monitor, All in One, Impresora, Lector de huella
-- Agregadas marcas por defecto: Lumidigm
-- Agregados modelos por defecto: V-302-20S
-
-### Filtros en Exportación Excel
-**Problema:** Al exportar Excel con filtros, solo se exportaban los registros de la página actual (5 por página).
-
-**Solución:**
-- Backend (`ordenRoutes.js`): Modificada función `buildFilterQuery` para ignorar paginación cuando se envía parámetro `sinPaginacion: true`
-- Frontend (`Ordenes.jsx`): Agregado `sinPaginacion: true` a las 3 funciones Excel (descargarExcel, descargarExcelCorreo, descargarExcelRespaldo)
-- También agregados filtros `equipo`, `marca`, `modelo` a las funciones de exportación
+- `frontend-ultra/src/components/Formulario.jsx`
+  - Modal de Diagnóstico (fecha_diagnostico, diagnostico)
+  - Selects para cliente, tecnico, estado, equipo, marca, modelo
+  - Texto actualizado: "Nuevo Informe Técnico", "Editar Informe Técnico"
 
 ---
 
@@ -204,5 +163,34 @@ const getDateValue = (fecha) => {
 ## Estado del Proyecto
 - Modulo Retiro Bodega: COMPLETADO
 - Exportacion PDF: COMPLETADO
+- Modulo Diagnostico: COMPLETADO
 - Cambios de texto interfaz: COMPLETADO
+- Tabla renombrada a informe_tecnico: COMPLETADO
+- Colores corporativos Sonda (UI, PDF, Excel): COMPLETADO
 - Produccion (PostgreSQL Neon): FUNCIONANDO
+
+---
+
+## Colores Corporativos Sonda
+
+**Colores aplicados a botones, PDF y Excel:**
+- **Primary:** #0C4A8C (azul corporativo)
+- **Primary Hover:** #0a3d75
+- **Primary Light:** #e6f0fa
+- **Secondary/Info:** #009EE3 (cyan)
+- **Success:** #00B5E2
+- **Success Light:** #e0f7fc
+- **Danger:** #E53935
+- **Warning:** #FF9800
+- **Gradient:** linear-gradient(135deg, #0C4A8C 0%, #009EE3 100%)
+
+**Colores en PDF:**
+- Header: #0C4A8C
+- Footer/Líneas: #009EE3
+- Labels: #0C4A8C
+
+**Colores en Excel:**
+- Header título: #009EE3 (cyan)
+- Header columnas: #E6F0FA
+- Texto header: #0C4A8C
+- Bordes: #009EE3

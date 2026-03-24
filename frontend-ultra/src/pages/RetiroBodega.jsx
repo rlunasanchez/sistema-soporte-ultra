@@ -84,9 +84,8 @@ function RetiroBodega() {
     e.preventDefault();
     try {
       const dataToSend = {
-        fecha_retiro: formData.fecha_retiro ? formData.fecha_retiro + "T12:00:00" : null,
-        serie_reversa: formData.serie_reversa,
-        equipo: formData.equipo
+        ...formData,
+        fecha_retiro: formData.fecha_retiro ? formData.fecha_retiro + "T00:00:00" : null
       };
       if (editarRetiro) {
         await api.put(`/api/retiro/${editarRetiro.id}`, dataToSend);
@@ -104,8 +103,9 @@ function RetiroBodega() {
 
   const editarItem = (item) => {
     setEditarRetiro(item);
+    const fechaParts = item.fecha_retiro ? item.fecha_retiro.split("T")[0] : "";
     setFormData({
-      fecha_retiro: item.fecha_retiro ? item.fecha_retiro.split("T")[0] : "",
+      fecha_retiro: fechaParts,
       serie_reversa: item.serie_reversa || "",
       equipo: item.equipo || ""
     });
@@ -122,13 +122,25 @@ function RetiroBodega() {
     }
   };
 
-  const formatDate = (fecha) =>
-    fecha ? new Date(fecha).toLocaleDateString("es-CL") : "-";
+  const formatDate = (fecha) => {
+    if (!fecha) return "-";
+    const d = new Date(fecha);
+    const day = String(d.getUTCDate()).padStart(2, '0');
+    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const year = d.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   const limpiarFiltros = () => {
     setFiltroFechaDesde("");
     setFiltroFechaHasta("");
     setPaginaActual(1);
+  };
+
+  const cancelarFormulario = () => {
+    setMostrarFormulario(false);
+    setEditarRetiro(null);
+    setFormData({ fecha_retiro: "", serie_reversa: "", equipo: "" });
   };
 
   const descargarExcel = async () => {
@@ -151,12 +163,6 @@ function RetiroBodega() {
     } catch {
       alert("No se pudo descargar el Excel");
     }
-  };
-
-  const cancelarFormulario = () => {
-    setMostrarFormulario(false);
-    setEditarRetiro(null);
-    setFormData({ fecha_retiro: "", serie_reversa: "", equipo: "" });
   };
 
   if (mostrarFormulario) {
@@ -354,48 +360,84 @@ function RetiroBodega() {
             <p>No se encontraron registros</p>
           </div>
         ) : (
-          <div className="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Fecha Retiro</th>
-                  <th>Serie Reversa</th>
-                  <th>Equipo</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {retiros.map((r) => (
-                  <tr key={r.id}>
-                    <td>{r.id}</td>
-                    <td>{formatDate(r.fecha_retiro)}</td>
-                    <td><strong>{r.serie_reversa}</strong></td>
-                    <td>{r.equipo}</td>
-                    <td>
-                      <div className="action-buttons">
-                        <button
-                          className="table-btn edit-btn"
-                          onClick={() => editarItem(r)}
-                        >
-                          <Edit size={14} />
-                          Editar
-                        </button>
-                        <button
-                          className="table-btn delete-btn"
-                          onClick={() => eliminarItem(r.id)}
-                        >
-                          <Trash2 size={14} />
-                          Eliminar
-                        </button>
-                      </div>
-                    </td>
+          <>
+            <div className="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Fecha Retiro</th>
+                    <th>Serie Reversa</th>
+                    <th>Equipo</th>
+                    <th>Acciones</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+
+                <tbody>
+                  {retiros.map((r) => (
+                    <tr key={r.id}>
+                      <td data-label="ID">{r.id}</td>
+                      <td data-label="Fecha Retiro">{formatDate(r.fecha_retiro)}</td>
+                      <td data-label="Serie Reversa"><strong>{r.serie_reversa}</strong></td>
+                      <td data-label="Equipo">{r.equipo}</td>
+                      <td data-label="Acciones">
+                        <div className="action-buttons">
+                          <button
+                            className="table-btn edit-btn"
+                            onClick={() => editarItem(r)}
+                          >
+                            <Edit size={14} />
+                            Editar
+                          </button>
+                          <button
+                            className="table-btn delete-btn"
+                            onClick={() => eliminarItem(r.id)}
+                          >
+                            <Trash2 size={14} />
+                            Eliminar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mobile-cards">
+              {retiros.map((r) => (
+                <div className="mobile-card" key={r.id}>
+                  <div className="mobile-card-header">
+                    <span>Fecha retiro: {formatDate(r.fecha_retiro)}</span>
+                  </div>
+                  <div className="mobile-card-body">
+                    <div className="mobile-card-row">
+                      <label>Fecha:</label>
+                      <span>{formatDate(r.fecha_retiro)}</span>
+                    </div>
+                    <div className="mobile-card-row">
+                      <label>Serie:</label>
+                      <span>{r.serie_reversa}</span>
+                    </div>
+                    <div className="mobile-card-row">
+                      <label>Equipo:</label>
+                      <span>{r.equipo}</span>
+                    </div>
+                  </div>
+                  <div className="mobile-card-footer">
+                    <button className="table-btn edit-btn" onClick={() => editarItem(r)}>
+                      <Edit size={14} />
+                      Editar
+                    </button>
+                    <button className="table-btn delete-btn" onClick={() => eliminarItem(r.id)}>
+                      <Trash2 size={14} />
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         <div className="pagination">
@@ -405,30 +447,34 @@ function RetiroBodega() {
 
           <div className="pagination-controls">
             <button
+              className="page-btn-nav"
               onClick={() => setPaginaActual(paginaActual - 1)}
               disabled={paginaActual === 1}
             >
-              ← Anterior
+              ‹
             </button>
 
-            {[...Array(totalPaginas)].map((_, i) => {
-              const numero = i + 1;
-              return (
-                <button
-                  key={numero}
-                  onClick={() => setPaginaActual(numero)}
-                  className={paginaActual === numero ? 'active' : ''}
-                >
-                  {numero}
-                </button>
-              );
-            })}
+            <span className="page-numbers-desktop">
+              {[...Array(totalPaginas)].map((_, i) => {
+                const numero = i + 1;
+                return (
+                  <button
+                    key={numero}
+                    onClick={() => setPaginaActual(numero)}
+                    className={paginaActual === numero ? 'active' : ''}
+                  >
+                    {numero}
+                  </button>
+                );
+              })}
+            </span>
 
             <button
+              className="page-btn-nav"
               onClick={() => setPaginaActual(paginaActual + 1)}
               disabled={paginaActual === totalPaginas || totalPaginas === 0}
             >
-              Siguiente →
+              ›
             </button>
           </div>
         </div>

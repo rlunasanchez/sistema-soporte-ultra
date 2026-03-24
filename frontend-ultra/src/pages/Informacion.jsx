@@ -2,8 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Info, Server, Database, Shield, FileSpreadsheet, 
-  Users, Wrench, LogOut, ArrowLeft, ChevronDown, ChevronUp,
-  Package
+  Users, Wrench, LogOut, ArrowLeft, ChevronDown, ChevronUp
 } from "lucide-react";
 
 function Informacion() {
@@ -47,6 +46,7 @@ function Informacion() {
           <p><strong>Cliente:</strong> Banco Estado (Chile)</p>
           <p><strong>Desarrollador:</strong> Rodrigo Luna</p>
           <p><strong>Tipo:</strong> Sistema de gestión de soporte técnico</p>
+          <p><strong>Estado:</strong> Desplegado en producción</p>
         </div>
       )
     },
@@ -60,10 +60,10 @@ function Informacion() {
           <ul>
             <li><strong>Node.js</strong> - Entorno de ejecución</li>
             <li><strong>Express.js</strong> - Framework web REST API</li>
-            <li><strong>MySQL</strong> - Base de datos relacional</li>
+            <li><strong>PostgreSQL</strong> - Base de datos (Neon)</li>
             <li><strong>JWT</strong> - Autenticación segura</li>
             <li><strong>bcrypt</strong> - Encriptación de contraseñas</li>
-            <li><strong>nodemailer</strong> - Envío de correos</li>
+            <li><strong>Resend</strong> - Envío de correos</li>
             <li><strong>xlsx-populate</strong> - Generación de Excel</li>
           </ul>
           <h4>Frontend</h4>
@@ -73,6 +73,32 @@ function Informacion() {
             <li><strong>Axios</strong> - Cliente HTTP</li>
             <li><strong>React Router</strong> - Navegación</li>
             <li><strong>Lucide React</strong> - Iconos</li>
+          </ul>
+        </div>
+      )
+    },
+    {
+      id: "despliegue",
+      titulo: "Despliegue en la Nube",
+      icono: <Database size={20} />,
+      contenido: (
+        <div className="info-content">
+          <p>El sistema está desplegado utilizando servicios gratuitos de nube:</p>
+          <h4>Servicios Utilizados</h4>
+          <ul>
+            <li><strong>Frontend:</strong> Vercel</li>
+            <li><strong>Backend:</strong> Render</li>
+            <li><strong>Base de datos:</strong> Neon (PostgreSQL)</li>
+            <li><strong>Email:</strong> Resend (API)</li>
+            <li><strong>Repositorio:</strong> GitHub</li>
+          </ul>
+          <h4>Costos</h4>
+          <ul>
+            <li><strong>Todos los servicios son gratuitos</strong></li>
+            <li>Neon: PostgreSQL gratis hasta 0.5GB</li>
+            <li>Render: 750 horas/mes gratis</li>
+            <li>Vercel: Ilimitado para proyectos personales</li>
+            <li>Resend: 3,000 emails gratis/mes</li>
           </ul>
         </div>
       )
@@ -113,16 +139,13 @@ function Informacion() {
             <li>Excel Correo: Formato Banco Estado</li>
             <li>Excel Respaldo: Backup completo</li>
           </ul>
-          <h4>Retiro Bodega <Package size={16} style={{marginLeft: '8px', verticalAlign: 'middle'}} /></h4>
+          <h4>Retiro de Bodega</h4>
           <ul>
-            <li>Registrar equiposretirados de bodega</li>
-            <li>Crear nuevos retiros</li>
-            <li>Editar retiros existentes</li>
-            <li>Eliminar retiros</li>
+            <li>Gestión de equipos retirada de bodega</li>
+            <li>Crear, editar y eliminar retiros</li>
+            <li>Filtros por fecha</li>
             <li>Paginación (5 por página)</li>
-            <li>Filtros por rango de fechas</li>
-            <li>Exportación a Excel con filtros aplicados</li>
-            <li>Vista móvil (mobile-cards)</li>
+            <li>Exportación a Excel</li>
           </ul>
         </div>
       )
@@ -196,7 +219,7 @@ function Informacion() {
               <tr><td>GET</td><td>/api/orden/excel</td><td>Exportar Excel</td></tr>
             </tbody>
           </table>
-          <h4>Retiro Bodega</h4>
+          <h4>Retiro de Bodega</h4>
           <table className="info-table">
             <thead>
               <tr>
@@ -206,7 +229,7 @@ function Informacion() {
               </tr>
             </thead>
             <tbody>
-              <tr><td>GET</td><td>/api/retiro</td><td>Listar retiros (paginación y filtros)</td></tr>
+              <tr><td>GET</td><td>/api/retiro</td><td>Listar retiros</td></tr>
               <tr><td>POST</td><td>/api/retiro</td><td>Crear retiro</td></tr>
               <tr><td>PUT</td><td>/api/retiro/:id</td><td>Actualizar retiro</td></tr>
               <tr><td>DELETE</td><td>/api/retiro/:id</td><td>Eliminar retiro</td></tr>
@@ -229,6 +252,10 @@ function Informacion() {
 │   ├── package.json
 │   ├── .env
 │   ├── crear_base_datos.sql
+│   ├── datos_migrate.sql
+│   ├── datos_completos.sql
+│   ├── backup_db_postgres.sql
+│   ├── equipos_retirados_postgres.sql
 │   ├── config/
 │   │   ├── db.js
 │   │   └── email.js
@@ -237,11 +264,12 @@ function Informacion() {
 │   └── routes/
 │       ├── auth.js
 │       ├── ordenRoutes.js
-│       └── retiroRoutes.js (NUEVO)
+│       └── retiroRoutes.js
 │
 └── frontend-ultra/
     ├── package.json
     ├── vite.config.js
+    ├── vercel.json
     ├── index.html
     └── src/
         ├── main.jsx
@@ -252,14 +280,14 @@ function Informacion() {
         │   ├── Login.jsx
         │   ├── GestionUsuarios.jsx
         │   ├── Informacion.jsx
-        │   └── RetiroBodega.jsx (NUEVO)
+        │   └── RetiroBodega.jsx
         ├── components/
         │   ├── Ordenes.jsx
         │   ├── Formulario.jsx
         │   └── PrivateRoute.jsx
         └── styles/
             ├── App.css
-            └── app.css`}
+            └── index.css`}
           </pre>
         </div>
       )
@@ -287,14 +315,16 @@ function Informacion() {
       <div className="info-container">
         <div className="info-header-section">
           <h2>Sistema de Soporte Ultra</h2>
-          <p className="info-subtitle">Versión 1.0.0</p>
+          <p className="info-subtitle">Versión 1.0.1</p>
           <p className="info-description">
             Aplicación web para la gestión de órdenes de servicio técnico para Banco Estado Chile.
           </p>
           <div className="info-badges">
             <span className="badge badge-primary">Backend: Node.js + Express</span>
             <span className="badge badge-info">Frontend: React + Vite</span>
-            <span className="badge badge-success">Database: MySQL</span>
+            <span className="badge badge-success">Database: PostgreSQL (Neon)</span>
+            <span className="badge badge-warning">Desplegado: Vercel + Render</span>
+            <span className="badge badge-primary">Retiro Bodega</span>
           </div>
         </div>
 
@@ -322,7 +352,7 @@ function Informacion() {
 
         <div className="info-footer">
           <p>© {new Date().getFullYear()} Rodrigo Luna. Todos los derechos reservados.</p>
-          <p>Desarrollado con React, Node.js y MySQL</p>
+          <p>Desarrollado con React, Node.js y PostgreSQL</p>
         </div>
       </div>
     </div>

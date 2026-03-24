@@ -11,13 +11,65 @@ const router = express.Router();
 ================================*/
 router.get("/tecnicos", async (req, res) => {
   try {
-    const [rows] = await pool.query(
-      "SELECT usuario FROM usuarios WHERE activo = 1 ORDER BY usuario ASC"
+    const result = await pool.query(
+      "SELECT usuario FROM usuarios WHERE activo = true ORDER BY usuario ASC"
     );
-    res.json(rows);
+    res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Error obteniendo técnicos" });
+  }
+});
+
+/* ===============================
+   OBTENER VALORES PARA FILTROS (EQUIPO, MARCA, MODELO) - PÚBLICO
+================================*/
+router.get("/filtros-valores", async (req, res) => {
+  try {
+    const equipos = await pool.query(
+      "SELECT DISTINCT equipo FROM informe_tecnico WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
+    );
+    const marcas = await pool.query(
+      "SELECT DISTINCT marca FROM informe_tecnico WHERE marca IS NOT NULL AND marca != '' ORDER BY marca ASC"
+    );
+    const modelos = await pool.query(
+      "SELECT DISTINCT modelo FROM informe_tecnico WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
+    );
+
+    res.json({
+      equipos: equipos.rows.map(r => r.equipo),
+      marcas: marcas.rows.map(r => r.marca),
+      modelos: modelos.rows.map(r => r.modelo)
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Error obteniendo valores de filtro" });
+  }
+});
+
+/* ===============================
+   OBTENER VALORES PARA FORMULARIO (EQUIPO, MARCA, MODELO) - PÚBLICO
+================================*/
+router.get("/valores-formulario", async (req, res) => {
+  try {
+    const equipos = await pool.query(
+      "SELECT DISTINCT equipo FROM informe_tecnico WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
+    );
+    const marcas = await pool.query(
+      "SELECT DISTINCT marca FROM informe_tecnico WHERE marca IS NOT NULL AND marca != '' ORDER BY marca ASC"
+    );
+    const modelos = await pool.query(
+      "SELECT DISTINCT modelo FROM informe_tecnico WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
+    );
+
+    res.json({
+      equipos: equipos.rows.map(r => r.equipo),
+      marcas: marcas.rows.map(r => r.marca),
+      modelos: modelos.rows.map(r => r.modelo)
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Error obteniendo valores de formulario" });
   }
 });
 
@@ -26,19 +78,7 @@ router.use(authMiddleware);
 const formatDate = (d) =>
   d ? new Date(d).toISOString().slice(0, 19).replace("T", " ") : null;
 
-const formatTitleCase = (str) => {
-  if (!str) return "";
-  const lower = str.toLowerCase();
-  const withAccents = lower
-    .replace(/reparacion/g, 'reparación')
-    .replace(/mantencion/g, 'mantención')
-    .replace(/asignacion/g, 'asignación')
-    .replace(/denuncia/g, 'denuncia')
-    .replace(/reparacion/g, 'reparación');
-  return withAccents.charAt(0).toUpperCase() + withAccents.slice(1);
-};
-
-const buildFilterQuery = (query) => {
+const buildFilterQuery = (query, forExport = false) => {
   const {
     os,
     cliente,
@@ -59,150 +99,105 @@ const buildFilterQuery = (query) => {
   let sql = "SELECT * FROM informe_tecnico WHERE 1=1";
   let countSql = "SELECT COUNT(*) as total FROM informe_tecnico WHERE 1=1";
   const params = [];
+  let paramIndex = 1;
 
   if (os) {
-    sql += " AND os LIKE ?";
-    countSql += " AND os LIKE ?";
+    sql += ` AND os LIKE $${paramIndex}`;
+    countSql += ` AND os LIKE $${paramIndex}`;
     params.push(`%${os}%`);
+    paramIndex++;
   }
 
   if (cliente) {
-    sql += " AND cliente LIKE ?";
-    countSql += " AND cliente LIKE ?";
+    sql += ` AND cliente LIKE $${paramIndex}`;
+    countSql += ` AND cliente LIKE $${paramIndex}`;
     params.push(`%${cliente}%`);
+    paramIndex++;
   }
 
   if (tecnico) {
-    sql += " AND tecnico LIKE ?";
-    countSql += " AND tecnico LIKE ?";
+    sql += ` AND tecnico LIKE $${paramIndex}`;
+    countSql += ` AND tecnico LIKE $${paramIndex}`;
     params.push(`%${tecnico}%`);
+    paramIndex++;
   }
 
   if (estado) {
-    sql += " AND estado_actual LIKE ?";
-    countSql += " AND estado_actual LIKE ?";
+    sql += ` AND estado_actual LIKE $${paramIndex}`;
+    countSql += ` AND estado_actual LIKE $${paramIndex}`;
     params.push(`%${estado}%`);
+    paramIndex++;
   }
 
   if (equipo) {
-    sql += " AND equipo LIKE ?";
-    countSql += " AND equipo LIKE ?";
+    sql += ` AND equipo LIKE $${paramIndex}`;
+    countSql += ` AND equipo LIKE $${paramIndex}`;
     params.push(`%${equipo}%`);
+    paramIndex++;
   }
 
   if (marca) {
-    sql += " AND marca LIKE ?";
-    countSql += " AND marca LIKE ?";
+    sql += ` AND marca LIKE $${paramIndex}`;
+    countSql += ` AND marca LIKE $${paramIndex}`;
     params.push(`%${marca}%`);
+    paramIndex++;
   }
 
   if (modelo) {
-    sql += " AND modelo LIKE ?";
-    countSql += " AND modelo LIKE ?";
+    sql += ` AND modelo LIKE $${paramIndex}`;
+    countSql += ` AND modelo LIKE $${paramIndex}`;
     params.push(`%${modelo}%`);
+    paramIndex++;
   }
 
   if (fechaAsignacionDesde) {
-    sql += " AND DATE(asignacion) >= ?";
-    countSql += " AND DATE(asignacion) >= ?";
+    sql += ` AND DATE(asignacion) >= $${paramIndex}`;
+    countSql += ` AND DATE(asignacion) >= $${paramIndex}`;
     params.push(fechaAsignacionDesde);
+    paramIndex++;
   }
 
   if (fechaAsignacionHasta) {
-    sql += " AND DATE(asignacion) <= ?";
-    countSql += " AND DATE(asignacion) <= ?";
+    sql += ` AND DATE(asignacion) <= $${paramIndex}`;
+    countSql += ` AND DATE(asignacion) <= $${paramIndex}`;
     params.push(fechaAsignacionHasta);
+    paramIndex++;
   }
 
   if (fechaReparacionDesde) {
-    sql += " AND DATE(fecha_reparacion) >= ?";
-    countSql += " AND DATE(fecha_reparacion) >= ?";
+    sql += ` AND DATE(fecha_reparacion) >= $${paramIndex}`;
+    countSql += ` AND DATE(fecha_reparacion) >= $${paramIndex}`;
     params.push(fechaReparacionDesde);
+    paramIndex++;
   }
 
   if (fechaReparacionHasta) {
-    sql += " AND DATE(fecha_reparacion) <= ?";
-    countSql += " AND DATE(fecha_reparacion) <= ?";
+    sql += ` AND DATE(fecha_reparacion) <= $${paramIndex}`;
+    countSql += ` AND DATE(fecha_reparacion) <= $${paramIndex}`;
     params.push(fechaReparacionHasta);
+    paramIndex++;
   }
 
   if (fecha) {
-    sql += " AND DATE(fecha) = ?";
-    countSql += " AND DATE(fecha) = ?";
+    sql += ` AND DATE(fecha) = $${paramIndex}`;
+    countSql += ` AND DATE(fecha) = $${paramIndex}`;
     params.push(fecha);
+    paramIndex++;
+  }
+
+  if (forExport) {
+    sql += ` ORDER BY id DESC`;
+    return { sql, params };
   }
 
   const pageNum = parseInt(page) || 1;
   const limitNum = parseInt(limit) || 5;
   const offset = (pageNum - 1) * limitNum;
 
-  if (!query.sinPaginacion) {
-    sql += ` ORDER BY id DESC LIMIT ${limitNum} OFFSET ${offset}`;
-  } else {
-    sql += ` ORDER BY id DESC`;
-  }
+  sql += ` ORDER BY id DESC LIMIT ${limitNum} OFFSET ${offset}`;
 
   return { sql, countSql, params, page: pageNum, limit: limitNum };
 };
-
-/* ===============================
-   OBTENER VALORES PARA FILTROS (EQUIPO, MARCA, MODELO)
-================================*/
-router.get("/filtros-valores", async (req, res) => {
-  try {
-    const [equipos] = await pool.query(
-      "SELECT DISTINCT equipo FROM informe_tecnico WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
-    );
-    const [marcas] = await pool.query(
-      "SELECT DISTINCT marca FROM informe_tecnico WHERE marca IS NOT NULL AND marca != '' ORDER BY marca ASC"
-    );
-    const [modelos] = await pool.query(
-      "SELECT DISTINCT modelo FROM informe_tecnico WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
-    );
-
-    res.json({
-      equipos: equipos.map(r => r.equipo),
-      marcas: marcas.map(r => r.marca),
-      modelos: modelos.map(r => r.modelo)
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "Error obteniendo valores de filtro" });
-  }
-});
-
-/* ===============================
-   OBTENER VALORES PARA FORMULARIO (EQUIPO, MARCA, MODELO)
-================================*/
-router.get("/valores-formulario", async (req, res) => {
-  try {
-    const defaultEquipos = ["PC", "Notebook", "Monitor", "All in One", "Impresora", "Lector de huella"];
-    const defaultMarcas = ["Lumidigm"];
-    const defaultModelos = ["V-302-20S"];
-    const [equipos] = await pool.query(
-      "SELECT DISTINCT equipo FROM informe_tecnico WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
-    );
-    const [marcas] = await pool.query(
-      "SELECT DISTINCT marca FROM informe_tecnico WHERE marca IS NOT NULL AND marca != '' ORDER BY marca ASC"
-    );
-    const [modelos] = await pool.query(
-      "SELECT DISTINCT modelo FROM informe_tecnico WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
-    );
-
-    const equiposUnicos = [...new Set([...defaultEquipos, ...equipos.map(r => r.equipo)])];
-    const marcasUnicas = [...new Set([...defaultMarcas, ...marcas.map(r => r.marca)])];
-    const modelosUnicos = [...new Set([...defaultModelos, ...modelos.map(r => r.modelo)])];
-
-    res.json({
-      equipos: equiposUnicos,
-      marcas: marcasUnicas,
-      modelos: modelosUnicos
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "Error obteniendo valores de formulario" });
-  }
-});
 
 /* ===============================
    OBTENER ÓRDENES
@@ -211,13 +206,13 @@ router.get("/", async (req, res) => {
   try {
     const { sql, countSql, params, page, limit } = buildFilterQuery(req.query);
     
-    const [rows] = await pool.query(sql, params);
-    const [countResult] = await pool.query(countSql, params);
-    const total = countResult[0].total;
+    const result = await pool.query(sql, params);
+    const countResult = await pool.query(countSql, params);
+    const total = countResult.rows[0].total;
     const totalPages = Math.ceil(total / limit);
 
     res.json({
-      data: rows,
+      data: result.rows,
       pagination: {
         page,
         limit,
@@ -252,7 +247,8 @@ router.post("/", async (req, res) => {
         falla_informada, falla_detectada, conclusion, realizado_por,
         fecha_diagnostico, diagnostico
       )
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31)
+      RETURNING id
     `;
 
     const values = [
@@ -289,15 +285,15 @@ router.post("/", async (req, res) => {
       data.diagnostico,
     ];
 
-    const [result] = await pool.query(sql, values);
+    const result = await pool.query(sql, values);
 
     res.status(201).json({
       msg: "Orden creada correctamente",
-      id: result.insertId,
+      id: result.rows[0].id,
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: "Error creando orden" });
+    res.status(500).json({ msg: "Error creando orden: " + err.message });
   }
 });
 
@@ -311,14 +307,14 @@ router.put("/:id", async (req, res) => {
 
     const sql = `
       UPDATE informe_tecnico SET
-        os = ?, cliente = ?, tecnico = ?, asignacion = ?, en_garantia = ?, tipo = ?,
-        estado_actual = ?, fecha_reparacion = ?, solicitud_compra = ?,
-        n_denuncia = ?, qty = ?, anexo = ?, fecha = ?, equipo = ?, marca = ?,
-        serie = ?, modelo = ?, procesador = ?, disco = ?, memoria = ?,
-        cargador = ?, bateria = ?, insumo = ?, cabezal = ?, otros = ?,
-        falla_informada = ?, falla_detectada = ?, conclusion = ?, realizado_por = ?,
-        fecha_diagnostico = ?, diagnostico = ?
-      WHERE id = ?
+        os = $1, cliente = $2, tecnico = $3, asignacion = $4, en_garantia = $5, tipo = $6,
+        estado_actual = $7, fecha_reparacion = $8, solicitud_compra = $9,
+        n_denuncia = $10, qty = $11, anexo = $12, fecha = $13, equipo = $14, marca = $15,
+        serie = $16, modelo = $17, procesador = $18, disco = $19, memoria = $20,
+        cargador = $21, bateria = $22, insumo = $23, cabezal = $24, otros = $25,
+        falla_informada = $26, falla_detectada = $27, conclusion = $28, realizado_por = $29,
+        fecha_diagnostico = $30, diagnostico = $31
+      WHERE id = $32
     `;
 
     const values = [
@@ -372,7 +368,7 @@ router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    await pool.query("DELETE FROM informe_tecnico WHERE id = ?", [id]);
+    await pool.query("DELETE FROM informe_tecnico WHERE id = $1", [id]);
 
     res.json({ msg: "Orden eliminada correctamente" });
   } catch (err) {
@@ -386,8 +382,8 @@ router.delete("/:id", async (req, res) => {
 =================================*/
 router.get("/excel", async (req, res) => {
   try {
-    const { sql, params } = buildFilterQuery(req.query);
-    const [rows] = await pool.query(sql, params);
+    const { sql, params } = buildFilterQuery(req.query, true);
+    const result = await pool.query(sql, params);
 
     const workbook = await XlsxPopulate.fromBlankAsync();
     const sheet = workbook.sheet(0);
@@ -428,7 +424,7 @@ router.get("/excel", async (req, res) => {
 
     headers.forEach((h, i) => sheet.cell(1, i + 1).value(h));
 
-    rows.forEach((r, rowIndex) => {
+    result.rows.forEach((r, rowIndex) => {
       const rowNum = rowIndex + 2;
 
       const accesorios = [
@@ -460,9 +456,9 @@ router.get("/excel", async (req, res) => {
         r.asignacion ? new Date(r.asignacion).toLocaleDateString("es-CL") : "",
         r.falla_informada,
         r.en_garantia,
-        formatTitleCase(r.tipo),
+        r.tipo,
         r.falla_detectada,
-        formatTitleCase(r.estado_actual),
+        r.estado_actual,
         r.conclusion,
         r.fecha_reparacion
           ? new Date(r.fecha_reparacion).toLocaleDateString("es-CL")
@@ -483,12 +479,12 @@ router.get("/excel", async (req, res) => {
 
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
 
     res.setHeader(
       "Content-Disposition",
-      "attachment; filename=informe_tecnico.xlsx",
+      "attachment; filename=informe_tecnico.xlsx"
     );
 
     res.send(buffer);
@@ -503,8 +499,8 @@ router.get("/excel", async (req, res) => {
 =================================*/
 router.get("/excel-correo", async (req, res) => {
   try {
-    const { sql, params } = buildFilterQuery(req.query);
-    const [rows] = await pool.query(sql, params);
+    const { sql, params } = buildFilterQuery(req.query, true);
+    const result = await pool.query(sql, params);
 
     const workbook = await XlsxPopulate.fromBlankAsync();
     const sheet = workbook.sheet(0);
@@ -541,7 +537,7 @@ router.get("/excel-correo", async (req, res) => {
       borderColor: "009EE3",
     });
 
-    rows.forEach((r, i) => {
+    result.rows.forEach((r, i) => {
       const row = i + 4;
 
       sheet.cell(`A${row}`).value(r.os);
@@ -569,12 +565,12 @@ router.get("/excel-correo", async (req, res) => {
 
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
 
     res.setHeader(
       "Content-Disposition",
-      "attachment; filename=equipos_banco_estado.xlsx",
+      "attachment; filename=equipos_banco_estado.xlsx"
     );
 
     res.send(buffer);
@@ -589,8 +585,8 @@ router.get("/excel-correo", async (req, res) => {
 =================================*/
 router.get("/excel-respaldo", async (req, res) => {
   try {
-    const { sql, params } = buildFilterQuery(req.query);
-    const [rows] = await pool.query(sql, params);
+    const { sql, params } = buildFilterQuery(req.query, true);
+    const result = await pool.query(sql, params);
 
     const workbook = await XlsxPopulate.fromBlankAsync();
     const sheet = workbook.sheet(0);
@@ -654,7 +650,7 @@ router.get("/excel-respaldo", async (req, res) => {
       fontColor: "0C4A8C",
     });
 
-    rows.forEach((r, i) => {
+    result.rows.forEach((r, i) => {
       const row = i + 4;
 
       const values = [
@@ -663,8 +659,8 @@ router.get("/excel-respaldo", async (req, res) => {
         r.tecnico,
         r.asignacion ? new Date(r.asignacion).toLocaleDateString("es-CL") : "",
         r.en_garantia,
-        formatTitleCase(r.tipo),
-        formatTitleCase(r.estado_actual),
+        r.tipo,
+        r.estado_actual,
         r.fecha_reparacion ? new Date(r.fecha_reparacion).toLocaleDateString("es-CL") : "",
         r.solicitud_compra,
         r.n_denuncia,
@@ -740,12 +736,12 @@ router.get("/excel-respaldo", async (req, res) => {
 
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
 
     res.setHeader(
       "Content-Disposition",
-      "attachment; filename=respaldo_banco_estado.xlsx",
+      "attachment; filename=respaldo_banco_estado.xlsx"
     );
 
     res.send(buffer);
@@ -760,45 +756,11 @@ router.get("/excel-respaldo", async (req, res) => {
 ================================*/
 router.get("/pdf", async (req, res) => {
   try {
-    const { os, cliente, tecnico, estado, equipo, marca, modelo } = req.query;
+    const { sql, params } = buildFilterQuery(req.query, true);
     
-    let sql = "SELECT * FROM informe_tecnico WHERE 1=1";
-    const params = [];
+    const result = await pool.query(sql, params);
 
-    if (os) {
-      sql += " AND os LIKE ?";
-      params.push(`%${os}%`);
-    }
-    if (cliente) {
-      sql += " AND cliente LIKE ?";
-      params.push(`%${cliente}%`);
-    }
-    if (tecnico) {
-      sql += " AND tecnico LIKE ?";
-      params.push(`%${tecnico}%`);
-    }
-    if (estado) {
-      sql += " AND estado_actual LIKE ?";
-      params.push(`%${estado}%`);
-    }
-    if (equipo) {
-      sql += " AND equipo LIKE ?";
-      params.push(`%${equipo}%`);
-    }
-    if (marca) {
-      sql += " AND marca LIKE ?";
-      params.push(`%${marca}%`);
-    }
-    if (modelo) {
-      sql += " AND modelo LIKE ?";
-      params.push(`%${modelo}%`);
-    }
-
-    sql += " ORDER BY id DESC LIMIT 100";
-
-    const [rows] = await pool.query(sql, params);
-
-    if (rows.length === 0) {
+    if (result.rows.length === 0) {
       return res.status(400).json({ msg: "No hay órdenes para exportar" });
     }
 
@@ -817,7 +779,7 @@ router.get("/pdf", async (req, res) => {
       res.send(pdfBuffer);
     });
 
-    rows.forEach((orden, index) => {
+    result.rows.forEach((orden, index) => {
       if (index > 0) {
         doc.addPage();
       }
