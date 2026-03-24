@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Save, ArrowLeft, FileText, Monitor, Edit } from "lucide-react";
 import api from "../services/api";
+import CustomSelect from "./CustomSelect";
 
 function Formulario({ orden, onCerrar }) {
   const navigate = useNavigate();
@@ -42,14 +43,25 @@ function Formulario({ orden, onCerrar }) {
 
   const [guardando, setGuardando] = useState(false);
   const [mostrarDiagnostico, setMostrarDiagnostico] = useState(false);
-  const [valoresForm, setValoresForm] = useState({ equipos: [], marcas: [], modelos: [] });
+  const [valoresForm, setValoresForm] = useState({ 
+    equipos: ["PC", "Notebook", "Monitor", "All in One", "Impresora", "Lector de huella"], 
+    marcas: ["Lumidigm"], 
+    modelos: ["V-302-20S"] 
+  });
+  const [opcionesCliente, setOpcionesCliente] = useState(["Banco Estado"]);
+  const [opcionesTipo, setOpcionesTipo] = useState(["Reparación", "Mantención", "DOA"]);
+  const [opcionesEstado, setOpcionesEstado] = useState(["Reparado en bodega", "Equipo irreparable en bodega"]);
   const textareasRef = useRef({});
 
   useEffect(() => {
     const cargarValoresForm = async () => {
       try {
         const res = await api.get("/api/orden/valores-formulario");
-        setValoresForm(res.data);
+        setValoresForm(prev => ({
+          equipos: [...new Set([...prev.equipos, ...(res.data.equipos || [])])],
+          marcas: [...new Set([...prev.marcas, ...(res.data.marcas || [])])],
+          modelos: [...new Set([...prev.modelos, ...(res.data.modelos || [])])]
+        }));
       } catch (err) {
         console.error("Error cargando valores de formulario:", err);
       }
@@ -176,11 +188,12 @@ function Formulario({ orden, onCerrar }) {
 
         <div className="form-group">
           <label>Cliente</label>
-          <input
+          <CustomSelect
             name="cliente"
-            placeholder="Nombre del cliente"
             value={form.cliente}
             onChange={handleChange}
+            options={opcionesCliente}
+            placeholder="Seleccionar cliente"
           />
         </div>
 
@@ -207,35 +220,35 @@ function Formulario({ orden, onCerrar }) {
 
         <div className="form-group">
           <label>Garantía</label>
-          <select
+          <CustomSelect
             name="en_garantia"
             value={form.en_garantia}
             onChange={handleChange}
-          >
-            <option value="NO">NO</option>
-            <option value="SI">SI</option>
-          </select>
+            options={["NO", "SI"]}
+            placeholder="Seleccionar garantía"
+          />
         </div>
 
         <div className="form-group">
           <label>Tipo</label>
-          <select name="tipo" value={form.tipo} onChange={handleChange}>
-            <option value="REPARACION">Reparación</option>
-            <option value="MANTENCION">Mantención</option>
-            <option value="DOA">DOA</option>
-          </select>
+          <CustomSelect
+            name="tipo"
+            value={form.tipo}
+            onChange={handleChange}
+            options={opcionesTipo}
+            placeholder="Seleccionar tipo"
+          />
         </div>
 
         <div className="form-group">
           <label>Estado Actual</label>
-          <select
+          <CustomSelect
             name="estado_actual"
             value={form.estado_actual}
             onChange={handleChange}
-          >
-            <option value="Reparado en bodega">Reparado en bodega</option>
-            <option value="Equipo irreparable en bodega">Equipo irreparable en bodega</option>
-          </select>
+            options={opcionesEstado}
+            placeholder="Seleccionar estado"
+          />
         </div>
 
         <div className="form-group">
@@ -315,18 +328,13 @@ function Formulario({ orden, onCerrar }) {
 
         <div className="form-group">
           <label>Equipo</label>
-          <select
+          <CustomSelect
             name="equipo"
             value={form.equipo}
             onChange={handleChange}
-          >
-            <option value="">Seleccionar equipo</option>
-            {valoresForm.equipos.map((eq) => (
-              <option key={eq} value={eq}>
-                {eq}
-              </option>
-            ))}
-          </select>
+            options={valoresForm.equipos}
+            placeholder="Seleccionar equipo"
+          />
         </div>
 
         <div className="form-group">
@@ -341,34 +349,24 @@ function Formulario({ orden, onCerrar }) {
 
         <div className="form-group">
           <label>Marca</label>
-          <select
+          <CustomSelect
             name="marca"
             value={form.marca}
             onChange={handleChange}
-          >
-            <option value="">Seleccionar marca</option>
-            {valoresForm.marcas.map((marca) => (
-              <option key={marca} value={marca}>
-                {marca}
-              </option>
-            ))}
-          </select>
+            options={valoresForm.marcas}
+            placeholder="Seleccionar marca"
+          />
         </div>
 
         <div className="form-group">
           <label>Modelo</label>
-          <select
+          <CustomSelect
             name="modelo"
             value={form.modelo}
             onChange={handleChange}
-          >
-            <option value="">Seleccionar modelo</option>
-            {valoresForm.modelos.map((mod) => (
-              <option key={mod} value={mod}>
-                {mod}
-              </option>
-            ))}
-          </select>
+            options={valoresForm.modelos}
+            placeholder="Seleccionar modelo"
+          />
         </div>
 
         <div className="form-group">

@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import api from "../services/api";
 import Formulario from "./Formulario";
+import CustomSelect from "./CustomSelect";
 
 function Ordenes() {
   const navigate = useNavigate();
@@ -473,13 +474,12 @@ function Ordenes() {
 
             <div className="filter-group">
               <label>Cliente</label>
-              <select
+              <CustomSelect
                 value={filtroCliente}
                 onChange={(e) => setFiltroCliente(e.target.value)}
-              >
-                <option value="">Todos</option>
-                <option value="Banco Estado">Banco Estado</option>
-              </select>
+                options={["Banco Estado"]}
+                placeholder="Todos"
+              />
             </div>
 
             <div className="filter-group">
@@ -494,59 +494,42 @@ function Ordenes() {
 
             <div className="filter-group">
               <label>Estado</label>
-              <select
+              <CustomSelect
                 value={filtroEstado}
                 onChange={(e) => setFiltroEstado(e.target.value)}
-              >
-                <option value="">Todos</option>
-                <option value="Reparado en bodega">Reparado en bodega</option>
-                <option value="Equipo irreparable en bodega">Equipo irreparable en bodega</option>
-              </select>
+                options={["Reparado en bodega", "Equipo irreparable en bodega"]}
+                placeholder="Todos"
+              />
             </div>
 
             <div className="filter-group">
               <label>Equipo</label>
-              <select
+              <CustomSelect
                 value={filtroEquipo}
                 onChange={(e) => setFiltroEquipo(e.target.value)}
-              >
-                <option value="">Todos</option>
-                {filtrosValores.equipos.map((eq) => (
-                  <option key={eq} value={eq}>
-                    {eq}
-                  </option>
-                ))}
-              </select>
+                options={filtrosValores.equipos}
+                placeholder="Todos"
+              />
             </div>
 
             <div className="filter-group">
               <label>Marca</label>
-              <select
+              <CustomSelect
                 value={filtroMarca}
                 onChange={(e) => setFiltroMarca(e.target.value)}
-              >
-                <option value="">Todos</option>
-                {filtrosValores.marcas.map((marca) => (
-                  <option key={marca} value={marca}>
-                    {marca}
-                  </option>
-                ))}
-              </select>
+                options={filtrosValores.marcas}
+                placeholder="Todos"
+              />
             </div>
 
             <div className="filter-group">
               <label>Modelo</label>
-              <select
+              <CustomSelect
                 value={filtroModelo}
                 onChange={(e) => setFiltroModelo(e.target.value)}
-              >
-                <option value="">Todos</option>
-                {filtrosValores.modelos.map((mod) => (
-                  <option key={mod} value={mod}>
-                    {mod}
-                  </option>
-                ))}
-              </select>
+                options={filtrosValores.modelos}
+                placeholder="Todos"
+              />
             </div>
 
             <div className="filter-group">
