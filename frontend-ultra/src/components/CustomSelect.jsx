@@ -12,9 +12,20 @@ export default function CustomSelect({ name, value, onChange, options, placehold
         setOpen(false);
       }
     }
+    function preventScroll(e) {
+      if (open) {
+        e.preventDefault();
+      }
+    }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    if (open) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   const filteredOptions = options.filter(opt => 
     opt.toLowerCase().includes(search.toLowerCase())
@@ -97,7 +108,10 @@ export default function CustomSelect({ name, value, onChange, options, placehold
         }}
       />
       {open && (
-        <ul style={getDropdownStyle()}>
+        <ul 
+          className="custom-select-dropdown"
+          style={getDropdownStyle()}
+        >
           {filteredOptions.length === 0 ? (
             <li style={{ padding: '8px 12px', color: '#999' }}>Sin resultados</li>
           ) : (
