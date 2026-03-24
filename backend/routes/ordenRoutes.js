@@ -238,6 +238,10 @@ router.post("/", async (req, res) => {
   try {
     const data = req.body;
 
+    if (!data.os || data.os.trim() === "") {
+      return res.status(400).json({ msg: "El campo OS es requerido" });
+    }
+
     const sql = `
       INSERT INTO informe_tecnico (
         os, cliente, tecnico, asignacion, en_garantia, tipo,
