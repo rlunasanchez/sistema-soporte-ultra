@@ -26,6 +26,18 @@ router.use(authMiddleware);
 const formatDate = (d) =>
   d ? new Date(d).toISOString().slice(0, 19).replace("T", " ") : null;
 
+const formatTitleCase = (str) => {
+  if (!str) return "";
+  const lower = str.toLowerCase();
+  const withAccents = lower
+    .replace(/reparacion/g, 'reparación')
+    .replace(/mantencion/g, 'mantención')
+    .replace(/asignacion/g, 'asignación')
+    .replace(/denuncia/g, 'denuncia')
+    .replace(/reparacion/g, 'reparación');
+  return withAccents.charAt(0).toUpperCase() + withAccents.slice(1);
+};
+
 const buildFilterQuery = (query) => {
   const {
     os,
@@ -124,7 +136,11 @@ const buildFilterQuery = (query) => {
   const limitNum = parseInt(limit) || 5;
   const offset = (pageNum - 1) * limitNum;
 
-  sql += ` ORDER BY id DESC LIMIT ${limitNum} OFFSET ${offset}`;
+  if (!query.sinPaginacion) {
+    sql += ` ORDER BY id DESC LIMIT ${limitNum} OFFSET ${offset}`;
+  } else {
+    sql += ` ORDER BY id DESC`;
+  }
 
   return { sql, countSql, params, page: pageNum, limit: limitNum };
 };
@@ -160,6 +176,9 @@ router.get("/filtros-valores", async (req, res) => {
 ================================*/
 router.get("/valores-formulario", async (req, res) => {
   try {
+    const defaultEquipos = ["PC", "Notebook", "Monitor", "All in One", "Impresora", "Lector de huella"];
+    const defaultMarcas = ["Lumidigm"];
+    const defaultModelos = ["V-302-20S"];
     const [equipos] = await pool.query(
       "SELECT DISTINCT equipo FROM informe_tecnico WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
     );
@@ -170,10 +189,14 @@ router.get("/valores-formulario", async (req, res) => {
       "SELECT DISTINCT modelo FROM informe_tecnico WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
     );
 
+    const equiposUnicos = [...new Set([...defaultEquipos, ...equipos.map(r => r.equipo)])];
+    const marcasUnicas = [...new Set([...defaultMarcas, ...marcas.map(r => r.marca)])];
+    const modelosUnicos = [...new Set([...defaultModelos, ...modelos.map(r => r.modelo)])];
+
     res.json({
-      equipos: equipos.map(r => r.equipo),
-      marcas: marcas.map(r => r.marca),
-      modelos: modelos.map(r => r.modelo)
+      equipos: equiposUnicos,
+      marcas: marcasUnicas,
+      modelos: modelosUnicos
     });
   } catch (err) {
     console.error(err);
@@ -433,9 +456,9 @@ router.get("/excel", async (req, res) => {
         r.asignacion ? new Date(r.asignacion).toLocaleDateString("es-CL") : "",
         r.falla_informada,
         r.en_garantia,
-        r.tipo,
+        formatTitleCase(r.tipo),
         r.falla_detectada,
-        r.estado_actual,
+        formatTitleCase(r.estado_actual),
         r.conclusion,
         r.fecha_reparacion
           ? new Date(r.fecha_reparacion).toLocaleDateString("es-CL")
@@ -636,8 +659,8 @@ router.get("/excel-respaldo", async (req, res) => {
         r.tecnico,
         r.asignacion ? new Date(r.asignacion).toLocaleDateString("es-CL") : "",
         r.en_garantia,
-        r.tipo,
-        r.estado_actual,
+        formatTitleCase(r.tipo),
+        formatTitleCase(r.estado_actual),
         r.fecha_reparacion ? new Date(r.fecha_reparacion).toLocaleDateString("es-CL") : "",
         r.solicitud_compra,
         r.n_denuncia,

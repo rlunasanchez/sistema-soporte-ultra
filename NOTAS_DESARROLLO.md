@@ -178,6 +178,23 @@ const getDateValue = (fecha) => {
 
 ---
 
+## v1.0.4 (23-03-2026)
+
+### Equipos por defecto en Formulario
+- Agregados equipos por defecto: PC, Notebook, Monitor, All in One, Impresora, Lector de huella
+- Agregadas marcas por defecto: Lumidigm
+- Agregados modelos por defecto: V-302-20S
+
+### Filtros en Exportación Excel
+**Problema:** Al exportar Excel con filtros, solo se exportaban los registros de la página actual (5 por página).
+
+**Solución:**
+- Backend (`ordenRoutes.js`): Modificada función `buildFilterQuery` para ignorar paginación cuando se envía parámetro `sinPaginacion: true`
+- Frontend (`Ordenes.jsx`): Agregado `sinPaginacion: true` a las 3 funciones Excel (descargarExcel, descargarExcelCorreo, descargarExcelRespaldo)
+- También agregados filtros `equipo`, `marca`, `modelo` a las funciones de exportación
+
+---
+
 ## Desplegar cambios
 1. **Frontend (Vercel):** GitHub connected, auto-deploy
 2. **Backend (Render):** Manual deploy - hacer clic en "Manual Deploy" > "Deploy latest commit"

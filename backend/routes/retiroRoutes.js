@@ -213,7 +213,7 @@ router.get("/excel", async (req, res) => {
 
       if (i % 2 === 0) {
         sheet.range(`A${row}:D${row}`).style({
-          fill: "F0FDF4",
+          fill: "F8FAFC",
         });
       }
     });
