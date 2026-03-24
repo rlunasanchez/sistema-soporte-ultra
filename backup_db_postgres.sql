@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
 );
 
 -- Crear tabla de órdenes
-CREATE TABLE IF NOT EXISTS ordenes_servicio (
+CREATE TABLE IF NOT EXISTS informe_tecnico (
     id SERIAL PRIMARY KEY,
     os VARCHAR(50),
     cliente VARCHAR(100),
@@ -45,7 +45,9 @@ CREATE TABLE IF NOT EXISTS ordenes_servicio (
     falla_informada TEXT,
     falla_detectada TEXT,
     conclusion TEXT,
-    realizado_por VARCHAR(100)
+    realizado_por VARCHAR(100),
+    fecha_diagnostico TIMESTAMP,
+    diagnostico TEXT
 );
 
 -- Insertar usuarios
