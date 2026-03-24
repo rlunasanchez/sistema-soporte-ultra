@@ -37,7 +37,7 @@ CREATE TABLE `ordenes_servicio` (
   `tecnico` varchar(255) DEFAULT NULL,
   `asignacion` date DEFAULT NULL,
   `en_garantia` enum('SI','NO') DEFAULT NULL,
-  `tipo` enum('REPARACION','MANTENCION','DOA') DEFAULT NULL,
+  `tipo` varchar(50) DEFAULT NULL,
   `estado_actual` varchar(255) DEFAULT NULL,
   `fecha_reparacion` date DEFAULT NULL,
   `solicitud_compra` varchar(255) DEFAULT NULL,
