@@ -102,51 +102,51 @@ const buildFilterQuery = (query, forExport = false) => {
   let paramIndex = 1;
 
   if (os) {
-    sql += ` AND os LIKE $${paramIndex}`;
-    countSql += ` AND os LIKE $${paramIndex}`;
-    params.push(`%${os}%`);
+    sql += ` AND LOWER(os) LIKE $${paramIndex}`;
+    countSql += ` AND LOWER(os) LIKE $${paramIndex}`;
+    params.push(`%${os.toLowerCase()}%`);
     paramIndex++;
   }
 
   if (cliente) {
-    sql += ` AND cliente LIKE $${paramIndex}`;
-    countSql += ` AND cliente LIKE $${paramIndex}`;
-    params.push(`%${cliente}%`);
+    sql += ` AND LOWER(cliente) LIKE $${paramIndex}`;
+    countSql += ` AND LOWER(cliente) LIKE $${paramIndex}`;
+    params.push(`%${cliente.toLowerCase()}%`);
     paramIndex++;
   }
 
   if (tecnico) {
-    sql += ` AND tecnico LIKE $${paramIndex}`;
-    countSql += ` AND tecnico LIKE $${paramIndex}`;
-    params.push(`%${tecnico}%`);
+    sql += ` AND LOWER(tecnico) LIKE $${paramIndex}`;
+    countSql += ` AND LOWER(tecnico) LIKE $${paramIndex}`;
+    params.push(`%${tecnico.toLowerCase()}%`);
     paramIndex++;
   }
 
   if (estado) {
-    sql += ` AND estado_actual LIKE $${paramIndex}`;
-    countSql += ` AND estado_actual LIKE $${paramIndex}`;
-    params.push(`%${estado}%`);
+    sql += ` AND LOWER(estado_actual) LIKE $${paramIndex}`;
+    countSql += ` AND LOWER(estado_actual) LIKE $${paramIndex}`;
+    params.push(`%${estado.toLowerCase()}%`);
     paramIndex++;
   }
 
   if (equipo) {
-    sql += ` AND equipo LIKE $${paramIndex}`;
-    countSql += ` AND equipo LIKE $${paramIndex}`;
-    params.push(`%${equipo}%`);
+    sql += ` AND LOWER(equipo) LIKE $${paramIndex}`;
+    countSql += ` AND LOWER(equipo) LIKE $${paramIndex}`;
+    params.push(`%${equipo.toLowerCase()}%`);
     paramIndex++;
   }
 
   if (marca) {
-    sql += ` AND marca LIKE $${paramIndex}`;
-    countSql += ` AND marca LIKE $${paramIndex}`;
-    params.push(`%${marca}%`);
+    sql += ` AND LOWER(marca) LIKE $${paramIndex}`;
+    countSql += ` AND LOWER(marca) LIKE $${paramIndex}`;
+    params.push(`%${marca.toLowerCase()}%`);
     paramIndex++;
   }
 
   if (modelo) {
-    sql += ` AND modelo LIKE $${paramIndex}`;
-    countSql += ` AND modelo LIKE $${paramIndex}`;
-    params.push(`%${modelo}%`);
+    sql += ` AND LOWER(modelo) LIKE $${paramIndex}`;
+    countSql += ` AND LOWER(modelo) LIKE $${paramIndex}`;
+    params.push(`%${modelo.toLowerCase()}%`);
     paramIndex++;
   }
 
