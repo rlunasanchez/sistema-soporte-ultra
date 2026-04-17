@@ -97,9 +97,9 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: var(--danger-light);
-  color: var(--danger);
-  border: none;
+  background: var(--bg);
+  color: var(--text-muted);
+  border: 1.5px solid var(--border);
   padding: 8px 16px;
   border-radius: var(--radius-sm);
   font-weight: 600;
@@ -109,8 +109,8 @@ body {
 }
 
 .logout-btn:hover {
-  background: var(--danger);
-  color: white;
+  background: var(--border);
+  color: var(--text);
 }
 
 /* =========================
@@ -147,12 +147,14 @@ body {
 .export-btn {
   background: var(--panel);
   color: var(--text);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   box-shadow: none;
+  transition: all 0.2s ease;
 }
 
 .export-btn:hover {
   background: var(--bg);
+  border-color: #c5cfd9;
   transform: translateY(-1px);
 }
 
@@ -225,17 +227,22 @@ body {
 .filter-group select {
   padding: 10px 14px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   font-size: 0.875rem;
   transition: all 0.2s ease;
-  background: var(--bg);
+  background: #fafbfc;
+}
+
+.filter-group input:hover,
+.filter-group select:hover {
+  border-color: #c5cfd9;
 }
 
 .filter-group input:focus,
 .filter-group select:focus {
   border-color: var(--primary);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px rgba(12, 74, 140, 0.12);
   background: white;
 }
 
@@ -410,7 +417,7 @@ table tr:last-child td {
   align-items: center;
   justify-content: center;
   padding: 8px 12px;
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   background: white;
   border-radius: var(--radius-sm);
   cursor: pointer;
@@ -448,7 +455,11 @@ table tr:last-child td {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: linear-gradient(135deg, #f0f2f5 0%, #e0e7ff 100%);
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(0, 181, 226, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(12, 74, 140, 0.08) 0%, transparent 50%),
+    linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  position: relative;
 }
 
 .auth-card {
@@ -458,6 +469,18 @@ table tr:last-child td {
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
   padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient);
 }
 
 .auth-header {
@@ -475,6 +498,12 @@ table tr:last-child td {
   justify-content: center;
   margin: 0 auto 16px;
   box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-header .logo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(12, 74, 140, 0.35);
 }
 
 .auth-header h2 {
@@ -511,10 +540,22 @@ table tr:last-child td {
 .form-group input {
   padding: 12px 14px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   font-size: 1rem;
   transition: all 0.2s ease;
   text-align: center;
+  background: #fafbfc;
+}
+
+.form-group input:hover {
+  border-color: #c5cfd9;
+}
+
+.form-group input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(12, 74, 140, 0.12);
+  background: #fff;
 }
 
 .form-group.input-with-icon {
@@ -523,7 +564,7 @@ table tr:last-child td {
 
 .form-group.input-with-icon input {
   padding-left: 44px;
-  padding-right: 14px;
+  padding-right: 44px;
   text-align: left;
 }
 
@@ -540,6 +581,25 @@ table tr:last-child td {
   justify-content: center;
 }
 
+.form-group.input-with-icon .toggle-password {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  opacity: 0.6;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-group.input-with-icon .toggle-password:hover {
+  opacity: 1;
+}
+
 .form-group input:focus {
   border-color: var(--primary);
   outline: none;
@@ -552,6 +612,26 @@ table tr:last-child td {
   padding: 14px 20px;
   font-size: 1rem;
   margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-form .main-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease;
+}
+
+.auth-form .main-btn:active::after {
+  width: 300px;
+  height: 300px;
 }
 
 .auth-footer {
@@ -570,6 +650,18 @@ table tr:last-child td {
   box-shadow: var(--shadow);
   padding: 12px;
   max-width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.form-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient);
 }
 
 .form-header {
@@ -605,17 +697,22 @@ table tr:last-child td {
 .form-grid select {
   padding: 8px 10px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   font-size: 0.8rem;
   transition: all 0.2s ease;
-  background: var(--bg);
+  background: #fafbfc;
+}
+
+.form-grid input:hover,
+.form-grid select:hover {
+  border-color: #c5cfd9;
 }
 
 .form-grid input:focus,
 .form-grid select:focus {
   border-color: var(--primary);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px rgba(12, 74, 140, 0.12);
   background: white;
 }
 
@@ -624,8 +721,13 @@ table tr:last-child td {
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 6px;
   padding: 8px;
-  background: var(--bg);
+  background: #fafbfc;
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
+}
+
+.checkbox-grid:hover {
+  border-color: #c5cfd9;
 }
 
 .checkbox-grid label {
@@ -634,6 +736,11 @@ table tr:last-child td {
   gap: 4px;
   font-size: 0.7rem;
   cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.checkbox-grid label:hover {
+  opacity: 0.8;
 }
 
 .checkbox-grid input[type="checkbox"] {
@@ -645,19 +752,24 @@ table tr:last-child td {
 textarea {
   padding: 8px 10px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   font-size: 0.75rem;
   transition: all 0.2s ease;
-  min-height: 120px;
+  min-height: 80px;
   resize: vertical;
   font-family: inherit;
   line-height: 1.6;
+  background: #fafbfc;
+}
+
+textarea:hover {
+  border-color: #c5cfd9;
 }
 
 textarea:focus {
   border-color: var(--primary);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px rgba(12, 74, 140, 0.12);
   background: white;
 }
 
@@ -677,7 +789,7 @@ textarea:focus {
   gap: 8px;
   background: var(--bg);
   color: var(--text-muted);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   padding: 12px 20px;
   border-radius: var(--radius-sm);
   font-weight: 600;
@@ -849,13 +961,13 @@ textarea:focus {
     padding: 12px;
   }
 
-  .mobile-card {
-    background: white;
-    border-radius: var(--radius-sm);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
+.mobile-card {
+  background: white;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+}
 
   .mobile-card-header {
     background: var(--primary-light);
@@ -1032,7 +1144,7 @@ textarea:focus {
 }
 
 .seccion-item {
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   overflow: hidden;
 }

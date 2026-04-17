@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
-import { Shield, Lock, User, ArrowLeft, KeyRound } from 'lucide-react';
+import { Shield, Lock, User, ArrowLeft, KeyRound, Eye, EyeOff } from 'lucide-react';
 import api from '../services/api';
 
 function Login() {
@@ -18,6 +18,9 @@ function Login() {
   const [nuevaPassword, setNuevaPassword] = useState('');
   const [confirmarPassword, setConfirmarPassword] = useState('');
   const [codigoEnviado, setCodigoEnviado] = useState(false);
+  const [mostrarPassword, setMostrarPassword] = useState(false);
+  const [mostrarNuevaPassword, setMostrarNuevaPassword] = useState(false);
+  const [mostrarConfirmarPassword, setMostrarConfirmarPassword] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -219,24 +222,30 @@ function Login() {
                 <label>Nueva Contraseña</label>
                 <Lock className='input-icon' size={20} />
                 <input
-                  type='password'
+                  type={mostrarNuevaPassword ? 'text' : 'password'}
                   placeholder='Nueva contraseña'
                   value={nuevaPassword}
                   onChange={(e) => setNuevaPassword(e.target.value)}
                   disabled={cargando}
                 />
+                <button type='button' className='toggle-password' onClick={() => setMostrarNuevaPassword(!mostrarNuevaPassword)}>
+                  {mostrarNuevaPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
 
               <div className='form-group input-with-icon'>
                 <label>Confirmar Contraseña</label>
                 <Lock className='input-icon' size={20} />
                 <input
-                  type='password'
+                  type={mostrarConfirmarPassword ? 'text' : 'password'}
                   placeholder='Confirme la contraseña'
                   value={confirmarPassword}
                   onChange={(e) => setConfirmarPassword(e.target.value)}
                   disabled={cargando}
                 />
+                <button type='button' className='toggle-password' onClick={() => setMostrarConfirmarPassword(!mostrarConfirmarPassword)}>
+                  {mostrarConfirmarPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
 
               <button 
@@ -297,12 +306,15 @@ function Login() {
             <label>Contraseña</label>
             <Lock className='input-icon' size={20} />
             <input
-              type='password'
+              type={mostrarPassword ? 'text' : 'password'}
               placeholder='Ingrese su contraseña'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={cargando}
             />
+            <button type='button' className='toggle-password' onClick={() => setMostrarPassword(!mostrarPassword)}>
+              {mostrarPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
 
           <button 
