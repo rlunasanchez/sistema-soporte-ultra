@@ -98,6 +98,16 @@ router.put("/cambiar-password", authMiddleware, async (req, res) => {
   }
 });
 
+// Endpoint de diagnóstico para verificar configuración de email (solo para testing)
+router.get("/verificar-email-config", async (req, res) => {
+  const configOk = !!process.env.RESEND_API_KEY;
+  res.json({
+    resendApiKeyConfigurada: configOk,
+    nodeEnv: process.env.NODE_ENV || 'not set',
+    mensaje: configOk ? "Configuración OK" : "RESEND_API_KEY no está configurada"
+  });
+});
+
 router.post("/olvide-password", async (req, res) => {
   const { usuario } = req.body;
 
@@ -120,45 +130,79 @@ router.post("/olvide-password", async (req, res) => {
 
 router.post("/buscar-usuario", async (req, res) => {
   const { usuario } = req.body;
+  
+  console.log(`[buscar-usuario] Iniciando para usuario: ${usuario}`);
 
   try {
+    console.log(`[buscar-usuario] Buscando usuario en BD...`);
     const result = await pool.query(
       "SELECT id, email FROM usuarios WHERE usuario = $1 AND activo = true",
       [usuario]
     );
+    console.log(`[buscar-usuario] Usuario encontrado: ${result.rows.length > 0}`);
 
     if (result.rows.length === 0) {
+      console.log(`[buscar-usuario] Usuario no encontrado o inactivo`);
       return res.json({ existe: false });
     }
 
     const email = result.rows[0].email;
+    console.log(`[buscar-usuario] Email del usuario: ${email ? '***' + email.slice(-10) : 'NO TIENE'}`);
     
     if (!email) {
+      console.log(`[buscar-usuario] Usuario sin email registrado`);
       return res.status(400).json({ msg: "El usuario no tiene email registrado. Contacta al administrador." });
     }
 
     const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log(`[buscar-usuario] Código generado: ${codigo}`);
     
+    console.log(`[buscar-usuario] Guardando código en BD...`);
     await pool.query(
       "UPDATE usuarios SET codigo_recuperacion = $1, fecha_codigo = CURRENT_TIMESTAMP WHERE usuario = $2",
       [codigo, usuario]
     );
+    console.log(`[buscar-usuario] Código guardado en BD`);
 
     const asunto = "Código de recuperación de contraseña";
     const mensaje = `Tu código de verificación es: ${codigo}\n\nEste código expira en 15 minutos.\n\nSistema de Soporte Ultra`;
 
+    console.log(`[buscar-usuario] Intentando enviar email...`);
     const emailEnviado = await enviarEmail(email, asunto, mensaje);
+    console.log(`[buscar-usuario] Resultado envío email: ${emailEnviado ? 'ÉXITO' : 'FALLO'}`);
 
     if (!emailEnviado) {
-      console.log(`=== CÓDIGO DE RECUPERACIÓN ===`);
-      console.log(`Usuario: ${usuario}, Código: ${codigo}`);
-      return res.status(500).json({ msg: "Error al enviar email. Intenta de nuevo más tarde." });
+      console.log(`=== CÓDIGO DE RECUPERACIÓN (FALLBACK) ===`);
+      console.log(`Usuario: ${usuario}, Email: ${email}, Código: ${codigo}`);
+      
+      // Solo mostrar código en respuesta si estamos en desarrollo local
+      const esDesarrollo = process.env.NODE_ENV !== 'production';
+      console.log(`[buscar-usuario] Modo desarrollo: ${esDesarrollo}`);
+      
+      if (esDesarrollo) {
+        return res.json({ 
+          existe: true, 
+          mensaje: "No se pudo enviar el email. Código mostrado para desarrollo.", 
+          codigo: codigo 
+        });
+      } else {
+        return res.status(500).json({ 
+          success: false,
+          msg: "No se pudo enviar el código. Por favor contacta al administrador." 
+        });
+      }
     }
 
-    res.json({ existe: true, mensaje: "Código enviado a tu email" });
+    console.log(`[buscar-usuario] Proceso completado exitosamente`);
+    res.json({ success: true, existe: true, mensaje: "Código enviado a tu email" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "Error del servidor" });
+    console.error(`[buscar-usuario] ERROR DETALLADO:`, err);
+    console.error(`[buscar-usuario] Stack trace:`, err.stack);
+    res.status(500).json({ 
+      success: false,
+      msg: "Error del servidor", 
+      error: err.message 
+    });
   }
 });
 
