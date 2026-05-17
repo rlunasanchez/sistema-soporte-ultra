@@ -63,7 +63,7 @@ function Informacion() {
             <li><strong>PostgreSQL</strong> - Base de datos (Neon)</li>
             <li><strong>JWT</strong> - Autenticación segura</li>
             <li><strong>bcrypt</strong> - Encriptación de contraseñas</li>
-            <li><strong>Resend</strong> - Envío de correos</li>
+
             <li><strong>xlsx-populate</strong> - Generación de Excel</li>
           </ul>
           <h4>Frontend</h4>
@@ -89,7 +89,6 @@ function Informacion() {
             <li><strong>Frontend:</strong> Vercel</li>
             <li><strong>Backend:</strong> Render</li>
             <li><strong>Base de datos:</strong> Neon (PostgreSQL)</li>
-            <li><strong>Email:</strong> Resend (API)</li>
             <li><strong>Repositorio:</strong> GitHub</li>
           </ul>
           <h4>Costos</h4>
@@ -98,7 +97,6 @@ function Informacion() {
             <li>Neon: PostgreSQL gratis hasta 0.5GB</li>
             <li>Render: 750 horas/mes gratis</li>
             <li>Vercel: Ilimitado para proyectos personales</li>
-            <li>Resend: 3,000 emails gratis/mes</li>
           </ul>
         </div>
       )
@@ -112,7 +110,7 @@ function Informacion() {
           <h4>Autenticación</h4>
           <ul>
             <li>Login con usuario y contraseña</li>
-            <li>Recuperación de contraseña por email</li>
+            <li>Recuperación de contraseña</li>
             <li>Token JWT con expiración de 8 horas</li>
             <li>Rate limiting (protección contra ataques)</li>
           </ul>

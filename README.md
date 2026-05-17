@@ -38,7 +38,6 @@
 - **PostgreSQL** - Base de datos (Neon)
 - **JWT** - Autenticación segura
 - **bcrypt** - Encriptación de contraseñas
-- **Resend API** - Envío de correos
 - **xlsx-populate** - Generación de Excel
 - **pdfkit** - Generación de PDF
 
@@ -58,7 +57,6 @@
 | **Vercel** | Frontend | Gratis |
 | **Render** | Backend | Gratis (750 horas/mes) |
 | **Neon** | PostgreSQL | Gratis (0.5GB) |
-| **Resend** | Emails | Gratis (3,000 emails/mes) |
 | **GitHub** | Repositorio | Gratis |
 
 ---
@@ -115,7 +113,6 @@ sistema-soporte-ultra/
 |----------|-------------|
 | `DATABASE_URL` | Connection string PostgreSQL de Neon |
 | `JWT_SECRET` | Clave secreta para JWT |
-| `RESEND_API_KEY` | API Key de Resend para emails |
 | `NODE_ENV` | production |
 
 ### Frontend (Vercel)
@@ -258,9 +255,7 @@ git push origin main
 
 2. **Render**: El backend está en el plan gratuito. Puede hibernar después de 15 minutos de inactividad. La primera petición después de hibernar puede tardar ~30 segundos.
 
-3. **Resend**: Para emails se usa Resend API (gratis). La cuenta está configurada con el dominio `onboarding@resend.dev`.
-
-4. **Vercel**: El frontend está configurado como SPA (Single Page Application) con rewrites para React Router.
+3. **Vercel**: El frontend está configurado como SPA (Single Page Application) con rewrites para React Router.
 
 5. **Datos**: Las órdenes y usuarios están sincronizados con la base de datos de Neon.
 
@@ -271,7 +266,6 @@ git push origin main
 - [x] Frontend desplegado en Vercel
 - [x] Backend desplegado en Render
 - [x] Base de datos en Neon
-- [x] Envío de emails funcionando
 - [x] Login y autenticación funcionando
 - [x] CRUD de órdenes funcionando
 - [x] Exportación a Excel funcionando

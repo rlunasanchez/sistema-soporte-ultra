@@ -98,13 +98,12 @@ router.put("/cambiar-password", authMiddleware, async (req, res) => {
   }
 });
 
-// Endpoint de diagnóstico para verificar configuración de email (solo para testing)
+// Endpoint de diagnóstico (solo para testing)
 router.get("/verificar-email-config", async (req, res) => {
-  const configOk = !!process.env.RESEND_API_KEY;
   res.json({
-    resendApiKeyConfigurada: configOk,
+    servicioCorreo: "deshabilitado",
     nodeEnv: process.env.NODE_ENV || 'not set',
-    mensaje: configOk ? "Configuración OK" : "RESEND_API_KEY no está configurada"
+    mensaje: "El servicio de correo está deshabilitado"
   });
 });
 
@@ -172,25 +171,14 @@ router.post("/buscar-usuario", async (req, res) => {
     console.log(`[buscar-usuario] Resultado envío email: ${emailEnviado ? 'ÉXITO' : 'FALLO'}`);
 
     if (!emailEnviado) {
-      console.log(`=== CÓDIGO DE RECUPERACIÓN (FALLBACK) ===`);
-      console.log(`Usuario: ${usuario}, Email: ${email}, Código: ${codigo}`);
+      console.log(`=== CÓDIGO DE RECUPERACIÓN ===`);
+      console.log(`Usuario: ${usuario}, Código: ${codigo}`);
       
-      // Solo mostrar código en respuesta si estamos en desarrollo local
-      const esDesarrollo = process.env.NODE_ENV !== 'production';
-      console.log(`[buscar-usuario] Modo desarrollo: ${esDesarrollo}`);
-      
-      if (esDesarrollo) {
-        return res.json({ 
-          existe: true, 
-          mensaje: "No se pudo enviar el email. Código mostrado para desarrollo.", 
-          codigo: codigo 
-        });
-      } else {
-        return res.status(500).json({ 
-          success: false,
-          msg: "No se pudo enviar el código. Por favor contacta al administrador." 
-        });
-      }
+      return res.json({ 
+        existe: true, 
+        mensaje: "Código de recuperación generado.", 
+        codigo: codigo 
+      });
     }
 
     console.log(`[buscar-usuario] Proceso completado exitosamente`);

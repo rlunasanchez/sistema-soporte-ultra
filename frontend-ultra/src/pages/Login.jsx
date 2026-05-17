@@ -87,7 +87,11 @@ function Login() {
 
       if (res.data.existe) {
         setCodigoEnviado(true);
-        alert(res.data.mensaje || 'Código enviado a tu email');
+        if (res.data.codigo) {
+          alert(`Tu código de recuperación es: ${res.data.codigo}`);
+        } else {
+          alert(res.data.mensaje || 'Código enviado');
+        }
       } else {
         alert('Usuario no encontrado');
       }
@@ -214,7 +218,7 @@ function Login() {
                   style={{ textAlign: 'center', fontSize: '1.2rem', letterSpacing: '4px' }}
                 />
                 <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                  El código llega a tu email
+                  Ingresa el código de recuperación
                 </small>
               </div>
 
