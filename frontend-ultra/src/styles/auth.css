@@ -58,12 +58,11 @@
   flex-direction: column;
 }
 
-@media (max-width: 420px) {
-  .auth-card { flex-direction: column; }
-  .auth-panel {
-    width: 100%;
-    height: 44px;
-  }
+@media (max-width: 520px) {
+  .auth-card { max-width: 100%; border-radius: 0; }
+  .auth-panel { width: 28px; }
+  .auth-panel svg { width: 16px; height: 16px; }
+  .auth-body { padding: clamp(18px, 4vw, 24px) clamp(14px, 3vw, 20px); }
 }
 
 .auth-main {
