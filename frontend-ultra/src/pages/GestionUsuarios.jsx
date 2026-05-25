@@ -13,7 +13,7 @@ function GestionUsuarios() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [mostrarCambioPassword, setMostrarCambioPassword] = useState(false);
   const [usuarioEditando, setUsuarioEditando] = useState(null);
-  
+
   const [nuevoUsuario, setNuevoUsuario] = useState({
     usuario: "",
     password: "",
@@ -148,7 +148,7 @@ function GestionUsuarios() {
       <div className="container">
         <div className="form-container">
           <div className="form-header">
-            <h2><Lock size={24} /> Cambiar Mi Contraseña</h2>
+            <h2><Lock /> Cambiar Mi Contraseña</h2>
           </div>
           <form onSubmit={cambiarMiPassword} className="form-grid">
             <div className="form-group full-width">
@@ -178,12 +178,12 @@ function GestionUsuarios() {
                 required
               />
             </div>
-            <div className="form-actions" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: '20px', marginTop: '8px' }}>
+            <div className="form-actions form-actions-space">
               <button type="button" className="cancel-btn" onClick={() => setMostrarCambioPassword(false)}>
-                <ArrowLeft size={20} /> Cancelar
+                <ArrowLeft /> Cancelar
               </button>
               <button type="submit" className="main-btn">
-                <Save size={20} /> Guardar
+                <Save /> Guardar
               </button>
             </div>
           </form>
@@ -197,7 +197,7 @@ function GestionUsuarios() {
       <div className="container">
         <div className="form-container">
           <div className="form-header">
-            <h2><Plus size={24} /> {usuarioEditando ? "Editar Usuario" : "Crear Usuario"}</h2>
+            <h2><Plus /> {usuarioEditando ? "Editar Usuario" : "Crear Usuario"}</h2>
           </div>
           <form onSubmit={crearUsuario} className="form-grid">
             <div className="form-group">
@@ -240,16 +240,16 @@ function GestionUsuarios() {
                 <option value="admin">Administrador</option>
               </select>
             </div>
-            <div className="form-actions" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: '20px', marginTop: '8px' }}>
+            <div className="form-actions form-actions-space">
               <button type="button" className="cancel-btn" onClick={() => {
                 setMostrarFormulario(false);
                 setUsuarioEditando(null);
                 setNuevoUsuario({ usuario: "", password: "", rol: "tecnico", email: "" });
               }}>
-                <ArrowLeft size={20} /> Cancelar
+                <ArrowLeft /> Cancelar
               </button>
               <button type="submit" className="main-btn">
-                <Save size={20} /> {usuarioEditando ? "Actualizar" : "Crear Usuario"}
+                <Save /> {usuarioEditando ? "Actualizar" : "Crear Usuario"}
               </button>
             </div>
           </form>
@@ -262,19 +262,19 @@ function GestionUsuarios() {
     <div className="container">
       <div className="header">
         <div className="header-left">
-          <h1><Users size={28} /> {rol === 'admin' ? 'Gestión de Usuarios' : 'Mi Cuenta'}</h1>
+          <h1><Users /> {rol === 'admin' ? 'Gestión de Usuarios' : 'Mi Cuenta'}</h1>
         </div>
         <div className="user-info">
-          <button onClick={() => setMostrarCambioPassword(true)} className="logout-btn" style={{ background: 'var(--primary-light)', color: 'var(--primary)' }}>
-            <Key size={18} />
+          <button onClick={() => setMostrarCambioPassword(true)} className="logout-btn accent-btn">
+            <Key />
             Cambiar Password
           </button>
           <button onClick={() => navigate("/ordenes")} className="logout-btn">
-            <ArrowLeft size={18} />
+            <ArrowLeft />
             Volver
           </button>
           <button onClick={cerrarSesion} className="logout-btn">
-            <LogOut size={18} />
+            <LogOut />
             Cerrar Sesión
           </button>
         </div>
@@ -283,7 +283,7 @@ function GestionUsuarios() {
       {rol === 'admin' && (
         <div className="actions-bar">
           <button onClick={() => setMostrarFormulario(true)} className="main-btn">
-            <Plus size={20} />
+            <Plus />
             Nuevo Usuario
           </button>
         </div>
@@ -316,11 +316,10 @@ function GestionUsuarios() {
                   </td>
                   <td data-label="Estado">
                     <button
-                      className="table-btn"
+                      className={`table-btn ${u.activo ? 'table-btn-success' : 'table-btn-danger'}`}
                       onClick={() => toggleActivo(u.id, u.activo)}
-                      style={{ background: u.activo ? 'var(--success-light)' : 'var(--danger-light)', color: u.activo ? 'var(--success)' : 'var(--danger)' }}
                     >
-                      {u.activo ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                      {u.activo ? <ToggleRight /> : <ToggleLeft />}
                       {u.activo ? 'Activo' : 'Inactivo'}
                     </button>
                   </td>
@@ -330,17 +329,14 @@ function GestionUsuarios() {
                       {rol === 'admin' && (
                         <>
                           <button className="table-btn edit-btn" onClick={() => editarUsuario(u)}>
-                            <Edit size={14} />
-                            Editar
+                            <Edit /> Editar
                           </button>
-                          <button className="table-btn" onClick={() => resetearPassword(u.id)} style={{ background: 'var(--warning-light)', color: 'var(--warning)' }}>
-                            <Key size={14} />
-                            Reset
+                          <button className="table-btn reset-pw-btn" onClick={() => resetearPassword(u.id)}>
+                            <Key /> Reset
                           </button>
                           {u.usuario !== 'admin' && (
                             <button className="table-btn delete-btn" onClick={() => eliminarUsuario(u.id)}>
-                              <Trash2 size={14} />
-                              Eliminar
+                              <Trash2 /> Eliminar
                             </button>
                           )}
                         </>
@@ -353,15 +349,15 @@ function GestionUsuarios() {
           </table>
         </div>
       ) : (
-        <div className="table-container" style={{ padding: '40px', textAlign: 'center' }}>
+        <div className="table-container user-info-card">
           <h2>Información de tu cuenta</h2>
-          <p style={{ fontSize: '1.1rem', marginTop: '20px' }}>
+          <p className="user-info-line">
             <strong>Usuario:</strong> {usuarioActual}
           </p>
-          <p style={{ fontSize: '1.1rem' }}>
+          <p className="user-info-line">
             <strong>Rol:</strong> {rol}
           </p>
-          <p style={{ color: 'var(--text-muted)', marginTop: '20px' }}>
+          <p className="user-info-muted">
             Contacta al administrador si necesitas cambios en tu cuenta.
           </p>
         </div>

@@ -1,13 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
-  Wrench, Plus, Download, Mail, Save, FileText,
+  Wrench, Plus, Mail, Save, FileText,
   Search, ChevronDown, ChevronUp, LogOut,
   User, Edit, Trash2, Filter, FileSpreadsheet, Users, Info, Package
 } from "lucide-react";
 import api from "../services/api";
 import Formulario from "./Formulario";
 import CustomSelect from "./CustomSelect";
+import Pagination from "./Pagination";
 
 function Ordenes() {
   const navigate = useNavigate();
@@ -67,7 +68,6 @@ function Ordenes() {
         fetchOrdenes();
       }
     };
-
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
@@ -133,11 +133,9 @@ function Ordenes() {
           limit: registrosPorPagina,
         },
       });
-
       setOrdenes(res.data.data);
       setTotalRegistros(res.data.pagination.total);
       setTotalPaginas(res.data.pagination.totalPages);
-
     } catch (err) {
       console.error(err);
       setOrdenes([]);
@@ -150,28 +148,17 @@ function Ordenes() {
     const delay = setTimeout(() => {
       fetchOrdenes();
     }, 400);
-
     return () => clearTimeout(delay);
-
   }, [
-    busquedaOS,
-    filtroCliente,
-    filtroTecnico,
-    filtroEstado,
-    filtroEquipo,
-    filtroMarca,
-    filtroModelo,
-    fechaAsignacionDesde,
-    fechaAsignacionHasta,
-    fechaReparacionDesde,
-    fechaReparacionHasta,
-    fechaFiltro,
-    paginaActual,
+    busquedaOS, filtroCliente, filtroTecnico, filtroEstado,
+    filtroEquipo, filtroMarca, filtroModelo,
+    fechaAsignacionDesde, fechaAsignacionHasta,
+    fechaReparacionDesde, fechaReparacionHasta,
+    fechaFiltro, paginaActual,
   ]);
 
   const eliminarOrden = async (id) => {
     if (!window.confirm("¿Deseas eliminar esta orden?")) return;
-
     try {
       await api.delete(`/api/orden/${id}`);
       fetchOrdenes();
@@ -225,19 +212,13 @@ function Ordenes() {
     try {
       const response = await api.get("/api/orden/excel", {
         params: {
-          os: busquedaOS,
-          cliente: filtroCliente,
-          tecnico: filtroTecnico,
-          estado: filtroEstado,
-          fechaAsignacionDesde,
-          fechaAsignacionHasta,
-          fechaReparacionDesde,
-          fechaReparacionHasta,
-          fecha: fechaFiltro,
+          os: busquedaOS, cliente: filtroCliente, tecnico: filtroTecnico,
+          estado: filtroEstado, equipo: filtroEquipo, marca: filtroMarca,
+          modelo: filtroModelo, fechaAsignacionDesde, fechaAsignacionHasta,
+          fechaReparacionDesde, fechaReparacionHasta, fecha: fechaFiltro,
         },
         responseType: "blob",
       });
-
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -245,7 +226,6 @@ function Ordenes() {
       document.body.appendChild(link);
       link.click();
       link.remove();
-
     } catch {
       alert("No se pudo descargar el Excel");
     }
@@ -255,19 +235,13 @@ function Ordenes() {
     try {
       const response = await api.get("/api/orden/excel-correo", {
         params: {
-          os: busquedaOS,
-          cliente: filtroCliente,
-          tecnico: filtroTecnico,
-          estado: filtroEstado,
-          fechaAsignacionDesde,
-          fechaAsignacionHasta,
-          fechaReparacionDesde,
-          fechaReparacionHasta,
-          fecha: fechaFiltro,
+          os: busquedaOS, cliente: filtroCliente, tecnico: filtroTecnico,
+          estado: filtroEstado, equipo: filtroEquipo, marca: filtroMarca,
+          modelo: filtroModelo, fechaAsignacionDesde, fechaAsignacionHasta,
+          fechaReparacionDesde, fechaReparacionHasta, fecha: fechaFiltro,
         },
         responseType: "blob",
       });
-
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -275,7 +249,6 @@ function Ordenes() {
       document.body.appendChild(link);
       link.click();
       link.remove();
-
     } catch {
       alert("No se pudo descargar el Excel correo");
     }
@@ -285,19 +258,13 @@ function Ordenes() {
     try {
       const response = await api.get("/api/orden/excel-respaldo", {
         params: {
-          os: busquedaOS,
-          cliente: filtroCliente,
-          tecnico: filtroTecnico,
-          estado: filtroEstado,
-          fechaAsignacionDesde,
-          fechaAsignacionHasta,
-          fechaReparacionDesde,
-          fechaReparacionHasta,
-          fecha: fechaFiltro,
+          os: busquedaOS, cliente: filtroCliente, tecnico: filtroTecnico,
+          estado: filtroEstado, equipo: filtroEquipo, marca: filtroMarca,
+          modelo: filtroModelo, fechaAsignacionDesde, fechaAsignacionHasta,
+          fechaReparacionDesde, fechaReparacionHasta, fecha: fechaFiltro,
         },
         responseType: "blob",
       });
-
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -305,7 +272,6 @@ function Ordenes() {
       document.body.appendChild(link);
       link.click();
       link.remove();
-
     } catch {
       alert("No se pudo descargar el Excel respaldo");
     }
@@ -329,10 +295,7 @@ function Ordenes() {
       params.append("limit", "1000");
       params.append("page", "1");
 
-      const response = await api.get(`/api/orden/pdf?${params.toString()}`, {
-        responseType: 'blob'
-      });
-
+      const response = await api.get(`/api/orden/pdf?${params.toString()}`, { responseType: 'blob' });
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -340,7 +303,6 @@ function Ordenes() {
       document.body.appendChild(link);
       link.click();
       link.remove();
-
     } catch {
       alert("No se pudo descargar el PDF");
     }
@@ -373,218 +335,112 @@ function Ordenes() {
     <div className="container">
       <div className="header">
         <div className="header-left">
-          <h1>
-            <Wrench size={28} />
-            Sistema de Carga OS
-          </h1>
+          <h1><Wrench /> Sistema de Carga OS</h1>
         </div>
-        
         <div className="user-info">
           <div className="user-badge">
-            <User size={18} />
-            {usuario}
+            <User /> {usuario}
           </div>
           <button onClick={cerrarSesion} className="logout-btn">
-            <LogOut size={18} />
-            Cerrar Sesión
+            <LogOut /> Cerrar Sesión
           </button>
         </div>
       </div>
 
       <div className="actions-bar">
-        <button
-          onClick={() => {
-            setOrdenEditar(null);
-            setMostrarFormulario(true);
-          }}
-          className="main-btn"
-        >
-          <Plus size={20} />
-          Informe Técnico
+        <button onClick={() => { setOrdenEditar(null); setMostrarFormulario(true); }} className="main-btn">
+          <Plus /> Informe Técnico
         </button>
-
         <button onClick={descargarExcel} className="main-btn export-btn">
-          <FileSpreadsheet size={20} />
-          Excel Carga
+          <FileSpreadsheet /> Excel Carga
         </button>
-
         <button onClick={descargarExcelCorreo} className="main-btn export-btn">
-          <Mail size={20} />
-          Excel Correo
+          <Mail /> Excel Correo
         </button>
-
         <button onClick={descargarExcelRespaldo} className="main-btn export-btn">
-          <Save size={20} />
-          Excel Respaldo
+          <Save /> Excel Respaldo
         </button>
-
-        <button onClick={descargarPDF} className="main-btn export-btn" style={{ background: 'linear-gradient(135deg, #E53935 0%, #ff5252 100%)' }}>
-          <FileText size={20} />
-          Exportar PDF
+        <button onClick={descargarPDF} className="main-btn export-btn pdf-btn">
+          <FileText /> Exportar PDF
         </button>
-
         {rol === 'admin' ? (
           <button onClick={() => navigate("/usuarios")} className="main-btn export-btn">
-            <Users size={20} />
-            Usuarios
+            <Users /> Usuarios
           </button>
         ) : (
           <button onClick={() => navigate("/usuarios")} className="main-btn export-btn">
-            <Users size={20} />
-            Mi Cuenta
+            <Users /> Mi Cuenta
           </button>
         )}
-
         <button onClick={() => navigate("/informacion")} className="main-btn info-btn">
-          <Info size={20} />
-          Datos del Software
+          <Info /> Datos del Software
         </button>
-
-        <button onClick={() => navigate("/retiro-bodega")} className="main-btn" style={{ background: 'linear-gradient(135deg, #009EE3 0%, #00B5E2 100%)' }}>
-          <Package size={20} />
-          Retiro Bodega
+        <button onClick={() => navigate("/retiro-bodega")} className="main-btn bodega-btn">
+          <Package /> Retiro Bodega
         </button>
       </div>
 
       <div className="filters-section">
-        <div 
-          className="filters-header"
-          onClick={() => setFiltrosExpandidos(!filtrosExpandidos)}
-        >
-          <h3>
-            <Filter size={18} />
-            Filtros de Búsqueda
-          </h3>
+        <div className="filters-header" onClick={() => setFiltrosExpandidos(!filtrosExpandidos)}>
+          <h3><Filter /> Filtros de Búsqueda</h3>
           <div className="filters-toggle">
             {filtrosExpandidos ? 'Ocultar' : 'Mostrar'}
-            {filtrosExpandidos ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            {filtrosExpandidos ? <ChevronUp /> : <ChevronDown />}
           </div>
         </div>
-
         {filtrosExpandidos && (
           <div className="filters-content">
             <div className="filter-group">
               <label>Buscar OS</label>
-              <input
-                placeholder="Número de OS"
-                value={busquedaOS}
-                onChange={(e) => setBusquedaOS(e.target.value)}
-              />
+              <input placeholder="Número de OS" value={busquedaOS} onChange={(e) => setBusquedaOS(e.target.value)} />
             </div>
-
             <div className="filter-group">
               <label>Cliente</label>
-              <CustomSelect
-                value={filtroCliente}
-                onChange={(e) => setFiltroCliente(e.target.value)}
-                options={["Banco Estado"]}
-                placeholder="Todos"
-              />
+              <CustomSelect value={filtroCliente} onChange={(e) => setFiltroCliente(e.target.value)} options={["Banco Estado"]} placeholder="Todos" />
             </div>
-
             <div className="filter-group">
               <label>Técnico</label>
-              <input
-                type="text"
-                placeholder="Nombre del técnico"
-                value={filtroTecnico}
-                onChange={(e) => setFiltroTecnico(e.target.value)}
-              />
+              <input type="text" placeholder="Nombre del técnico" value={filtroTecnico} onChange={(e) => setFiltroTecnico(e.target.value)} />
             </div>
-
             <div className="filter-group">
               <label>Estado</label>
-              <CustomSelect
-                value={filtroEstado}
-                onChange={(e) => setFiltroEstado(e.target.value)}
-                options={["Reparado en bodega", "Equipo irreparable en bodega"]}
-                placeholder="Todos"
-              />
+              <CustomSelect value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)} options={["Reparado en bodega", "Equipo irreparable en bodega"]} placeholder="Todos" />
             </div>
-
             <div className="filter-group">
               <label>Equipo</label>
-              <CustomSelect
-                value={filtroEquipo}
-                onChange={(e) => setFiltroEquipo(e.target.value)}
-                options={filtrosValores.equipos}
-                placeholder="Todos"
-              />
+              <CustomSelect value={filtroEquipo} onChange={(e) => setFiltroEquipo(e.target.value)} options={filtrosValores.equipos} placeholder="Todos" />
             </div>
-
             <div className="filter-group">
               <label>Marca</label>
-              <CustomSelect
-                value={filtroMarca}
-                onChange={(e) => setFiltroMarca(e.target.value)}
-                options={filtrosValores.marcas}
-                placeholder="Todos"
-              />
+              <CustomSelect value={filtroMarca} onChange={(e) => setFiltroMarca(e.target.value)} options={filtrosValores.marcas} placeholder="Todos" />
             </div>
-
             <div className="filter-group">
               <label>Modelo</label>
-              <CustomSelect
-                value={filtroModelo}
-                onChange={(e) => setFiltroModelo(e.target.value)}
-                options={filtrosValores.modelos}
-                placeholder="Todos"
-              />
+              <CustomSelect value={filtroModelo} onChange={(e) => setFiltroModelo(e.target.value)} options={filtrosValores.modelos} placeholder="Todos" />
             </div>
-
             <div className="filter-group">
               <label>Asignación Desde</label>
-              <input
-                type="date"
-                value={fechaAsignacionDesde}
-                onChange={(e) => setFechaAsignacionDesde(e.target.value)}
-              />
+              <input type="date" value={fechaAsignacionDesde} onChange={(e) => setFechaAsignacionDesde(e.target.value)} />
             </div>
-
             <div className="filter-group">
               <label>Asignación Hasta</label>
-              <input
-                type="date"
-                value={fechaAsignacionHasta}
-                onChange={(e) => setFechaAsignacionHasta(e.target.value)}
-              />
+              <input type="date" value={fechaAsignacionHasta} onChange={(e) => setFechaAsignacionHasta(e.target.value)} />
             </div>
-
             <div className="filter-group">
               <label>Reparación Desde</label>
-              <input
-                type="date"
-                value={fechaReparacionDesde}
-                onChange={(e) => setFechaReparacionDesde(e.target.value)}
-              />
+              <input type="date" value={fechaReparacionDesde} onChange={(e) => setFechaReparacionDesde(e.target.value)} />
             </div>
-
             <div className="filter-group">
               <label>Reparación Hasta</label>
-              <input
-                type="date"
-                value={fechaReparacionHasta}
-                onChange={(e) => setFechaReparacionHasta(e.target.value)}
-              />
+              <input type="date" value={fechaReparacionHasta} onChange={(e) => setFechaReparacionHasta(e.target.value)} />
             </div>
-
             <div className="filter-group">
               <label>Fecha</label>
-              <input
-                type="date"
-                value={fechaFiltro}
-                onChange={(e) => setFechaFiltro(e.target.value)}
-              />
+              <input type="date" value={fechaFiltro} onChange={(e) => setFechaFiltro(e.target.value)} />
             </div>
-
-            <div className="filter-group" style={{ justifyContent: 'flex-end' }}>
-              <button 
-                onClick={limpiarFiltros}
-                className="cancel-btn"
-                style={{ marginTop: 'auto' }}
-              >
-                <Search size={16} />
-                Limpiar
+            <div className="filter-group filter-actions">
+              <button onClick={limpiarFiltros} className="cancel-btn">
+                <Search /> Limpiar
               </button>
             </div>
           </div>
@@ -595,15 +451,11 @@ function Ordenes() {
         <div className="table-header">
           <span>Informes ({ordenes.length} registros)</span>
         </div>
-
         {cargando ? (
-          <div className="loading">
-            <div className="spinner"></div>
-          </div>
+          <div className="loading"><div className="spinner"></div></div>
         ) : ordenes.length === 0 ? (
           <div className="empty-state">
-            <Search size={48} />
-            <p>No se encontraron informes</p>
+            <Search /> <p>No se encontraron informes</p>
           </div>
         ) : (
           <>
@@ -611,20 +463,11 @@ function Ordenes() {
               <table>
                 <thead>
                   <tr>
-                    <th>ID</th>
-                    <th>OS</th>
-                    <th>Cliente</th>
-                    <th>Técnico</th>
-                    <th>Asignación</th>
-                    <th>Estado</th>
-                    <th>Fecha Rep.</th>
-                    <th>Fecha</th>
-                    <th>Equipo</th>
-                    <th>Serie</th>
-                    <th>Acciones</th>
+                    <th>ID</th><th>OS</th><th>Cliente</th><th>Técnico</th>
+                    <th>Asignación</th><th>Estado</th><th>Fecha Rep.</th>
+                    <th>Fecha</th><th>Equipo</th><th>Serie</th><th>Acciones</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   {ordenes.map((o) => (
                     <tr key={o.id}>
@@ -638,23 +481,13 @@ function Ordenes() {
                       <td data-label="Fecha">{formatDate(o.fecha)}</td>
                       <td data-label="Equipo">{o.equipo}</td>
                       <td data-label="Serie">{o.serie}</td>
-
                       <td data-label="Acciones">
                         <div className="action-buttons">
-                          <button
-                            className="table-btn edit-btn"
-                            onClick={() => editarOrden(o)}
-                          >
-                            <Edit size={14} />
-                            Editar
+                          <button className="table-btn edit-btn" onClick={() => editarOrden(o)}>
+                            <Edit /> Editar
                           </button>
-
-                          <button
-                            className="table-btn delete-btn"
-                            onClick={() => eliminarOrden(o.id)}
-                          >
-                            <Trash2 size={14} />
-                            Eliminar
+                          <button className="table-btn delete-btn" onClick={() => eliminarOrden(o.id)}>
+                            <Trash2 /> Eliminar
                           </button>
                         </div>
                       </td>
@@ -663,7 +496,6 @@ function Ordenes() {
                 </tbody>
               </table>
             </div>
-
             <div className="mobile-cards">
               {ordenes.map((o) => (
                 <div className="mobile-card" key={o.id}>
@@ -672,39 +504,19 @@ function Ordenes() {
                     {getEstadoBadge(o.estado_actual)}
                   </div>
                   <div className="mobile-card-body">
-                    <div className="mobile-card-row">
-                      <label>Cliente:</label>
-                      <span>{o.cliente}</span>
-                    </div>
-                    <div className="mobile-card-row">
-                      <label>Técnico:</label>
-                      <span>{o.tecnico}</span>
-                    </div>
-                    <div className="mobile-card-row">
-                      <label>Asignación:</label>
-                      <span>{formatDate(o.asignacion)}</span>
-                    </div>
-                    <div className="mobile-card-row">
-                      <label>Fecha Rep.:</label>
-                      <span>{formatDate(o.fecha_reparacion)}</span>
-                    </div>
-                    <div className="mobile-card-row">
-                      <label>Equipo:</label>
-                      <span>{o.equipo}</span>
-                    </div>
-                    <div className="mobile-card-row">
-                      <label>Serie:</label>
-                      <span>{o.serie}</span>
-                    </div>
+                    <div className="mobile-card-row"><label>Cliente:</label><span>{o.cliente}</span></div>
+                    <div className="mobile-card-row"><label>Técnico:</label><span>{o.tecnico}</span></div>
+                    <div className="mobile-card-row"><label>Asignación:</label><span>{formatDate(o.asignacion)}</span></div>
+                    <div className="mobile-card-row"><label>Fecha Rep.:</label><span>{formatDate(o.fecha_reparacion)}</span></div>
+                    <div className="mobile-card-row"><label>Equipo:</label><span>{o.equipo}</span></div>
+                    <div className="mobile-card-row"><label>Serie:</label><span>{o.serie}</span></div>
                   </div>
                   <div className="mobile-card-footer">
                     <button className="table-btn edit-btn" onClick={() => editarOrden(o)}>
-                      <Edit size={14} />
-                      Editar
+                      <Edit /> Editar
                     </button>
                     <button className="table-btn delete-btn" onClick={() => eliminarOrden(o.id)}>
-                      <Trash2 size={14} />
-                      Eliminar
+                      <Trash2 /> Eliminar
                     </button>
                   </div>
                 </div>
@@ -712,45 +524,13 @@ function Ordenes() {
             </div>
           </>
         )}
-
-        <div className="pagination">
-          <div className="pagination-info">
-            Mostrando {ordenes.length > 0 ? (paginaActual - 1) * registrosPorPagina + 1 : 0} - {(paginaActual - 1) * registrosPorPagina + ordenes.length} de {totalRegistros} registros
-          </div>
-
-          <div className="pagination-controls">
-            <button
-              className="page-btn-nav"
-              onClick={() => setPaginaActual(paginaActual - 1)}
-              disabled={paginaActual === 1}
-            >
-              ‹
-            </button>
-
-            <span className="page-numbers-desktop">
-              {[...Array(totalPaginas)].map((_, i) => {
-                const numero = i + 1;
-                return (
-                  <button
-                    key={numero}
-                    onClick={() => setPaginaActual(numero)}
-                    className={paginaActual === numero ? 'active' : ''}
-                  >
-                    {numero}
-                  </button>
-                );
-              })}
-            </span>
-
-            <button
-              className="page-btn-nav"
-              onClick={() => setPaginaActual(paginaActual + 1)}
-              disabled={paginaActual === totalPaginas || totalPaginas === 0}
-            >
-              ›
-            </button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={paginaActual}
+          totalPages={totalPaginas}
+          pageSize={registrosPorPagina}
+          totalItems={totalRegistros}
+          onPageChange={setPaginaActual}
+        />
       </div>
     </div>
   );

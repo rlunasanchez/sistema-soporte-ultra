@@ -1,0 +1,80 @@
+.header {
+  background: var(--panel);
+  padding: clamp(8px, 1.2vw, 14px) clamp(12px, 1.5vw, 20px);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: var(--gap-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--gap);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+}
+
+.header h1 {
+  font-size: var(--font-2xl);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: -0.02em;
+}
+
+.header h1 svg {
+  width: clamp(20px, 2.5vw, 26px);
+  height: clamp(20px, 2.5vw, 26px);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1vw, 12px);
+  flex-wrap: wrap;
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--primary-light);
+  padding: clamp(3px, 0.5vw, 5px) clamp(8px, 1vw, 12px);
+  border-radius: 50px;
+  font-weight: 600;
+  color: var(--text);
+  font-size: var(--font-sm);
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg);
+  color: var(--text-muted);
+  border: 1.5px solid var(--border);
+  padding: var(--btn-pad-y) var(--btn-pad-x);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: var(--font-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.logout-btn:hover {
+  background: var(--border);
+  color: var(--text);
+  border-color: var(--border-hover);
+}
+
+.logout-btn svg {
+  width: clamp(14px, 1.5vw, 17px);
+  height: clamp(14px, 1.5vw, 17px);
+}

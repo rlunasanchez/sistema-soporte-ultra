@@ -10,10 +10,7 @@ function Informacion() {
   const [seccionesExpandidas, setSeccionesExpandidas] = useState({});
 
   const toggleSeccion = (seccion) => {
-    setSeccionesExpandidas(prev => ({
-      ...prev,
-      [seccion]: !prev[seccion]
-    }));
+    setSeccionesExpandidas(prev => ({ ...prev, [seccion]: !prev[seccion] }));
   };
 
   const cerrarSesion = () => {
@@ -39,7 +36,7 @@ function Informacion() {
     {
       id: "resumen",
       titulo: "Resumen del Proyecto",
-      icono: <Info size={20} />,
+      icono: <Info />,
       contenido: (
         <div className="info-content">
           <p><strong>Sistema de Soporte Ultra</strong> es una aplicación web para la gestión de órdenes de servicio técnico. Permite crear, editar, eliminar y visualizar órdenes de reparación de equipos, con exportación a Excel para reportes.</p>
@@ -53,17 +50,17 @@ function Informacion() {
     {
       id: "tecnologias",
       titulo: "Tecnologías Utilizadas",
-      icono: <Server size={20} />,
+      icono: <Server />,
       contenido: (
         <div className="info-content">
           <h4>Backend</h4>
           <ul>
             <li><strong>Node.js</strong> - Entorno de ejecución</li>
             <li><strong>Express.js</strong> - Framework web REST API</li>
-            <li><strong>PostgreSQL</strong> - Base de datos (Neon)</li>
+            <li><strong>MySQL</strong> - Base de datos local (phpMyAdmin)</li>
             <li><strong>JWT</strong> - Autenticación segura</li>
             <li><strong>bcrypt</strong> - Encriptación de contraseñas</li>
-
+            <li><strong>Nodemailer</strong> - Envío de correos</li>
             <li><strong>xlsx-populate</strong> - Generación de Excel</li>
           </ul>
           <h4>Frontend</h4>
@@ -79,24 +76,23 @@ function Informacion() {
     },
     {
       id: "despliegue",
-      titulo: "Despliegue en la Nube",
-      icono: <Database size={20} />,
+      titulo: "Entorno Local",
+      icono: <Database />,
       contenido: (
         <div className="info-content">
-          <p>El sistema está desplegado utilizando servicios gratuitos de nube:</p>
-          <h4>Servicios Utilizados</h4>
+          <p>El sistema corre en un servidor local con WAMP:</p>
+          <h4>Servidores Locales</h4>
           <ul>
-            <li><strong>Frontend:</strong> Vercel</li>
-            <li><strong>Backend:</strong> Render</li>
-            <li><strong>Base de datos:</strong> Neon (PostgreSQL)</li>
-            <li><strong>Repositorio:</strong> GitHub</li>
+            <li><strong>Backend:</strong> Node.js + Express (puerto 5000)</li>
+            <li><strong>Frontend:</strong> React + Vite (puerto 5173)</li>
+            <li><strong>Base de datos:</strong> MySQL (phpMyAdmin)</li>
+            <li><strong>Servidor Web:</strong> WAMP64</li>
           </ul>
-          <h4>Costos</h4>
+          <h4>Herramientas</h4>
           <ul>
-            <li><strong>Todos los servicios son gratuitos</strong></li>
-            <li>Neon: PostgreSQL gratis hasta 0.5GB</li>
-            <li>Render: 750 horas/mes gratis</li>
-            <li>Vercel: Ilimitado para proyectos personales</li>
+            <li><strong>npm</strong> - Gestión de dependencias</li>
+            <li><strong>phpMyAdmin</strong> - Administración de DB</li>
+            <li><strong>WAMP64</strong> - Servidor Apache + MySQL</li>
           </ul>
         </div>
       )
@@ -104,13 +100,13 @@ function Informacion() {
     {
       id: "caracteristicas",
       titulo: "Características del Sistema",
-      icono: <Wrench size={20} />,
+      icono: <Wrench />,
       contenido: (
         <div className="info-content">
           <h4>Autenticación</h4>
           <ul>
             <li>Login con usuario y contraseña</li>
-            <li>Recuperación de contraseña</li>
+            <li>Recuperación de contraseña por email</li>
             <li>Token JWT con expiración de 8 horas</li>
             <li>Rate limiting (protección contra ataques)</li>
           </ul>
@@ -151,7 +147,7 @@ function Informacion() {
     {
       id: "seguridad",
       titulo: "Seguridad",
-      icono: <Shield size={20} />,
+      icono: <Shield />,
       contenido: (
         <div className="info-content">
           <h4>Autenticación</h4>
@@ -179,18 +175,12 @@ function Informacion() {
     {
       id: "endpoints",
       titulo: "Endpoints de API",
-      icono: <Database size={20} />,
+      icono: <Database />,
       contenido: (
         <div className="info-content">
           <h4>Autenticación</h4>
           <table className="info-table">
-            <thead>
-              <tr>
-                <th>Método</th>
-                <th>Endpoint</th>
-                <th>Descripción</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Método</th><th>Endpoint</th><th>Descripción</th></tr></thead>
             <tbody>
               <tr><td>POST</td><td>/api/auth/login</td><td>Iniciar sesión</td></tr>
               <tr><td>POST</td><td>/api/auth/registrar</td><td>Crear usuario (admin)</td></tr>
@@ -202,13 +192,7 @@ function Informacion() {
           </table>
           <h4>Órdenes</h4>
           <table className="info-table">
-            <thead>
-              <tr>
-                <th>Método</th>
-                <th>Endpoint</th>
-                <th>Descripción</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Método</th><th>Endpoint</th><th>Descripción</th></tr></thead>
             <tbody>
               <tr><td>GET</td><td>/api/orden</td><td>Listar órdenes</td></tr>
               <tr><td>POST</td><td>/api/orden</td><td>Crear orden</td></tr>
@@ -219,13 +203,7 @@ function Informacion() {
           </table>
           <h4>Retiro de Bodega</h4>
           <table className="info-table">
-            <thead>
-              <tr>
-                <th>Método</th>
-                <th>Endpoint</th>
-                <th>Descripción</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Método</th><th>Endpoint</th><th>Descripción</th></tr></thead>
             <tbody>
               <tr><td>GET</td><td>/api/retiro</td><td>Listar retiros</td></tr>
               <tr><td>POST</td><td>/api/retiro</td><td>Crear retiro</td></tr>
@@ -240,7 +218,7 @@ function Informacion() {
     {
       id: "estructura",
       titulo: "Estructura de Archivos",
-      icono: <FileSpreadsheet size={20} />,
+      icono: <FileSpreadsheet />,
       contenido: (
         <div className="info-content">
           <pre className="code-block">
@@ -252,8 +230,9 @@ function Informacion() {
 │   ├── crear_base_datos.sql
 │   ├── datos_migrate.sql
 │   ├── datos_completos.sql
-│   ├── backup_db_postgres.sql
-│   ├── equipos_retirados_postgres.sql
+│   ├── insert_equipos_mysql.sql
+│   ├── equipos_retirados.sql
+│   ├── equipos_retirados_simple.sql
 │   ├── config/
 │   │   ├── db.js
 │   │   └── email.js
@@ -264,28 +243,31 @@ function Informacion() {
 │       ├── ordenRoutes.js
 │       └── retiroRoutes.js
 │
-└── frontend-ultra/
-    ├── package.json
-    ├── vite.config.js
-    ├── vercel.json
-    ├── index.html
-    └── src/
-        ├── main.jsx
-        ├── App.jsx
-        ├── services/
-        │   └── api.js
-        ├── pages/
-        │   ├── Login.jsx
-        │   ├── GestionUsuarios.jsx
-        │   ├── Informacion.jsx
-        │   └── RetiroBodega.jsx
-        ├── components/
-        │   ├── Ordenes.jsx
-        │   ├── Formulario.jsx
-        │   └── PrivateRoute.jsx
-        └── styles/
-            ├── App.css
-            └── index.css`}
+├── frontend-ultra/
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── index.html
+│   └── src/
+│       ├── main.jsx
+│       ├── App.jsx
+│       ├── services/
+│       │   └── api.js
+│       ├── pages/
+│       │   ├── Login.jsx
+│       │   ├── GestionUsuarios.jsx
+│       │   ├── Informacion.jsx
+│       │   └── RetiroBodega.jsx
+│       ├── components/
+│       │   ├── Ordenes.jsx
+│       │   ├── Formulario.jsx
+│       │   └── PrivateRoute.jsx
+│       └── styles/
+│           ├── App.css
+│           └── index.css
+│
+├── backup_db.sql
+├── backup_db_postgres.sql
+└── NOTAS_PROYECTO_LOCAL.md`}
           </pre>
         </div>
       )
@@ -296,16 +278,14 @@ function Informacion() {
     <div className="container">
       <div className="header">
         <div className="header-left">
-          <h1><Info size={28} /> Información del Sistema</h1>
+          <h1><Info /> Información del Sistema</h1>
         </div>
         <div className="user-info">
           <button onClick={() => navigate("/ordenes")} className="logout-btn">
-            <ArrowLeft size={18} />
-            Volver
+            <ArrowLeft /> Volver
           </button>
           <button onClick={cerrarSesion} className="logout-btn">
-            <LogOut size={18} />
-            Cerrar Sesión
+            <LogOut /> Cerrar Sesión
           </button>
         </div>
       </div>
@@ -318,39 +298,34 @@ function Informacion() {
             Aplicación web para la gestión de órdenes de servicio técnico para Banco Estado Chile.
           </p>
           <div className="info-badges">
-            <span className="badge badge-primary">Backend: Node.js + Express</span>
-            <span className="badge badge-info">Frontend: React + Vite</span>
-            <span className="badge badge-success">Database: PostgreSQL (Neon)</span>
-            <span className="badge badge-warning">Desplegado: Vercel + Render</span>
-            <span className="badge badge-primary">Retiro Bodega</span>
+            <span className="badge" style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}>Backend: Node.js + Express</span>
+            <span className="badge" style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}>Frontend: React + Vite</span>
+            <span className="badge" style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}>Database: MySQL Local</span>
+            <span className="badge" style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}>Entorno: WAMP64 Local</span>
+            <span className="badge" style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}>Retiro Bodega</span>
           </div>
         </div>
 
         <div className="secciones-accordion">
           {secciones.map((seccion) => (
             <div key={seccion.id} className="seccion-item">
-              <div 
-                className="seccion-titulo" 
-                onClick={() => toggleSeccion(seccion.id)}
-              >
+              <div className="seccion-titulo" onClick={() => toggleSeccion(seccion.id)}>
                 <span className="seccion-icono">{seccion.icono}</span>
                 <span className="seccion-texto">{seccion.titulo}</span>
                 <span className="seccion-flecha">
-                  {seccionesExpandidas[seccion.id] ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                  {seccionesExpandidas[seccion.id] ? <ChevronUp /> : <ChevronDown />}
                 </span>
               </div>
               {seccionesExpandidas[seccion.id] && (
-                <div className="seccion-contenido">
-                  {seccion.contenido}
-                </div>
+                <div className="seccion-contenido">{seccion.contenido}</div>
               )}
             </div>
           ))}
         </div>
 
         <div className="info-footer">
-          <p>© {new Date().getFullYear()} Rodrigo Luna. Todos los derechos reservados.</p>
-          <p>Desarrollado con React, Node.js y PostgreSQL</p>
+          <p>&copy; {new Date().getFullYear()} Rodrigo Luna. Todos los derechos reservados.</p>
+          <p>Desarrollado con React, Node.js y MySQL</p>
         </div>
       </div>
     </div>

@@ -1,0 +1,126 @@
+.table-container {
+  background: var(--panel);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-lg);
+  border-bottom: 1px solid var(--border);
+}
+
+.table-header span {
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: var(--font-md);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: var(--font-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: clamp(6px, 0.8vw, 10px) clamp(6px, 0.8vw, 10px);
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+
+table td {
+  padding: clamp(6px, 0.8vw, 10px) clamp(6px, 0.8vw, 10px);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--font-sm);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+table tr:hover { background: #f8fafc; }
+table tr:last-child td { border-bottom: none; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: clamp(2px, 0.3vw, 4px) clamp(6px, 0.8vw, 10px);
+  border-radius: 50px;
+  font-size: var(--font-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-success { background: var(--success-light); color: var(--success); }
+.badge-warning { background: var(--warning-light); color: var(--warning); }
+.badge-danger { background: var(--danger-light); color: var(--danger); }
+.badge-info { background: var(--info-light); color: var(--info); }
+.badge-primary { background: var(--primary-light); color: var(--primary); }
+
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+
+.table-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: clamp(3px, 0.4vw, 5px) clamp(6px, 0.8vw, 8px);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.table-btn svg {
+  width: clamp(12px, 1.2vw, 14px);
+  height: clamp(12px, 1.2vw, 14px);
+}
+
+.edit-btn { background: var(--warning-light); color: var(--warning); }
+.edit-btn:hover { background: var(--warning); color: #000; }
+
+.delete-btn { background: var(--danger-light); color: var(--danger); }
+.delete-btn:hover { background: var(--danger); color: white; }
+
+.table-btn-success {
+  background: var(--success-light);
+  color: var(--success);
+  border: none;
+}
+
+.table-btn-success:hover { background: var(--success); color: #000; }
+
+.table-btn-danger {
+  background: var(--danger-light);
+  color: var(--danger);
+  border: none;
+}
+
+.table-btn-danger:hover { background: var(--danger); color: white; }
+
+.reset-pw-btn {
+  background: var(--warning-light);
+  color: var(--warning);
+  border: none;
+}
+
+.reset-pw-btn:hover { background: var(--warning); color: #000; }

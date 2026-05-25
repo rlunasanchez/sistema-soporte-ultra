@@ -5,6 +5,7 @@ import {
   Search, ChevronDown, ChevronUp, Edit, Trash2, FileSpreadsheet
 } from "lucide-react";
 import api from "../services/api";
+import Pagination from "../components/Pagination";
 
 function RetiroBodega() {
   const navigate = useNavigate();
@@ -56,7 +57,6 @@ function RetiroBodega() {
           limit: registrosPorPagina,
         },
       });
-
       setRetiros(res.data.data || []);
       setTotalRegistros(res.data.pagination.total);
       setTotalPaginas(res.data.pagination.totalPages);
@@ -72,7 +72,6 @@ function RetiroBodega() {
     const delay = setTimeout(() => {
       fetchRetiros();
     }, 400);
-
     return () => clearTimeout(delay);
   }, [filtroFechaDesde, filtroFechaHasta, paginaActual]);
 
@@ -152,7 +151,6 @@ function RetiroBodega() {
         },
         responseType: "blob",
       });
-
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -171,26 +169,21 @@ function RetiroBodega() {
         <div className="header">
           <div className="header-left">
             <h1>
-              <Package size={28} />
+              <Package />
               {editarRetiro ? "Editar Retiro" : "Nuevo Retiro"}
             </h1>
           </div>
           <div className="user-info">
             <button onClick={cancelarFormulario} className="logout-btn">
-              <ArrowLeft size={18} />
+              <ArrowLeft />
               Volver
             </button>
           </div>
         </div>
-
         <div className="form-container">
           <div className="form-header">
-            <h2>
-              <Package size={20} />
-              Equipos Retirados Banco Estado
-            </h2>
+            <h2><Package /> Equipos Retirados Banco Estado</h2>
           </div>
-
           <form onSubmit={guardarRetiro}>
             <div className="form-grid">
               <div className="form-group">
@@ -203,7 +196,6 @@ function RetiroBodega() {
                   required
                 />
               </div>
-
               <div className="form-group">
                 <label>Serie Reversa</label>
                 <input
@@ -215,7 +207,6 @@ function RetiroBodega() {
                   required
                 />
               </div>
-
               <div className="form-group">
                 <label>Equipo</label>
                 <input
@@ -228,14 +219,12 @@ function RetiroBodega() {
                 />
               </div>
             </div>
-
             <div className="form-actions">
               <button type="button" onClick={cancelarFormulario} className="cancel-btn">
-                <ArrowLeft size={18} />
-                Cancelar
+                <ArrowLeft /> Cancelar
               </button>
               <button type="submit" className="main-btn">
-                <Package size={18} />
+                <Package />
                 {editarRetiro ? "Actualizar" : "Guardar"}
               </button>
             </div>
@@ -249,23 +238,19 @@ function RetiroBodega() {
     <div className="container">
       <div className="header">
         <div className="header-left">
-          <h1>
-            <Package size={28} />
-            Equipos Retirados Banco Estado
-          </h1>
+          <h1><Package /> Equipos Retirados Banco Estado</h1>
         </div>
-        
         <div className="user-info">
           <div className="user-badge">
-            <User size={18} />
+            <User />
             {usuario}
           </div>
           <button onClick={() => navigate("/ordenes")} className="logout-btn">
-            <ArrowLeft size={18} />
+            <ArrowLeft />
             Volver
           </button>
           <button onClick={cerrarSesion} className="logout-btn">
-            <LogOut size={18} />
+            <LogOut />
             Cerrar Sesión
           </button>
         </div>
@@ -280,12 +265,11 @@ function RetiroBodega() {
           }}
           className="main-btn"
         >
-          <Plus size={20} />
+          <Plus />
           Nuevo Retiro
         </button>
-
         <button onClick={descargarExcel} className="main-btn export-btn">
-          <FileSpreadsheet size={20} />
+          <FileSpreadsheet />
           Exportar Excel
         </button>
       </div>
@@ -295,16 +279,12 @@ function RetiroBodega() {
           className="filters-header"
           onClick={() => setFiltrosExpandidos(!filtrosExpandidos)}
         >
-          <h3>
-            <Search size={18} />
-            Filtros de Búsqueda
-          </h3>
+          <h3><Search /> Filtros de Búsqueda</h3>
           <div className="filters-toggle">
             {filtrosExpandidos ? 'Ocultar' : 'Mostrar'}
-            {filtrosExpandidos ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            {filtrosExpandidos ? <ChevronUp /> : <ChevronDown />}
           </div>
         </div>
-
         {filtrosExpandidos && (
           <div className="filters-content">
             <div className="filter-group">
@@ -312,33 +292,20 @@ function RetiroBodega() {
               <input
                 type="date"
                 value={filtroFechaDesde}
-                onChange={(e) => {
-                  setFiltroFechaDesde(e.target.value);
-                  setPaginaActual(1);
-                }}
+                onChange={(e) => { setFiltroFechaDesde(e.target.value); setPaginaActual(1); }}
               />
             </div>
-
             <div className="filter-group">
               <label>Fecha Hasta</label>
               <input
                 type="date"
                 value={filtroFechaHasta}
-                onChange={(e) => {
-                  setFiltroFechaHasta(e.target.value);
-                  setPaginaActual(1);
-                }}
+                onChange={(e) => { setFiltroFechaHasta(e.target.value); setPaginaActual(1); }}
               />
             </div>
-
-            <div className="filter-group" style={{ justifyContent: 'flex-end' }}>
-              <button 
-                onClick={limpiarFiltros}
-                className="cancel-btn"
-                style={{ marginTop: 'auto' }}
-              >
-                <Search size={16} />
-                Limpiar
+            <div className="filter-group filter-actions">
+              <button onClick={limpiarFiltros} className="cancel-btn">
+                <Search /> Limpiar
               </button>
             </div>
           </div>
@@ -349,14 +316,11 @@ function RetiroBodega() {
         <div className="table-header">
           <span>Equipos Retirados ({totalRegistros} registros)</span>
         </div>
-
         {cargando ? (
-          <div className="loading">
-            <div className="spinner"></div>
-          </div>
+          <div className="loading"><div className="spinner"></div></div>
         ) : retiros.length === 0 ? (
           <div className="empty-state">
-            <Package size={48} />
+            <Package />
             <p>No se encontraron registros</p>
           </div>
         ) : (
@@ -372,7 +336,6 @@ function RetiroBodega() {
                     <th>Acciones</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   {retiros.map((r) => (
                     <tr key={r.id}>
@@ -382,19 +345,11 @@ function RetiroBodega() {
                       <td data-label="Equipo">{r.equipo}</td>
                       <td data-label="Acciones">
                         <div className="action-buttons">
-                          <button
-                            className="table-btn edit-btn"
-                            onClick={() => editarItem(r)}
-                          >
-                            <Edit size={14} />
-                            Editar
+                          <button className="table-btn edit-btn" onClick={() => editarItem(r)}>
+                            <Edit /> Editar
                           </button>
-                          <button
-                            className="table-btn delete-btn"
-                            onClick={() => eliminarItem(r.id)}
-                          >
-                            <Trash2 size={14} />
-                            Eliminar
+                          <button className="table-btn delete-btn" onClick={() => eliminarItem(r.id)}>
+                            <Trash2 /> Eliminar
                           </button>
                         </div>
                       </td>
@@ -403,7 +358,6 @@ function RetiroBodega() {
                 </tbody>
               </table>
             </div>
-
             <div className="mobile-cards">
               {retiros.map((r) => (
                 <div className="mobile-card" key={r.id}>
@@ -411,27 +365,16 @@ function RetiroBodega() {
                     <span>Fecha retiro: {formatDate(r.fecha_retiro)}</span>
                   </div>
                   <div className="mobile-card-body">
-                    <div className="mobile-card-row">
-                      <label>Fecha:</label>
-                      <span>{formatDate(r.fecha_retiro)}</span>
-                    </div>
-                    <div className="mobile-card-row">
-                      <label>Serie:</label>
-                      <span>{r.serie_reversa}</span>
-                    </div>
-                    <div className="mobile-card-row">
-                      <label>Equipo:</label>
-                      <span>{r.equipo}</span>
-                    </div>
+                    <div className="mobile-card-row"><label>Fecha:</label><span>{formatDate(r.fecha_retiro)}</span></div>
+                    <div className="mobile-card-row"><label>Serie:</label><span>{r.serie_reversa}</span></div>
+                    <div className="mobile-card-row"><label>Equipo:</label><span>{r.equipo}</span></div>
                   </div>
                   <div className="mobile-card-footer">
                     <button className="table-btn edit-btn" onClick={() => editarItem(r)}>
-                      <Edit size={14} />
-                      Editar
+                      <Edit /> Editar
                     </button>
                     <button className="table-btn delete-btn" onClick={() => eliminarItem(r.id)}>
-                      <Trash2 size={14} />
-                      Eliminar
+                      <Trash2 /> Eliminar
                     </button>
                   </div>
                 </div>
@@ -439,45 +382,13 @@ function RetiroBodega() {
             </div>
           </>
         )}
-
-        <div className="pagination">
-          <div className="pagination-info">
-            Mostrando {retiros.length > 0 ? (paginaActual - 1) * registrosPorPagina + 1 : 0} - {(paginaActual - 1) * registrosPorPagina + retiros.length} de {totalRegistros} registros
-          </div>
-
-          <div className="pagination-controls">
-            <button
-              className="page-btn-nav"
-              onClick={() => setPaginaActual(paginaActual - 1)}
-              disabled={paginaActual === 1}
-            >
-              ‹
-            </button>
-
-            <span className="page-numbers-desktop">
-              {[...Array(totalPaginas)].map((_, i) => {
-                const numero = i + 1;
-                return (
-                  <button
-                    key={numero}
-                    onClick={() => setPaginaActual(numero)}
-                    className={paginaActual === numero ? 'active' : ''}
-                  >
-                    {numero}
-                  </button>
-                );
-              })}
-            </span>
-
-            <button
-              className="page-btn-nav"
-              onClick={() => setPaginaActual(paginaActual + 1)}
-              disabled={paginaActual === totalPaginas || totalPaginas === 0}
-            >
-              ›
-            </button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={paginaActual}
+          totalPages={totalPaginas}
+          pageSize={registrosPorPagina}
+          totalItems={totalRegistros}
+          onPageChange={setPaginaActual}
+        />
       </div>
     </div>
   );

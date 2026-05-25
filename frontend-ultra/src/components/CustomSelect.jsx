@@ -4,7 +4,6 @@ export default function CustomSelect({ name, value, onChange, options, placehold
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const wrapperRef = useRef(null);
-  const inputRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -13,9 +12,7 @@ export default function CustomSelect({ name, value, onChange, options, placehold
       }
     }
     function preventScroll(e) {
-      if (open) {
-        e.preventDefault();
-      }
+      if (open) e.preventDefault();
     }
     document.addEventListener("mousedown", handleClickOutside);
     if (open) {
@@ -27,7 +24,7 @@ export default function CustomSelect({ name, value, onChange, options, placehold
     };
   }, [open]);
 
-  const filteredOptions = options.filter(opt => 
+  const filteredOptions = options.filter(opt =>
     opt.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -42,27 +39,23 @@ export default function CustomSelect({ name, value, onChange, options, placehold
       maxHeight: '250px',
       overflowY: 'auto',
       zIndex: 1000,
-      boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
     };
-
     if (wrapperRef.current) {
       const rect = wrapperRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
-      
       if (spaceBelow < 200) {
-        return { 
-          ...baseStyle, 
-          bottom: (window.innerHeight - rect.top) + 'px', 
+        return {
+          ...baseStyle,
+          bottom: (window.innerHeight - rect.top) + 'px',
           left: rect.left + 'px',
-          right: 'auto',
           width: rect.width + 'px'
         };
       }
-      return { 
-        ...baseStyle, 
-        top: (rect.bottom + 2) + 'px', 
+      return {
+        ...baseStyle,
+        top: (rect.bottom + 2) + 'px',
         left: rect.left + 'px',
-        right: 'auto',
         width: rect.width + 'px'
       };
     }
@@ -88,45 +81,25 @@ export default function CustomSelect({ name, value, onChange, options, placehold
   };
 
   return (
-    <div className="custom-select-wrapper" ref={wrapperRef} style={{ position: 'relative' }}>
+    <div className="custom-select-wrapper" ref={wrapperRef}>
       <input
-        ref={inputRef}
         name={name}
         value={value}
         onChange={handleInputChange}
         placeholder={placeholder || "Seleccionar"}
         onClick={handleClick}
         onFocus={() => setOpen(true)}
-        style={{ 
-          width: '100%', 
-          padding: '8px 10px', 
-          borderRadius: 'var(--radius-sm)', 
-          border: '1px solid var(--border)', 
-          fontSize: '0.8rem',
-          background: 'var(--bg)',
-          cursor: 'pointer'
-        }}
       />
       {open && (
-        <ul 
-          className="custom-select-dropdown"
-          style={getDropdownStyle()}
-        >
+        <ul className="custom-select-dropdown" style={getDropdownStyle()}>
           {filteredOptions.length === 0 ? (
-            <li style={{ padding: '8px 12px', color: '#999' }}>Sin resultados</li>
+            <li className="cs-empty">Sin resultados</li>
           ) : (
             filteredOptions.map((opt) => (
               <li
                 key={opt}
+                className={`cs-option ${value === opt ? 'cs-selected' : ''}`}
                 onClick={() => handleSelect(opt)}
-                style={{
-                  padding: '8px 12px',
-                  cursor: 'pointer',
-                  background: value === opt ? '#e6f0fa' : 'white',
-                  borderBottom: '1px solid #f1f5f9'
-                }}
-                onMouseEnter={(e) => e.target.style.background = '#f1f5f9'}
-                onMouseLeave={(e) => e.target.style.background = value === opt ? '#e6f0fa' : 'white'}
               >
                 {opt}
               </li>
