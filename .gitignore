@@ -1,0 +1,16 @@
+.env
+.env.example
+node_modules/
+dist/
+.DS_Store
+Thumbs.db
+
+# opencode
+.agents/
+skills-lock.json
+
+# local-only
+sistema-soporte-ultra-prod/
+docs/
+_nul
+_write_test.txt
