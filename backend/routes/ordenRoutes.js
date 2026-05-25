@@ -1,5 +1,5 @@
 import express from "express";
-import pool from "../config/db.js";
+import { query } from "../config/db.js";
 import XlsxPopulate from "xlsx-populate";
 import PDFDocument from "pdfkit";
 import { authMiddleware } from "../middleware/authMiddleware.js";
@@ -11,7 +11,7 @@ const router = express.Router();
 ================================*/
 router.get("/tecnicos", async (req, res) => {
   try {
-    const result = await pool.query(
+    const result = await query(
       "SELECT usuario FROM usuarios WHERE activo = true ORDER BY usuario ASC"
     );
     res.json(result.rows);
@@ -26,13 +26,13 @@ router.get("/tecnicos", async (req, res) => {
 ================================*/
 router.get("/filtros-valores", async (req, res) => {
   try {
-    const equipos = await pool.query(
+    const equipos = await query(
       "SELECT DISTINCT equipo FROM informe_tecnico WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
     );
-    const marcas = await pool.query(
+    const marcas = await query(
       "SELECT DISTINCT marca FROM informe_tecnico WHERE marca IS NOT NULL AND marca != '' ORDER BY marca ASC"
     );
-    const modelos = await pool.query(
+    const modelos = await query(
       "SELECT DISTINCT modelo FROM informe_tecnico WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
     );
 
@@ -52,13 +52,13 @@ router.get("/filtros-valores", async (req, res) => {
 ================================*/
 router.get("/valores-formulario", async (req, res) => {
   try {
-    const equipos = await pool.query(
+    const equipos = await query(
       "SELECT DISTINCT equipo FROM informe_tecnico WHERE equipo IS NOT NULL AND equipo != '' ORDER BY equipo ASC"
     );
-    const marcas = await pool.query(
+    const marcas = await query(
       "SELECT DISTINCT marca FROM informe_tecnico WHERE marca IS NOT NULL AND marca != '' ORDER BY marca ASC"
     );
-    const modelos = await pool.query(
+    const modelos = await query(
       "SELECT DISTINCT modelo FROM informe_tecnico WHERE modelo IS NOT NULL AND modelo != '' ORDER BY modelo ASC"
     );
 
@@ -206,8 +206,8 @@ router.get("/", async (req, res) => {
   try {
     const { sql, countSql, params, page, limit } = buildFilterQuery(req.query);
     
-    const result = await pool.query(sql, params);
-    const countResult = await pool.query(countSql, params);
+    const result = await query(sql, params);
+    const countResult = await query(countSql, params);
     const total = countResult.rows[0].total;
     const totalPages = Math.ceil(total / limit);
 
@@ -285,7 +285,7 @@ router.post("/", async (req, res) => {
       data.diagnostico,
     ];
 
-    const result = await pool.query(sql, values);
+    const result = await query(sql, values);
 
     res.status(201).json({
       msg: "Orden creada correctamente",
@@ -352,7 +352,7 @@ router.put("/:id", async (req, res) => {
       id,
     ];
 
-    await pool.query(sql, values);
+    await query(sql, values);
 
     res.json({ msg: "Orden actualizada correctamente" });
   } catch (err) {
@@ -368,7 +368,7 @@ router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    await pool.query("DELETE FROM informe_tecnico WHERE id = $1", [id]);
+    await query("DELETE FROM informe_tecnico WHERE id = $1", [id]);
 
     res.json({ msg: "Orden eliminada correctamente" });
   } catch (err) {
@@ -383,7 +383,7 @@ router.delete("/:id", async (req, res) => {
 router.get("/excel", async (req, res) => {
   try {
     const { sql, params } = buildFilterQuery(req.query, true);
-    const result = await pool.query(sql, params);
+    const result = await query(sql, params);
 
     const workbook = await XlsxPopulate.fromBlankAsync();
     const sheet = workbook.sheet(0);
@@ -500,7 +500,7 @@ router.get("/excel", async (req, res) => {
 router.get("/excel-correo", async (req, res) => {
   try {
     const { sql, params } = buildFilterQuery(req.query, true);
-    const result = await pool.query(sql, params);
+    const result = await query(sql, params);
 
     const workbook = await XlsxPopulate.fromBlankAsync();
     const sheet = workbook.sheet(0);
@@ -586,7 +586,7 @@ router.get("/excel-correo", async (req, res) => {
 router.get("/excel-respaldo", async (req, res) => {
   try {
     const { sql, params } = buildFilterQuery(req.query, true);
-    const result = await pool.query(sql, params);
+    const result = await query(sql, params);
 
     const workbook = await XlsxPopulate.fromBlankAsync();
     const sheet = workbook.sheet(0);
@@ -758,7 +758,7 @@ router.get("/pdf", async (req, res) => {
   try {
     const { sql, params } = buildFilterQuery(req.query, true);
     
-    const result = await pool.query(sql, params);
+    const result = await query(sql, params);
 
     if (result.rows.length === 0) {
       return res.status(400).json({ msg: "No hay órdenes para exportar" });

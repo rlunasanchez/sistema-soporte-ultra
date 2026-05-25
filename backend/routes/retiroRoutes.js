@@ -1,5 +1,5 @@
 import express from "express";
-import pool from "../config/db.js";
+import { query } from "../config/db.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import XlsxPopulate from "xlsx-populate";
 
@@ -47,10 +47,10 @@ router.get("/", async (req, res) => {
 
     sql += ` ORDER BY id DESC LIMIT ${limitNum} OFFSET ${offset}`;
 
-    const result = await pool.query(sql, params);
+    const result = await query(sql, params);
     const rows = result.rows;
     
-    const countResult = await pool.query(countSql, params);
+    const countResult = await query(countSql, params);
     const total = countResult.rows[0].total;
     const totalPages = Math.ceil(total / limitNum);
 
@@ -88,7 +88,7 @@ router.post("/", async (req, res) => {
       data.equipo,
     ];
 
-    const result = await pool.query(sql, values);
+    const result = await query(sql, values);
 
     res.status(201).json({
       msg: "Retiro creado correctamente",
@@ -123,7 +123,7 @@ router.put("/:id", async (req, res) => {
       id,
     ];
 
-    await pool.query(sql, values);
+    await query(sql, values);
 
     res.json({ msg: "Retiro actualizado correctamente" });
   } catch (err) {
@@ -139,7 +139,7 @@ router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    await pool.query("DELETE FROM equipos_retirados WHERE id = $1", [id]);
+    await query("DELETE FROM equipos_retirados WHERE id = $1", [id]);
 
     res.json({ msg: "Retiro eliminado correctamente" });
   } catch (err) {
@@ -173,7 +173,7 @@ router.get("/excel", async (req, res) => {
 
     sql += " ORDER BY fecha_retiro DESC";
 
-    const result = await pool.query(sql, params);
+    const result = await query(sql, params);
     const rows = result.rows;
 
     const workbook = await XlsxPopulate.fromBlankAsync();

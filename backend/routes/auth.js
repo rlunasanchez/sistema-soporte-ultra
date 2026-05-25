@@ -2,7 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import pool from "../config/db.js";
+import { query } from "../config/db.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import { enviarEmail } from "../config/email.js";
 
@@ -14,7 +14,7 @@ router.post("/login", async (req, res) => {
   const { usuario, password } = req.body;
 
   try {
-    const result = await pool.query(
+    const result = await query(
       "SELECT * FROM usuarios WHERE usuario = $1 AND activo = true",
       [usuario]
     );
@@ -49,14 +49,14 @@ router.post("/registrar", authMiddleware, async (req, res) => {
   try {
     const passwordEncriptada = await bcrypt.hash(password, 10);
 
-    const result = await pool.query(
+    const result = await query(
       "INSERT INTO usuarios (usuario, password, rol, email, activo) VALUES ($1, $2, $3, $4, 1)",
       [usuario, passwordEncriptada, rol || "tecnico", email || null]
     );
 
     res.status(201).json({ msg: "Usuario creado correctamente" });
   } catch (err) {
-    if (err.code === "23505") {
+    if (err.code === "23505" || err.code === "ER_DUP_ENTRY") {
       return res.status(400).json({ msg: "El usuario ya existe" });
     }
     console.error(err);
@@ -68,7 +68,7 @@ router.put("/cambiar-password", authMiddleware, async (req, res) => {
   const { usuario, passwordActual, nuevaPassword } = req.body;
 
   try {
-    const result = await pool.query(
+    const result = await query(
       "SELECT * FROM usuarios WHERE usuario = $1",
       [usuario]
     );
@@ -86,7 +86,7 @@ router.put("/cambiar-password", authMiddleware, async (req, res) => {
 
     const nuevaPasswordEncriptada = await bcrypt.hash(nuevaPassword, 10);
 
-    await pool.query(
+    await query(
       "UPDATE usuarios SET password = $1 WHERE usuario = $2",
       [nuevaPasswordEncriptada, usuario]
     );
@@ -111,7 +111,7 @@ router.post("/olvide-password", async (req, res) => {
   const { usuario } = req.body;
 
   try {
-    const result = await pool.query(
+    const result = await query(
       "SELECT * FROM usuarios WHERE usuario = $1",
       [usuario]
     );
@@ -134,7 +134,7 @@ router.post("/buscar-usuario", async (req, res) => {
 
   try {
     console.log(`[buscar-usuario] Buscando usuario en BD...`);
-    const result = await pool.query(
+    const result = await query(
       "SELECT id, email FROM usuarios WHERE usuario = $1 AND activo = true",
       [usuario]
     );
@@ -157,7 +157,7 @@ router.post("/buscar-usuario", async (req, res) => {
     console.log(`[buscar-usuario] Código generado: ${codigo}`);
     
     console.log(`[buscar-usuario] Guardando código en BD...`);
-    await pool.query(
+    await query(
       "UPDATE usuarios SET codigo_recuperacion = $1, fecha_codigo = CURRENT_TIMESTAMP WHERE usuario = $2",
       [codigo, usuario]
     );
@@ -198,7 +198,7 @@ router.post("/verificar-codigo", async (req, res) => {
   const { usuario, codigo } = req.body;
 
   try {
-    const result = await pool.query(
+    const result = await query(
       "SELECT id, fecha_codigo FROM usuarios WHERE usuario = $1 AND codigo_recuperacion = $2",
       [usuario, codigo]
     );
@@ -226,7 +226,7 @@ router.post("/cambiar-password-externo", async (req, res) => {
   const { usuario, nuevaPassword } = req.body;
 
   try {
-    const result = await pool.query(
+    const result = await query(
       "SELECT id FROM usuarios WHERE usuario = $1 AND activo = true",
       [usuario]
     );
@@ -237,7 +237,7 @@ router.post("/cambiar-password-externo", async (req, res) => {
 
     const passwordEncriptada = await bcrypt.hash(nuevaPassword, 10);
 
-    await pool.query(
+    await query(
       "UPDATE usuarios SET password = $1, codigo_recuperacion = NULL, fecha_codigo = NULL WHERE usuario = $2",
       [passwordEncriptada, usuario]
     );
@@ -251,7 +251,7 @@ router.post("/cambiar-password-externo", async (req, res) => {
 
 router.get("/usuarios", authMiddleware, async (req, res) => {
   try {
-    const result = await pool.query(
+    const result = await query(
       "SELECT id, usuario, email, rol, activo, fecha_creacion FROM usuarios ORDER BY id DESC"
     );
     res.json(result.rows);
@@ -268,7 +268,7 @@ router.put("/resetear-password/:id", authMiddleware, async (req, res) => {
   try {
     const nuevaPasswordEncriptada = await bcrypt.hash(nuevaPassword, 10);
 
-    await pool.query(
+    await query(
       "UPDATE usuarios SET password = $1 WHERE id = $2",
       [nuevaPasswordEncriptada, id]
     );
@@ -285,7 +285,7 @@ router.put("/activar-usuario/:id", authMiddleware, async (req, res) => {
   const { activo } = req.body;
 
   try {
-    await pool.query(
+    await query(
       "UPDATE usuarios SET activo = $1 WHERE id = $2",
       [activo ? true : false, id]
     );
@@ -301,7 +301,7 @@ router.delete("/eliminar-usuario/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
 
   try {
-    await pool.query("DELETE FROM usuarios WHERE id = $1", [id]);
+    await query("DELETE FROM usuarios WHERE id = $1", [id]);
     res.json({ msg: "Usuario eliminado" });
   } catch (err) {
     console.error(err);
@@ -314,7 +314,7 @@ router.put("/actualizar-email/:id", authMiddleware, async (req, res) => {
   const { email } = req.body;
 
   try {
-    await pool.query(
+    await query(
       "UPDATE usuarios SET email = $1 WHERE id = $2",
       [email || null, id]
     );
@@ -330,13 +330,13 @@ router.put("/actualizar-usuario/:id", authMiddleware, async (req, res) => {
   const { usuario, rol, email } = req.body;
 
   try {
-    await pool.query(
+    await query(
       "UPDATE usuarios SET usuario = $1, rol = $2, email = $3 WHERE id = $4",
       [usuario, rol, email || null, id]
     );
     res.json({ msg: "Usuario actualizado correctamente" });
   } catch (err) {
-    if (err.code === "23505") {
+    if (err.code === "23505" || err.code === "ER_DUP_ENTRY") {
       return res.status(400).json({ msg: "El usuario ya existe" });
     }
     console.error(err);
