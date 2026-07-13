@@ -237,6 +237,16 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ msg: "El campo OS es requerido" });
     }
 
+    const existe = await query(
+      "SELECT id FROM informe_tecnico WHERE os = $1 LIMIT 1",
+      [data.os]
+    );
+    if (existe.rows.length > 0) {
+      return res.status(409).json({
+        msg: `El número de OS "${data.os}" ya está registrado en el sistema. No se puede crear dos órdenes con el mismo número. Por favor, verifique el dato e intente con un número de OS diferente.`
+      });
+    }
+
     const sql = `
       INSERT INTO informe_tecnico (
         os, cliente, tecnico, asignacion, en_garantia, tipo,
@@ -293,7 +303,7 @@ router.post("/", async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: "Error creando orden: " + err.message });
+    res.status(500).json({ msg: "Ocurrió un error al crear la orden. Por favor, intente nuevamente." });
   }
 });
 
