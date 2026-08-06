@@ -9,6 +9,11 @@ function Informacion() {
   const navigate = useNavigate();
   const [seccionesExpandidas, setSeccionesExpandidas] = useState({});
 
+  const esEntornoWeb =
+    typeof window !== "undefined" &&
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1";
+
   const toggleSeccion = (seccion) => {
     setSeccionesExpandidas(prev => ({ ...prev, [seccion]: !prev[seccion] }));
   };
@@ -57,12 +62,27 @@ function Informacion() {
           <ul>
             <li><strong>Node.js</strong> - Entorno de ejecución</li>
             <li><strong>Express.js</strong> - Framework web REST API</li>
-            <li><strong>MySQL</strong> - Base de datos local (phpMyAdmin)</li>
             <li><strong>JWT</strong> - Autenticación segura</li>
             <li><strong>bcrypt</strong> - Encriptación de contraseñas</li>
-            <li><strong>Nodemailer</strong> - Envío de correos</li>
+            <li><strong>Resend</strong> - Envío de correos</li>
             <li><strong>xlsx-populate</strong> - Generación de Excel</li>
+            <li><strong>pdfkit</strong> - Generación de PDF</li>
           </ul>
+          {esEntornoWeb ? (
+            <>
+              <h4>Base de datos</h4>
+              <ul>
+                <li><strong>PostgreSQL</strong> - Base de datos en la nube (Neon)</li>
+              </ul>
+            </>
+          ) : (
+            <>
+              <h4>Base de datos</h4>
+              <ul>
+                <li><strong>MySQL</strong> - Base de datos local (phpMyAdmin)</li>
+              </ul>
+            </>
+          )}
           <h4>Frontend</h4>
           <ul>
             <li><strong>React</strong> - Framework UI</li>
@@ -76,9 +96,31 @@ function Informacion() {
     },
     {
       id: "despliegue",
-      titulo: "Entorno Local",
+      titulo: esEntornoWeb ? "Entorno Web (Producción)" : "Entorno Local",
       icono: <Database />,
-      contenido: (
+      contenido: esEntornoWeb ? (
+        <div className="info-content">
+          <p>El sistema está desplegado en la nube con despliegue automático desde GitHub:</p>
+          <h4>Servicios en la Nube</h4>
+          <ul>
+            <li><strong>Frontend:</strong> Vercel</li>
+            <li><strong>Backend:</strong> Render</li>
+            <li><strong>Base de datos:</strong> Neon (PostgreSQL)</li>
+            <li><strong>Repositorio:</strong> GitHub</li>
+          </ul>
+          <h4>URLs de Producción</h4>
+          <ul>
+            <li><strong>Frontend:</strong> https://sistema-soporte-ultra-wngj.vercel.app</li>
+            <li><strong>Backend:</strong> https://sistema-soporte-ultra.onrender.com</li>
+          </ul>
+          <h4>Notas</h4>
+          <ul>
+            <li>Despliegue automático al hacer push a GitHub</li>
+            <li>Backend en plan gratuito (puede hibernar tras 15 min de inactividad)</li>
+            <li>Base de datos configurada con SSL requerido</li>
+          </ul>
+        </div>
+      ) : (
         <div className="info-content">
           <p>El sistema corre en un servidor local con WAMP:</p>
           <h4>Servidores Locales</h4>
@@ -222,7 +264,49 @@ function Informacion() {
       contenido: (
         <div className="info-content">
           <pre className="code-block">
-{`sistema-soporte-ultra/
+{esEntornoWeb ? `sistema-soporte-ultra/
+├── backend/
+│   ├── server.js
+│   ├── package.json
+│   ├── .env
+│   ├── schema_postgres.sql
+│   ├── backup_db_postgres.sql
+│   ├── equipos_retirados_postgres.sql
+│   ├── config/
+│   │   ├── db.js
+│   │   └── email.js
+│   ├── middleware/
+│   │   └── authMiddleware.js
+│   └── routes/
+│       ├── auth.js
+│       ├── ordenRoutes.js
+│       └── retiroRoutes.js
+│
+├── frontend-ultra/
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── vercel.json
+│   ├── index.html
+│   └── src/
+│       ├── main.jsx
+│       ├── App.jsx
+│       ├── services/
+│       │   └── api.js
+│       ├── pages/
+│       │   ├── Login.jsx
+│       │   ├── GestionUsuarios.jsx
+│       │   ├── Informacion.jsx
+│       │   └── RetiroBodega.jsx
+│       ├── components/
+│       │   ├── Ordenes.jsx
+│       │   ├── Formulario.jsx
+│       │   └── PrivateRoute.jsx
+│       └── styles/
+│           ├── App.css
+│           └── index.css
+│
+├── backup_db_postgres.sql
+└── vercel.json` : `sistema-soporte-ultra/
 ├── backend/
 │   ├── server.js
 │   ├── package.json
@@ -266,7 +350,6 @@ function Informacion() {
 │           └── index.css
 │
 ├── backup_db.sql
-├── backup_db_postgres.sql
 └── NOTAS_PROYECTO_LOCAL.md`}
           </pre>
         </div>
@@ -300,8 +383,12 @@ function Informacion() {
           <div className="info-badges">
             <span className="badge" style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}>Backend: Node.js + Express</span>
             <span className="badge" style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}>Frontend: React + Vite</span>
-            <span className="badge" style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}>Database: MySQL Local</span>
-            <span className="badge" style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}>Entorno: WAMP64 Local</span>
+            <span className="badge" style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}>
+              {esEntornoWeb ? "Database: PostgreSQL (Neon)" : "Database: MySQL Local"}
+            </span>
+            <span className="badge" style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}>
+              {esEntornoWeb ? "Entorno: Vercel + Render" : "Entorno: WAMP64 Local"}
+            </span>
             <span className="badge" style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}>Retiro Bodega</span>
           </div>
         </div>
@@ -325,7 +412,7 @@ function Informacion() {
 
         <div className="info-footer">
           <p>&copy; {new Date().getFullYear()} Rodrigo Luna. Todos los derechos reservados.</p>
-          <p>Desarrollado con React, Node.js y MySQL</p>
+          <p>Desarrollado con React, Node.js y {esEntornoWeb ? "PostgreSQL" : "MySQL"}</p>
         </div>
       </div>
     </div>
